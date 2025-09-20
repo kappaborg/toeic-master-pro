@@ -190,13 +190,8 @@ class PerformanceOptimizer {
     
     preloadCriticalResources() {
         const criticalResources = [
-            { href: './assets/data/toeic_vocabulary.csv', as: 'fetch', crossOrigin: 'anonymous' },
-            { href: './assets/icons/icon-192.png', as: 'image' },
             { href: './assets/css/tailwind-custom.css', as: 'style' },
-            { href: './assets/css/professional-ui.css', as: 'style' },
-            { href: './assets/audio/correct.mp3', as: 'fetch' },
-            { href: './assets/audio/incorrect.mp3', as: 'fetch' },
-            { href: './assets/audio/conversation-examples.mp3', as: 'fetch' }
+            { href: './assets/css/professional-ui.css', as: 'style' }
         ];
         
         criticalResources.forEach(resource => {

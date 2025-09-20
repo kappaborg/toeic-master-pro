@@ -6328,3 +6328,4 @@ function goHome() {
 // Export for global use
 window.App = App;
 // Force deployment update - Sun Sep 21 00:17:25 CEST 2025
+// Version: 1758407038 - Force cache bust

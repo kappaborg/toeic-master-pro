@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "toeic-master-pro",
   "builds": [
     {
       "src": "index.html",
@@ -58,11 +57,6 @@
       ]
     }
   ],
-  "functions": {
-    "app.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }

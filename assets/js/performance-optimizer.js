@@ -605,7 +605,7 @@ class PerformanceOptimizer {
     enableProductionMode() {
         console.log('⚡ Production mode enabled for Performance Optimizer');
         this.isProduction = true;
-        this.enableAdvancedOptimizations();
+        // Advanced optimizations are already enabled by default
     }
 }
 

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - TOEIC Master Pro</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .debug-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); border: 1px solid rgba(34, 197, 94, 0.5); }
+        .error { background: rgba(239, 68, 68, 0.3); border: 1px solid rgba(239, 68, 68, 0.5); }
+        .warning { background: rgba(245, 158, 11, 0.3); border: 1px solid rgba(245, 158, 11, 0.5); }
+        button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { opacity: 0.8; }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 TOEIC Master Pro - Debug Page</h1>
+    
+    <div class="debug-container">
+        <h2>📊 Deployment Debug</h2>
+        <div id="deploymentInfo">
+            <div class="status warning">Loading deployment info...</div>
+        </div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>🧪 File Tests</h2>
+        <div id="fileTests">
+            <div class="status warning">Testing files...</div>
+        </div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>🔧 Console Tests</h2>
+        <div id="consoleTests">
+            <div class="status warning">Testing console...</div>
+        </div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>🎯 Actions</h2>
+        <button onclick="testFiles()">Test Files</button>
+        <button onclick="testConsole()">Test Console</button>
+        <button onclick="clearAllCache()">Clear All Cache</button>
+        <button onclick="goToApp()">Go to App</button>
+        <button onclick="showDeploymentInfo()">Show Deployment Info</button>
+    </div>
+
+    <script>
+        // Show deployment info
+        function showDeploymentInfo() {
+            const info = {
+                url: window.location.href,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                cacheStatus: 'Unknown'
+            };
+            
+            document.getElementById('deploymentInfo').innerHTML = `
+                <div class="status success">
+                    <h3>Deployment Information</h3>
+                    <pre>${JSON.stringify(info, null, 2)}</pre>
+                </div>
+            `;
+        }
+        
+        // Test files
+        async function testFiles() {
+            document.getElementById('fileTests').innerHTML = '<div class="status warning">Testing files...</div>';
+            
+            const files = [
+                'assets/js/performance-optimizer.js?v=20250921002',
+                'assets/js/app.js?v=20250921002',
+                'assets/js/error-boundary.js?v=20250921001',
+                'assets/js/real-time-monitor.js?v=20250921001'
+            ];
+            
+            let results = [];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        const text = await response.text();
+                        if (text.includes('enableAdvancedOptimizations')) {
+                            results.push(`❌ ${file} - Still contains old code`);
+                        } else {
+                            results.push(`✅ ${file} - OK (${response.status})`);
+                        }
+                    } else {
+                        results.push(`❌ ${file} - ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${file} - Error: ${error.message}`);
+                }
+            }
+            
+            document.getElementById('fileTests').innerHTML = `
+                <div class="status success">
+                    <h3>File Test Results</h3>
+                    ${results.join('<br>')}
+                </div>
+            `;
+        }
+        
+        // Test console
+        function testConsole() {
+            document.getElementById('consoleTests').innerHTML = '<div class="status warning">Testing console...</div>';
+            
+            let results = [];
+            
+            // Test if performance optimizer has the method
+            if (window.performanceOptimizer) {
+                if (typeof window.performanceOptimizer.enableProductionMode === 'function') {
+                    results.push('✅ performanceOptimizer.enableProductionMode - Available');
+                } else {
+                    results.push('❌ performanceOptimizer.enableProductionMode - Not a function');
+                }
+            } else {
+                results.push('❌ performanceOptimizer - Not available');
+            }
+            
+            // Test if login system is available
+            if (window.loginSystem) {
+                results.push('✅ loginSystem - Available');
+            } else {
+                results.push('❌ loginSystem - Not available');
+            }
+            
+            // Test if app is available
+            if (window.app) {
+                results.push('✅ app - Available');
+            } else {
+                results.push('❌ app - Not available');
+            }
+            
+            document.getElementById('consoleTests').innerHTML = `
+                <div class="status success">
+                    <h3>Console Test Results</h3>
+                    ${results.join('<br>')}
+                </div>
+            `;
+        }
+        
+        // Clear all cache
+        function clearAllCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            localStorage.clear();
+            sessionStorage.clear();
+            document.getElementById('deploymentInfo').innerHTML = `
+                <div class="status success">
+                    Cache cleared! Please refresh the page.
+                </div>
+            `;
+        }
+        
+        // Go to app
+        function goToApp() {
+            window.location.href = '/';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showDeploymentInfo();
+            testFiles();
+            testConsole();
+        });
+        
+        // Override console to capture errors
+        const originalError = console.error;
+        console.error = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('enableAdvancedOptimizations')) {
+                document.getElementById('consoleTests').innerHTML = `
+                    <div class="status error">
+                        ❌ enableAdvancedOptimizations error detected!<br>
+                        <pre>${message}</pre>
+                    </div>
+                `;
+            }
+            originalError.apply(console, args);
+        };
+    </script>
+</body>
+</html>

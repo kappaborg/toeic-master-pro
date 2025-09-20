@@ -1,0 +1,37 @@
+{
+  "name": "toeic-master-pro",
+  "version": "3.0.0",
+  "description": "Professional TOEIC Test Preparation Application with Real-time Admin Tracking",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "dev": "npx serve . -l 3000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "toeic",
+    "english",
+    "test-preparation",
+    "education",
+    "vocabulary",
+    "grammar",
+    "reading-comprehension",
+    "admin-dashboard",
+    "real-time-tracking"
+  ],
+  "author": "Kappasutra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kappasutra/toeic-master-pro"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "dependencies": {},
+  "homepage": "https://toeic-master-pro.vercel.app"
+}

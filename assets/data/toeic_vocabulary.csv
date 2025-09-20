@@ -1,0 +1,621 @@
+word,level,meaning,example1,example2,category,toeic_frequency,part_of_speech
+accomplish,B2,To achieve or complete successfully,We need to accomplish our goals by the end of the quarter.,The team accomplished the project ahead of schedule.,business,high,verb
+acquisition,B2,The act of acquiring or gaining possession,The company announced the acquisition of a new subsidiary.,The acquisition of new skills is essential for career growth.,business,high,noun
+adequate,B1,Sufficient or acceptable in quality or quantity,The current budget is adequate for our needs.,We need adequate time to complete this project.,business,medium,adjective
+administration,B2,The process of managing or organizing,The administration of the company is very efficient.,Good administration is crucial for business success.,business,high,noun
+advancement,B2,Progress or development,There are many opportunities for career advancement here.,The advancement of technology has changed our lives.,business,high,noun
+agenda,B1,A list of items to be discussed at a meeting,Please review the agenda before the meeting.,The agenda for tomorrow's conference is quite full.,business,high,noun
+allocate,B2,To distribute or assign resources,We need to allocate more budget to marketing.,The manager will allocate tasks to team members.,business,medium,verb
+analysis,B2,Detailed examination of something,The financial analysis shows positive growth.,We need a thorough analysis of the market trends.,business,high,noun
+announcement,B1,A public statement about something,The company made an important announcement today.,The announcement of the new product was well-received.,business,high,noun
+application,B1,A formal request for something,Please submit your application by Friday.,The job application process takes about two weeks.,business,high,noun
+appointment,B1,A scheduled meeting,I have an appointment with the client at 3 PM.,Please confirm your appointment by calling our office.,business,high,noun
+approach,B2,A way of dealing with something,We need a new approach to solve this problem.,The company's approach to customer service is excellent.,business,high,noun
+appropriate,B1,Suitable or proper,Please wear appropriate attire for the meeting.,This is not an appropriate time to discuss salary.,business,high,adjective
+approval,B1,Official permission or agreement,We need management approval for this project.,The proposal received unanimous approval from the board.,business,high,noun
+arrangement,B1,Plans or preparations for something,We need to make arrangements for the conference.,The travel arrangements have been confirmed.,business,medium,noun
+assessment,B2,Evaluation or judgment,The assessment of the project will take two weeks.,We need a proper assessment of the risks involved.,business,medium,noun
+assignment,B1,A task or piece of work,I have a new assignment from my supervisor.,The assignment deadline is next Monday.,business,medium,noun
+assistance,B1,Help or support,Thank you for your assistance with the project.,We need technical assistance to solve this issue.,business,medium,noun
+associate,B2,A colleague or partner,My associate will handle the presentation.,She is an associate professor at the university.,business,medium,noun
+assume,B2,To take for granted or suppose,I assume you have read the report.,We assume the project will be completed on time.,business,high,verb
+assurance,B2,A promise or guarantee,We can give you assurance that the quality is excellent.,The company provides assurance of customer satisfaction.,business,medium,noun
+attendance,B1,The action of being present,Your attendance at the meeting is required.,The attendance rate has improved significantly.,business,medium,noun
+attitude,B1,A way of thinking or feeling,She has a positive attitude towards work.,A good attitude is essential for success.,business,medium,noun
+authority,B2,The power to make decisions,The manager has the authority to approve expenses.,You need proper authority to access this information.,business,high,noun
+available,B1,Able to be used or obtained,The conference room is available at 2 PM.,Are you available for a meeting tomorrow?,business,high,adjective
+benefit,B1,An advantage or profit,The new policy will benefit all employees.,What are the benefits of this insurance plan?,business,high,noun
+budget,B1,An estimate of income and expenditure,We need to stay within our budget.,The annual budget has been approved by the board.,business,high,noun
+business,B1,Commercial activity,The business is growing rapidly.,We need to discuss business matters in private.,business,high,noun
+capacity,B2,The maximum amount something can contain,The hall has a capacity of 500 people.,We need to increase our production capacity.,business,medium,noun
+capital,B2,Wealth in the form of money or assets,The company needs more capital to expand.,We're looking for capital investment opportunities.,business,high,noun
+career,B1,A person's profession or occupation,She has a successful career in marketing.,Career development is important for employees.,business,high,noun
+category,B1,A class or division of things,This product falls into the electronics category.,We need to create a new category for this item.,business,medium,noun
+challenge,B1,A difficult task or situation,This project presents many challenges.,We need to overcome the challenge of limited resources.,business,high,noun
+change,B1,To make or become different,We need to change our marketing strategy.,The company has undergone many changes recently.,business,high,verb
+client,B1,A person or organization using services,Our client is very satisfied with the results.,We need to meet with the client tomorrow.,business,high,noun
+communication,B1,The imparting of information,Good communication is essential in business.,We need to improve communication between departments.,business,high,noun
+company,B1,A commercial business,The company was founded in 1995.,Our company values innovation and creativity.,business,high,noun
+competition,B1,Rivalry between businesses,The competition in this market is intense.,We need to stay ahead of the competition.,business,high,noun
+complete,B1,To finish or bring to an end,Please complete the form by Friday.,The project will be completed next month.,business,high,verb
+conference,B1,A formal meeting for discussion,The annual conference will be held in Paris.,I'm attending a business conference next week.,business,high,noun
+consider,B1,To think carefully about something,We need to consider all options before deciding.,Please consider my proposal for the new project.,business,high,verb
+contact,B1,To communicate with someone,Please contact me if you have any questions.,I'll contact the client about the meeting.,business,high,verb
+contract,B1,A written agreement,We need to sign the contract before starting work.,The contract expires at the end of the year.,business,high,noun
+contribute,B2,To give or supply something,Everyone should contribute to the discussion.,The new policy will contribute to better efficiency.,business,medium,verb
+control,B1,The power to influence or direct,We need better control over our expenses.,The manager has control over the department budget.,business,high,noun
+cooperation,B1,Working together towards a common goal,Thank you for your cooperation on this project.,International cooperation is essential for success.,business,medium,noun
+cost,B1,The amount required to buy something,The cost of the project has increased.,We need to reduce costs to stay competitive.,business,high,noun
+create,B1,To bring something into existence,We need to create a new marketing campaign.,The company creates innovative products.,business,high,verb
+customer,B1,A person who buys goods or services,Our customers are very satisfied with our service.,We need to improve customer satisfaction.,business,high,noun
+deadline,B1,A time limit for completing something,The deadline for the project is next Friday.,We need to meet the deadline to avoid penalties.,business,high,noun
+decision,B1,A conclusion reached after consideration,The board made an important decision today.,We need to make a decision about the budget.,business,high,noun
+deliver,B1,To bring and hand over something,We will deliver the goods tomorrow.,The company delivers excellent customer service.,business,high,verb
+department,B1,A division of a large organization,She works in the marketing department.,The finance department handles all accounting.,business,high,noun
+develop,B1,To grow or cause to grow,We need to develop new products.,The company is developing a new strategy.,business,high,verb
+development,B1,The process of developing,The development of new technology takes time.,Career development is important for employees.,business,high,noun
+discuss,B1,To talk about something,We need to discuss the budget for next year.,Let's discuss the project in detail.,business,high,verb
+document,B1,A written or printed record,Please review the document carefully.,We need to update the company documents.,business,high,noun
+economy,B1,The state of a country's wealth,The economy is showing signs of recovery.,We need to consider the economic situation.,business,medium,noun
+effective,B1,Successful in producing a desired result,This marketing strategy is very effective.,We need to find an effective solution.,business,high,adjective
+efficient,B1,Achieving maximum productivity,Our new system is more efficient.,We need to work more efficiently to meet deadlines.,business,high,adjective
+employee,B1,A person employed for wages,Every employee should attend the meeting.,The company has over 500 employees.,business,high,noun
+employer,B1,A person or organization that employs people,The employer provides health insurance.,My employer is very supportive of career development.,business,high,noun
+employment,B1,The state of having paid work,Employment opportunities are increasing.,The employment rate has improved this year.,business,medium,noun
+energy,B1,Power derived from physical resources,We need to save energy to reduce costs.,The company is investing in renewable energy.,business,medium,noun
+ensure,B1,To make certain that something will occur,We need to ensure quality in our products.,Please ensure that all documents are signed.,business,high,verb
+environment,B1,The surroundings or conditions,We need to protect the environment.,The work environment is very positive here.,business,medium,noun
+equipment,B1,The necessary items for a particular purpose,We need to buy new office equipment.,The equipment is being delivered tomorrow.,business,medium,noun
+establish,B2,To set up or create,We need to establish new procedures.,The company was established in 1990.,business,high,verb
+estimate,B1,An approximate calculation,The estimate for the project is $50,000.,We need to provide an accurate estimate.,business,medium,noun
+evaluate,B2,To assess or judge,We need to evaluate the performance of the team.,The manager will evaluate all proposals.,business,medium,verb
+event,B1,A thing that happens,The company event was very successful.,We're organizing a networking event next month.,business,medium,noun
+examine,B1,To inspect or scrutinize,We need to examine the financial reports.,The committee will examine all applications.,business,medium,verb
+example,B1,A thing characteristic of its kind,This is a good example of teamwork.,Please provide an example of your work.,business,medium,noun
+exchange,B1,An act of giving one thing for another,We need to exchange information about the project.,The currency exchange rate has changed.,business,medium,noun
+executive,B2,A senior manager in a company,The executive team met yesterday.,She is an executive at a major corporation.,business,high,noun
+expand,B1,To become larger,The company plans to expand internationally.,We need to expand our product line.,business,high,verb
+expect,B1,To regard as likely to happen,We expect the project to be completed on time.,I expect to hear from you soon.,business,high,verb
+experience,B1,Knowledge or skill gained over time,She has extensive experience in marketing.,The job requires at least 5 years of experience.,business,high,noun
+explain,B1,To make something clear,Please explain the new policy to the team.,Can you explain how this system works?,business,high,verb
+facility,B1,A place or building for a particular activity,The company has excellent facilities.,We need to upgrade our manufacturing facilities.,business,medium,noun
+factor,B1,A circumstance that influences a result,Cost is an important factor in our decision.,Many factors affect the success of a project.,business,high,noun
+failure,B1,Lack of success,The project was a complete failure.,We need to learn from our failures.,business,medium,noun
+feature,B1,A distinctive attribute,This product has many useful features.,The new software has advanced features.,business,medium,noun
+finance,B1,The management of money,The finance department handles all budgets.,We need to secure finance for the project.,business,high,noun
+financial,B1,Relating to money,The financial situation is improving.,We need to review our financial performance.,business,high,adjective
+function,B1,An activity or purpose,The main function of this department is sales.,This machine has multiple functions.,business,medium,noun
+fund,B1,A sum of money for a specific purpose,We need to raise funds for the project.,The company has a fund for employee development.,business,medium,noun
+general,B1,Affecting or concerning all people,The general opinion is positive.,We need to discuss the general strategy.,business,medium,adjective
+goal,B1,An aim or desired result,Our goal is to increase sales by 20%.,We need to set clear goals for the team.,business,high,noun
+government,B1,The governing body of a nation,The government announced new policies.,We need to comply with government regulations.,business,medium,noun
+growth,B1,The process of increasing,The company shows steady growth.,We need to focus on sustainable growth.,business,high,noun
+handle,B1,To deal with or manage,We need to handle this situation carefully.,The manager handles all customer complaints.,business,high,verb
+headquarters,B1,The main office of an organization,The company headquarters is in New York.,We need to visit the headquarters next week.,business,medium,noun
+health,B1,The state of being free from illness,Employee health is our priority.,We need to improve workplace health and safety.,business,medium,noun
+hire,B1,To employ someone,We need to hire more staff for the project.,The company is hiring experienced professionals.,business,high,verb
+identify,B1,To recognize or establish,We need to identify the main problems.,Can you identify the key issues?,business,high,verb
+implement,B2,To put into effect,We need to implement the new policy.,The plan will be implemented next month.,business,high,verb
+improve,B1,To make or become better,We need to improve our customer service.,The company is working to improve efficiency.,business,high,verb
+include,B1,To contain as part of a whole,The package includes all necessary materials.,Please include your contact information.,business,high,verb
+income,B1,Money received for work or investments,The company's income has increased.,We need to diversify our income sources.,business,medium,noun
+increase,B1,To become greater in size or amount,We need to increase our market share.,The demand for our products is increasing.,business,high,verb
+industry,B1,A particular form of economic activity,The technology industry is growing rapidly.,We work in the manufacturing industry.,business,high,noun
+information,B1,Facts provided about something,We need more information about the project.,Please provide detailed information.,business,high,noun
+innovation,B2,New ideas or methods,Innovation is key to our success.,The company is known for its innovation.,business,medium,noun
+insurance,B1,Arrangement for compensation,We need to buy insurance for the equipment.,The company provides health insurance for employees.,business,medium,noun
+interest,B1,The feeling of wanting to know something,There is great interest in our new product.,The bank charges 5% interest on loans.,business,medium,noun
+international,B1,Existing between nations,We have international clients.,The company operates internationally.,business,high,adjective
+interview,B1,A formal meeting to assess someone,The job interview went very well.,We need to schedule interviews for the position.,business,high,noun
+introduce,B1,To present someone or something,Let me introduce you to our new manager.,We need to introduce new products to the market.,business,high,verb
+investment,B1,The action of investing money,We need to make a significant investment.,The investment in new technology paid off.,business,high,noun
+involve,B1,To include as a necessary part,This project involves many departments.,We need to involve all stakeholders in the decision.,business,high,verb
+issue,B1,An important topic or problem,We need to address this issue immediately.,The main issue is the budget constraint.,business,high,noun
+job,B1,A paid position of employment,She has a new job at a consulting firm.,The job requires excellent communication skills.,business,high,noun
+join,B1,To connect or become a member,We invite you to join our team.,She decided to join the company last year.,business,high,verb
+knowledge,B1,Information and skills acquired,She has extensive knowledge of the industry.,We need to share knowledge across departments.,business,medium,noun
+labor,B1,Work, especially physical work,The cost of labor has increased.,We need to reduce labor costs to stay competitive.,business,medium,noun
+language,B1,The method of human communication,English is the business language worldwide.,We need to improve our language skills.,business,medium,noun
+lead,B1,To guide or direct,She will lead the new project.,The company leads the market in innovation.,business,high,verb
+leadership,B1,The action of leading a group,Good leadership is essential for success.,The company values strong leadership qualities.,business,medium,noun
+learn,B1,To gain knowledge or skills,We need to learn from our mistakes.,Employees should learn new skills regularly.,business,high,verb
+level,B1,A position on a scale,The management level has increased.,We need to maintain high quality levels.,business,medium,noun
+license,B1,Official permission to do something,We need a license to operate in this area.,The software license expires next month.,business,medium,noun
+limit,B1,A restriction on something,There is a limit on the budget for this project.,We need to set limits on overtime work.,business,medium,noun
+line,B1,A series of connected items,We need to expand our product line.,The assembly line is very efficient.,business,medium,noun
+location,B1,A particular place,The new office location is perfect.,We need to find a better location for the warehouse.,business,medium,noun
+machine,B1,A piece of equipment,The machine needs regular maintenance.,We need to buy new machines for production.,business,medium,noun
+maintain,B1,To keep in good condition,We need to maintain our equipment properly.,The company maintains high standards of quality.,business,high,verb
+management,B1,The process of managing,Good management is crucial for success.,The management team meets every Monday.,business,high,noun
+manager,B1,A person responsible for controlling,The manager approved the budget.,We need to hire a new manager for the department.,business,high,noun
+market,B1,A place where goods are sold,We need to enter new markets.,The market for our products is growing.,business,high,noun
+material,B1,The matter from which something is made,We need high-quality materials for production.,The material costs have increased significantly.,business,medium,noun
+meeting,B1,An assembly of people for discussion,We have a meeting at 2 PM today.,The meeting was very productive.,business,high,noun
+method,B1,A way of doing something,We need to find a better method.,The new method is more efficient.,business,medium,noun
+million,B1,The number 1,000,000,The company is worth millions of dollars.,We need to invest millions in new technology.,business,medium,number
+modern,B1,Relating to the present time,We need modern equipment for the office.,The company uses modern technology.,business,medium,adjective
+money,B1,A medium of exchange,We need more money for the project.,The company is making good money this year.,business,high,noun
+month,B1,Each of the twelve named periods,The project will take three months to complete.,We have a meeting every month.,business,high,noun
+move,B1,To change position,We need to move to a larger office.,The company is moving to a new location.,business,medium,verb
+necessary,B1,Required to be done,It is necessary to complete the training.,We need to take necessary precautions.,business,high,adjective
+need,B1,To require something,We need more staff for this project.,The company needs to improve its image.,business,high,verb
+network,B1,A group of interconnected people,We need to expand our professional network.,The computer network is down.,business,medium,noun
+office,B1,A room or building for business,The office is located downtown.,We need to rent a larger office space.,business,high,noun
+operation,B1,The action of functioning,The operation of the factory is efficient.,We need to improve our daily operations.,business,high,noun
+opportunity,B1,A set of circumstances for success,This is a great opportunity for growth.,We need to seize every opportunity.,business,high,noun
+order,B1,A request for something,Please place your order by Friday.,The order will be delivered next week.,business,high,noun
+organization,B1,A group of people working together,The organization has 1000 employees.,We need to improve the organization structure.,business,high,noun
+package,B1,A wrapped or boxed object,The package will arrive tomorrow.,We need to design a new package for the product.,business,medium,noun
+paper,B1,Thin material for writing,Please sign the paper and return it.,We need to reduce paper usage in the office.,business,medium,noun
+part,B1,A piece or segment of something,This is an important part of the project.,We need to order spare parts for the machine.,business,medium,noun
+partner,B1,A person who shares in business,She is my business partner.,We need to find a reliable partner.,business,high,noun
+party,B1,A social gathering,We're having a company party next week.,The party was a great success.,business,medium,noun
+pass,B1,To move past or through,Please pass the message to the manager.,The proposal passed the board meeting.,business,medium,verb
+pay,B1,To give money for goods or services,We need to pay the suppliers on time.,The company pays competitive salaries.,business,high,verb
+payment,B1,The action of paying,The payment is due next week.,We accept various forms of payment.,business,high,noun
+people,B1,Human beings in general,The people in this company are very friendly.,We need to hire more people for the project.,business,high,noun
+percent,B1,One part in every hundred,The sales increased by 20 percent.,We need to reduce costs by 10 percent.,business,medium,noun
+performance,B1,How well someone or something functions,The performance of the team was excellent.,We need to improve our performance.,business,high,noun
+period,B1,A length of time,The trial period is 30 days.,We need to extend the contract period.,business,medium,noun
+person,B1,A human being,The right person for the job is hard to find.,We need to hire a qualified person.,business,high,noun
+plan,B1,A detailed proposal for doing something,We need to make a plan for next year.,The business plan looks promising.,business,high,noun
+policy,B1,A course of action adopted by an organization,The company has a strict policy on punctuality.,We need to review our insurance policy.,business,high,noun
+position,B1,A place where someone or something is located,She has a senior position in the company.,We need to fill this position immediately.,business,high,noun
+possible,B1,Able to be done,It is possible to complete the project on time.,We need to explore all possible options.,business,high,adjective
+power,B1,The ability to do something,The manager has the power to make decisions.,We need to increase our purchasing power.,business,medium,noun
+practice,B1,The actual application of an idea,In practice, this method works well.,We need to put our ideas into practice.,business,medium,noun
+present,B1,To show or offer something,Please present your ideas to the team.,The company will present its annual report.,business,high,verb
+presentation,B1,A formal talk given to an audience,The presentation was very informative.,We need to prepare a presentation for the client.,business,high,noun
+price,B1,The amount of money required to buy something,The price of the product is reasonable.,We need to reduce our prices to stay competitive.,business,high,noun
+problem,B1,A matter or situation regarded as unwelcome,We need to solve this problem quickly.,The main problem is the lack of funding.,business,high,noun
+process,B1,A series of actions to achieve something,The hiring process takes about two weeks.,We need to improve our manufacturing process.,business,high,noun
+product,B1,An article or substance manufactured,This is our best-selling product.,We need to develop new products.,business,high,noun
+production,B1,The action of making or manufacturing,The production of goods has increased.,We need to increase our production capacity.,business,high,noun
+profit,B1,A financial gain,The company made a good profit this year.,We need to maximize our profits.,business,high,noun
+program,B1,A planned series of events,The training program starts next month.,We need to develop a new program.,business,medium,noun
+project,B1,An individual or collaborative enterprise,The project will be completed next year.,We need to start a new project.,business,high,noun
+provide,B1,To make available for use,We need to provide better customer service.,The company provides health insurance.,business,high,verb
+public,B1,Of or concerning the people,The company went public last year.,We need to improve our public image.,business,medium,adjective
+purchase,B1,To buy something,We need to purchase new equipment.,The purchase was approved by management.,business,high,verb
+purpose,B1,The reason for which something is done,The purpose of the meeting is to discuss the budget.,We need to clarify the purpose of this project.,business,medium,noun
+quality,B1,The standard of something,We need to maintain high quality standards.,The quality of our products is excellent.,business,high,noun
+question,B1,A sentence worded to elicit information,Do you have any questions about the project?,We need to answer all customer questions.,business,high,noun
+rate,B1,A measure of the frequency of something,The success rate is very high.,We need to increase our production rate.,business,medium,noun
+reason,B1,A cause or explanation,The reason for the delay is unclear.,We need to find the reason for the problem.,business,medium,noun
+receive,B1,To be given something,We will receive the shipment tomorrow.,The company received many applications.,business,high,verb
+record,B1,A thing constituting evidence,Please keep a record of all expenses.,We need to update our records.,business,medium,noun
+reduce,B1,To make smaller or less,We need to reduce our costs.,The company reduced its workforce.,business,high,verb
+relationship,B1,The way in which people or things are connected,We have a good relationship with our clients.,The relationship between departments needs improvement.,business,high,noun
+report,B1,An account given of a particular matter,Please submit your report by Friday.,The annual report shows positive growth.,business,high,noun
+require,B1,To need something,This job requires experience.,We require all employees to attend training.,business,high,verb
+research,B1,The systematic investigation of a subject,We need to do more research on the market.,The research shows interesting results.,business,high,noun
+resource,B1,A stock or supply of something,We need to allocate our resources wisely.,Human resources are our most valuable asset.,business,high,noun
+result,B1,A consequence or effect,The result of the meeting was positive.,We need to achieve better results.,business,high,noun
+return,B1,To come or go back,Please return the documents after review.,The return on investment is excellent.,business,medium,verb
+review,B1,To examine or assess something,We need to review the contract.,The annual review is scheduled for next month.,business,high,verb
+risk,B1,A situation involving exposure to danger,There is a risk of losing money.,We need to assess the risks involved.,business,high,noun
+role,B1,The function assumed by someone,She has an important role in the company.,We need to define everyone's role clearly.,business,high,noun
+rule,B1,A principle or regulation,We need to follow the company rules.,The new rule will take effect next month.,business,medium,noun
+sale,B1,The exchange of goods for money,The sale of the product was successful.,We need to increase our sales.,business,high,noun
+schedule,B1,A plan for carrying out a process,The schedule for the project is tight.,We need to stick to the schedule.,business,high,noun
+section,B1,A distinct part of something,Please read section 3 of the manual.,We need to reorganize this section.,business,medium,noun
+security,B1,The state of being free from danger,We need to improve office security.,The security system is very advanced.,business,medium,noun
+sell,B1,To give something in exchange for money,We need to sell more products.,The company sells to international markets.,business,high,verb
+service,B1,The action of helping or doing work,We provide excellent customer service.,The service quality needs improvement.,business,high,noun
+share,B1,A part or portion of something,We need to share the information with the team.,The company's share price has increased.,business,medium,noun
+show,B1,To display or demonstrate,Please show me the new product.,The presentation will show our progress.,business,high,verb
+skill,B1,The ability to do something well,She has excellent communication skills.,We need to develop new skills.,business,high,noun
+solution,B1,A means of solving a problem,We need to find a solution to this issue.,The solution is simple but effective.,business,high,noun
+special,B1,Better or different from usual,This is a special offer for our customers.,We need to create something special.,business,medium,adjective
+staff,B1,All the people employed by an organization,The staff is very professional.,We need to hire more staff.,business,high,noun
+standard,B1,A level of quality or attainment,We need to maintain high standards.,The standard procedure is to check everything twice.,business,high,noun
+start,B1,To begin,We need to start the project immediately.,The company started in 1990.,business,high,verb
+state,B1,The particular condition of something,The current state of the project is good.,We need to assess the state of the market.,business,medium,noun
+statement,B1,A definite or clear expression,Please read the financial statement.,We need to issue a public statement.,business,medium,noun
+stock,B1,A supply of goods kept for sale,We need to check our stock levels.,The stock market is performing well.,business,medium,noun
+store,B1,A retail establishment,The store is open from 9 AM to 6 PM.,We need to open a new store in the city.,business,medium,noun
+strategy,B1,A plan of action designed to achieve a goal,We need to develop a new strategy.,The marketing strategy is very effective.,business,high,noun
+structure,B1,The arrangement of parts,The company structure is very clear.,We need to improve the organizational structure.,business,medium,noun
+study,B1,To examine or investigate,We need to study the market trends.,The study shows interesting results.,business,medium,verb
+success,B1,The accomplishment of an aim,The success of the project was remarkable.,We need to build on our success.,business,high,noun
+suggest,B1,To put forward for consideration,We suggest starting the project next month.,I suggest we meet again tomorrow.,business,high,verb
+supply,B1,To make something available,We need to supply the materials on time.,The supply chain is very efficient.,business,high,verb
+support,B1,To give assistance to,We need to support our team members.,The company provides excellent support.,business,high,verb
+system,B1,A set of connected things,The computer system is very advanced.,We need to improve our management system.,business,high,noun
+table,B1,A piece of furniture with a flat top,Please sit at the table for the meeting.,The table shows the sales figures.,business,medium,noun
+task,B1,A piece of work to be done,This is an important task.,We need to complete all tasks on time.,business,high,noun
+team,B1,A group of people working together,The team is very efficient.,We need to build a strong team.,business,high,noun
+technology,B1,The application of scientific knowledge,We need to invest in new technology.,The technology is very advanced.,business,high,noun
+term,B1,A word or phrase used to describe something,The terms of the contract are clear.,We need to agree on the terms.,business,medium,noun
+test,B1,A procedure to determine quality,We need to test the new product.,The test results are very positive.,business,medium,noun
+time,B1,The indefinite continued progress of existence,We need more time to complete the project.,Time management is very important.,business,high,noun
+total,B1,Complete or absolute,The total cost is $10,000.,We need to calculate the total amount.,business,medium,adjective
+training,B1,The action of teaching a skill,We need to provide training for new employees.,The training program is very comprehensive.,business,high,noun
+transport,B1,The movement of people or goods,We need to arrange transport for the goods.,The transport costs are very high.,business,medium,noun
+travel,B1,To make a journey,We need to travel to the client's office.,Business travel is very common.,business,medium,verb
+turn,B1,To move in a circular direction,Please turn to page 10.,It's your turn to present.,business,medium,verb
+type,B1,A category of people or things,What type of business is this?,We need to identify the type of problem.,business,medium,noun
+unit,B1,An individual thing or person,We need to produce 1000 units this month.,The unit cost has decreased.,business,medium,noun
+use,B1,To employ for a purpose,We need to use our resources wisely.,The company uses modern technology.,business,high,verb
+value,B1,The importance or worth of something,The value of the company has increased.,We need to add value to our products.,business,high,noun
+variety,B1,A number of different things,We offer a variety of products.,There is a variety of options available.,business,medium,noun
+visit,B1,To go to see someone or something,We need to visit the client tomorrow.,The visit was very productive.,business,medium,verb
+wait,B1,To stay where one is,Please wait for the meeting to start.,We need to wait for the approval.,business,medium,verb
+work,B1,Activity involving mental or physical effort,We need to work harder to meet the deadline.,The work environment is very positive.,business,high,noun
+worker,B1,A person who works,Every worker should attend the training.,We need to hire more workers.,business,high,noun
+year,B1,A period of 365 days,The company was founded 20 years ago.,We need to plan for next year.,business,high,noun
+abandon,B2,To give up or leave completely,We cannot abandon this project now.,The company decided to abandon the merger.,business,medium,verb
+ability,B1,The capacity to do something,She has the ability to lead the team.,Technical ability is required for this position.,business,high,noun
+absence,B1,The state of being away,Your absence from the meeting was noticed.,We need to report any absence in advance.,business,medium,noun
+absolute,B2,Complete or total,We need absolute confidentiality in this matter.,The results show absolute improvement.,business,medium,adjective
+absorb,B2,To take in or soak up,The company will absorb the new division.,We need to absorb the additional costs.,business,medium,verb
+abstract,B2,Existing in thought but not physical,The concept is too abstract for most people.,We need a more concrete approach.,business,low,adjective
+abundant,B2,Existing in large quantities,We have abundant resources for this project.,The market offers abundant opportunities.,business,medium,adjective
+accelerate,B2,To increase in speed,We need to accelerate the development process.,The company plans to accelerate growth.,business,medium,verb
+accept,B1,To agree to receive,We accept your proposal with pleasure.,Please accept our apologies for the delay.,business,high,verb
+access,B1,The ability to enter or use,You need proper access to this system.,The building has wheelchair access.,business,high,noun
+accident,B1,An unfortunate incident,There was an accident in the factory.,We need to prevent workplace accidents.,business,medium,noun
+accommodate,B2,To provide lodging or space,The hotel can accommodate 200 guests.,We need to accommodate the new requirements.,business,medium,verb
+accompany,B2,To go somewhere with someone,The manager will accompany you to the meeting.,Please accompany the client to the conference room.,business,medium,verb
+accomplish,B2,To achieve or complete successfully,We need to accomplish our goals by the end of the quarter.,The team accomplished the project ahead of schedule.,business,high,verb
+accord,B2,An official agreement,The two companies reached an accord.,We need to work in accord with regulations.,business,medium,noun
+account,B1,A record of financial transactions,Please check your account balance.,We need to open a business account.,business,high,noun
+accumulate,B2,To gather or collect over time,We need to accumulate more data.,The company has accumulated significant debt.,business,medium,verb
+accurate,B1,Correct in all details,We need accurate information for the report.,The measurements must be accurate.,business,high,adjective
+achieve,B1,To successfully complete,We achieved our sales target this month.,The team achieved excellent results.,business,high,verb
+acknowledge,B2,To accept or admit,We acknowledge receipt of your letter.,Please acknowledge the terms and conditions.,business,medium,verb
+acquire,B2,To buy or obtain,The company plans to acquire a competitor.,We need to acquire new skills.,business,high,verb
+action,B1,The process of doing something,We need to take immediate action.,The action plan has been approved.,business,high,noun
+active,B1,Engaged in action,She is an active member of the team.,We need to be more active in marketing.,business,high,adjective
+activity,B1,The condition of being active,The activity level has increased significantly.,We need to monitor business activity.,business,high,noun
+actual,B1,Existing in fact,The actual cost was higher than estimated.,We need to see the actual results.,business,high,adjective
+adapt,B2,To adjust to new conditions,We need to adapt to market changes.,The company must adapt its strategy.,business,medium,verb
+add,B1,To join or combine,Please add this item to the list.,We need to add more staff members.,business,high,verb
+address,B1,To deal with a problem,We need to address this issue immediately.,The manager will address the concerns.,business,high,verb
+adequate,B1,Sufficient or acceptable,The current budget is adequate for our needs.,We need adequate time to complete this project.,business,medium,adjective
+adjust,B1,To alter or modify,We need to adjust our schedule.,Please adjust the settings as needed.,business,high,verb
+administration,B2,The process of managing,The administration of the company is efficient.,Good administration is crucial for success.,business,high,noun
+admit,B1,To confess or acknowledge,We must admit that we made a mistake.,The company admits the need for change.,business,medium,verb
+adopt,B2,To take up or start to use,We need to adopt new technologies.,The company adopted a new policy.,business,medium,verb
+adult,B1,A fully grown person,This course is designed for adults.,Adult learners have different needs.,business,medium,noun
+advance,B1,To move forward,We need to advance the project timeline.,The technology has advanced significantly.,business,high,verb
+advantage,B1,A beneficial factor,The new system has many advantages.,We need to use our competitive advantage.,business,high,noun
+adventure,B1,An exciting experience,Starting a business is quite an adventure.,The adventure of entrepreneurship is challenging.,business,low,noun
+advertise,B1,To promote publicly,We need to advertise our new product.,The company advertises in major magazines.,business,high,verb
+advice,B1,Guidance or recommendations,Thank you for your valuable advice.,We need professional advice on this matter.,business,high,noun
+advise,B1,To give advice,I advise you to consider all options.,The consultant will advise us on the strategy.,business,high,verb
+affair,B1,A matter of concern,This is a private affair.,Business affairs require confidentiality.,business,medium,noun
+affect,B1,To have an impact on,The changes will affect all employees.,The weather may affect our plans.,business,high,verb
+afford,B1,To have enough money,We cannot afford to lose this client.,The company can afford to invest more.,business,medium,verb
+afraid,B1,Feeling fear,Don't be afraid to ask questions.,We are afraid the deadline cannot be met.,business,medium,adjective
+after,B1,Following in time,We will discuss this after the meeting.,After careful consideration, we decided to proceed.,business,high,preposition
+afternoon,B1,The time between noon and evening,The meeting is scheduled for this afternoon.,We have an afternoon appointment.,business,medium,noun
+again,B1,Once more,Please try again later.,We need to review this again.,business,high,adverb
+against,B1,In opposition to,We are against this proposal.,The decision goes against company policy.,business,high,preposition
+age,B1,The length of time lived,The age of the equipment is a concern.,We need to consider the age of our workforce.,business,medium,noun
+agent,B1,A person who acts on behalf of another,Our sales agent will contact you.,We need to hire a real estate agent.,business,medium,noun
+ago,B1,In the past,The company was founded 20 years ago.,We discussed this issue a week ago.,business,high,adverb
+agree,B1,To have the same opinion,We agree with your proposal.,The board members agree on the strategy.,business,high,verb
+agriculture,B1,The practice of farming,Agriculture is important for the economy.,The company invests in agriculture technology.,business,low,noun
+ahead,B1,In front or in advance,We need to plan ahead for next year.,The project is ahead of schedule.,business,medium,adverb
+aid,B1,Help or assistance,We need financial aid for this project.,The government provides aid to small businesses.,business,medium,noun
+aim,B1,To point or direct,We aim to increase sales by 20%.,The company aims to expand internationally.,business,high,verb
+air,B1,The invisible gas we breathe,The air quality in the office is good.,We need to improve air circulation.,business,medium,noun
+aircraft,B1,A vehicle that flies,The aircraft industry is growing.,We need to book aircraft for the trip.,business,low,noun
+airline,B1,A company that provides air transport,The airline offers good service.,We need to contact the airline about the booking.,business,medium,noun
+airport,B1,A place where aircraft land and take off,The airport is very busy today.,We need to go to the airport early.,business,medium,noun
+alarm,B1,A warning device,The fire alarm went off.,We need to test the alarm system.,business,medium,noun
+album,B1,A collection of recordings,The new album is very popular.,We need to promote the album launch.,business,low,noun
+alcohol,B1,An intoxicating drink,Alcohol is not allowed in the office.,The company has a strict alcohol policy.,business,low,noun
+alert,B1,Quick to notice,Please stay alert during the presentation.,We need to be alert to market changes.,business,medium,adjective
+alien,B1,A foreigner or stranger,The new employee feels like an alien.,We need to help aliens integrate into the team.,business,low,noun
+alike,B1,Similar in appearance,The two products are very alike.,All employees should be treated alike.,business,medium,adjective
+alive,B1,Living or existing,The company is still alive and growing.,We need to keep the project alive.,business,medium,adjective
+all,B1,The whole quantity,All employees must attend the meeting.,We need all the information available.,business,high,determiner
+allow,B1,To give permission,We allow flexible working hours.,The system allows multiple users.,business,high,verb
+almost,B1,Nearly but not quite,We almost missed the deadline.,The project is almost complete.,business,high,adverb
+alone,B1,Without others,You don't have to work alone.,The manager made the decision alone.,business,medium,adjective
+along,B1,In a line or direction,We need to work along with the team.,Please walk along the corridor.,business,medium,preposition
+already,B1,Before now,We have already discussed this issue.,The project is already behind schedule.,business,high,adverb
+also,B1,In addition,We also need to consider the costs.,The company also offers training programs.,business,high,adverb
+although,B1,Despite the fact that,Although it's difficult, we must try.,Although the budget is tight, we can manage.,business,high,conjunction
+always,B1,At all times,We always strive for excellence.,The company always puts customers first.,business,high,adverb
+amazing,B1,Very surprising,The results are amazing.,We had an amazing year for sales.,business,medium,adjective
+among,B1,In the middle of,We are among the top companies.,Among all options, this is the best.,business,high,preposition
+amount,B1,A quantity of something,The amount of work is overwhelming.,We need to reduce the amount of waste.,business,high,noun
+analysis,B2,Detailed examination,The financial analysis shows positive growth.,We need a thorough analysis of the market.,business,high,noun
+ancient,B1,Very old,The company has ancient traditions.,We need to modernize ancient systems.,business,low,adjective
+and,B1,Used to connect words,We need time and resources.,The project requires skill and dedication.,business,high,conjunction
+anger,B1,Strong feeling of annoyance,We should not show anger in meetings.,The customer's anger was understandable.,business,medium,noun
+angle,B1,The space between two lines,We need to consider this from a different angle.,The camera angle is perfect.,business,medium,noun
+angry,B1,Feeling anger,Don't be angry about the mistake.,The client was angry about the delay.,business,medium,adjective
+animal,B1,A living creature,The company logo features an animal.,We need to protect animal habitats.,business,low,noun
+anniversary,B1,The yearly return of a date,Today is our company anniversary.,We celebrate the anniversary every year.,business,medium,noun
+announce,B1,To make known publicly,We will announce the results tomorrow.,The company announced a new product.,business,high,verb
+annual,B1,Happening once a year,The annual meeting is next month.,We need to prepare the annual report.,business,high,adjective
+another,B1,One more,We need another meeting to discuss this.,Another option is to postpone the project.,business,high,determiner
+answer,B1,A response to a question,Please provide an answer by Friday.,The answer to the problem is simple.,business,high,noun
+anxiety,B1,A feeling of worry,The project deadline causes anxiety.,We need to reduce employee anxiety.,business,medium,noun
+any,B1,One or some,Do you have any questions?,We don't have any more time.,business,high,determiner
+anybody,B1,Any person,Does anybody have suggestions?,We need anybody who can help.,business,medium,pronoun
+anyone,B1,Any person,Anyone can participate in the training.,We need anyone with experience.,business,medium,pronoun
+anything,B1,Any thing,Is there anything else to discuss?,We can do anything to help.,business,high,pronoun
+anywhere,B1,In any place,We can meet anywhere convenient.,The office can be located anywhere.,business,medium,adverb
+apart,B1,Separated by distance,The two offices are far apart.,We need to keep personal and business matters apart.,business,medium,adverb
+apartment,B1,A set of rooms for living,The company provides apartment accommodation.,We need to find an apartment near the office.,business,medium,noun
+apparent,B2,Clearly visible,The problem is apparent to everyone.,The solution is not immediately apparent.,business,medium,adjective
+appeal,B1,To make a request,We appeal to your understanding.,The product has wide appeal.,business,medium,verb
+appear,B1,To become visible,The results will appear soon.,The problem appears to be complex.,business,high,verb
+apple,B1,A round fruit,The company logo features an apple.,We serve fresh apples in the cafeteria.,business,low,noun
+application,B1,A formal request,Please submit your application by Friday.,The job application process takes two weeks.,business,high,noun
+apply,B1,To make a formal request,You can apply for the position online.,We need to apply for a permit.,business,high,verb
+appoint,B1,To assign a job,We will appoint a new manager.,The board will appoint a new director.,business,medium,verb
+appointment,B1,A scheduled meeting,I have an appointment at 3 PM.,Please confirm your appointment.,business,high,noun
+appreciate,B1,To recognize the value,We appreciate your hard work.,The company appreciates customer feedback.,business,high,verb
+approach,B2,A way of dealing with something,We need a new approach to solve this.,The company's approach is innovative.,business,high,noun
+appropriate,B1,Suitable or proper,Please wear appropriate attire.,This is not an appropriate time.,business,high,adjective
+approval,B1,Official permission,We need management approval.,The proposal received unanimous approval.,business,high,noun
+approve,B1,To accept as satisfactory,The board will approve the budget.,We need to approve the contract.,business,high,verb
+approximately,B1,About or roughly,The project will take approximately 6 months.,We have approximately 100 employees.,business,medium,adverb
+area,B1,A region or space,The office area is very spacious.,We need to expand the work area.,business,high,noun
+argue,B1,To give reasons,We can argue both sides of the issue.,The team members argue about the strategy.,business,medium,verb
+argument,B1,A reason or set of reasons,The argument for change is strong.,We need to present a good argument.,business,medium,noun
+arise,B2,To come into existence,Problems may arise during implementation.,New opportunities arise every day.,business,medium,verb
+arm,B1,An upper limb,The worker injured his arm.,We need to provide arm protection.,business,low,noun
+army,B1,A military force,The army uses our technology.,We supply equipment to the army.,business,low,noun
+around,B1,In the area of,The office is around the corner.,We need to look around for options.,business,high,preposition
+arrange,B1,To organize or plan,We need to arrange a meeting.,Please arrange the documents properly.,business,high,verb
+arrangement,B1,Plans or preparations,We need to make arrangements for the conference.,The travel arrangements are confirmed.,business,medium,noun
+arrest,B1,To seize and hold,The police arrested the suspect.,We cannot arrest the development process.,business,low,verb
+arrival,B1,The act of arriving,The arrival time is 3 PM.,We need to confirm the arrival schedule.,business,medium,noun
+arrive,B1,To reach a destination,The client will arrive at 2 PM.,We need to arrive early for the meeting.,business,high,verb
+art,B1,Creative expression,The office displays modern art.,We need to appreciate the art of negotiation.,business,low,noun
+article,B1,A piece of writing,Please read this article carefully.,The article discusses market trends.,business,medium,noun
+artist,B1,A person who creates art,The artist designed our logo.,We need to hire a graphic artist.,business,low,noun
+as,B1,In the role of,As a manager, I must make decisions.,We work as a team.,business,high,preposition
+ashamed,B1,Feeling shame,Don't be ashamed to ask for help.,We should not be ashamed of our mistakes.,business,low,adjective
+aside,B1,To one side,Please put the documents aside.,We need to set aside time for planning.,business,medium,adverb
+ask,B1,To request information,Please ask if you have questions.,We need to ask for more time.,business,high,verb
+asleep,B1,In a state of sleep,The meeting was so boring, I fell asleep.,We cannot be asleep to market changes.,business,low,adjective
+aspect,B1,A particular part,We need to consider every aspect.,The financial aspect is important.,business,high,noun
+assess,B2,To evaluate,We need to assess the situation.,The manager will assess your performance.,business,medium,verb
+assessment,B2,Evaluation or judgment,The assessment will take two weeks.,We need a proper assessment of risks.,business,medium,noun
+asset,B1,A useful thing,Our employees are our greatest asset.,The company has valuable assets.,business,high,noun
+assign,B1,To allocate,We will assign tasks to team members.,The manager will assign a new project.,business,high,verb
+assignment,B1,A task or piece of work,I have a new assignment from my supervisor.,The assignment deadline is next Monday.,business,medium,noun
+assist,B1,To help,We will assist you with the process.,The team will assist in the implementation.,business,high,verb
+assistance,B1,Help or support,Thank you for your assistance.,We need technical assistance.,business,medium,noun
+assistant,B1,A person who helps,The manager has a personal assistant.,We need to hire an administrative assistant.,business,medium,noun
+associate,B2,A colleague or partner,My associate will handle the presentation.,She is an associate professor.,business,medium,noun
+association,B1,An organization,The business association meets monthly.,We are members of the trade association.,business,medium,noun
+assume,B2,To take for granted,I assume you have read the report.,We assume the project will be completed on time.,business,high,verb
+assurance,B2,A promise or guarantee,We can give you assurance of quality.,The company provides assurance of satisfaction.,business,medium,noun
+astonish,B1,To surprise greatly,The results will astonish everyone.,We are astonished by the success.,business,low,verb
+at,B1,Expressing location,We are at the office.,The meeting is at 3 PM.,business,high,preposition
+athlete,B1,A person who competes in sports,The athlete endorsed our product.,We sponsor several athletes.,business,low,noun
+atmosphere,B1,The air around us,The office has a positive atmosphere.,We need to improve the work atmosphere.,business,medium,noun
+atom,B1,The smallest unit of matter,The technology works at the atomic level.,We need to understand atomic structure.,business,low,noun
+attach,B1,To fasten or join,Please attach the document to the email.,We need to attach the file to the report.,business,high,verb
+attack,B1,To act against,The company was attacked by competitors.,We need to defend against cyber attacks.,business,medium,verb
+attempt,B1,To try to do something,We will attempt to solve this problem.,The attempt was successful.,business,high,verb
+attend,B1,To be present at,Please attend the meeting tomorrow.,We need to attend the conference.,business,high,verb
+attention,B1,Notice or consideration,Please pay attention to the details.,We need to draw attention to this issue.,business,high,noun
+attitude,B1,A way of thinking,She has a positive attitude.,A good attitude is essential for success.,business,medium,noun
+attract,B1,To draw towards,We need to attract new customers.,The job offer attracts many applicants.,business,high,verb
+attractive,B1,Pleasing to look at,The product has an attractive design.,We need to make the offer more attractive.,business,medium,adjective
+audience,B1,A group of listeners,The audience was very engaged.,We need to consider our target audience.,business,medium,noun
+author,B1,A writer,The author of the report is experienced.,We need to contact the author for permission.,business,medium,noun
+authority,B2,The power to make decisions,The manager has the authority to approve expenses.,You need proper authority to access this.,business,high,noun
+automatic,B1,Working by itself,The system is fully automatic.,We need to install automatic doors.,business,medium,adjective
+autumn,B1,The season between summer and winter,The autumn season brings new challenges.,We plan to launch in autumn.,business,low,noun
+available,B1,Able to be used,The conference room is available at 2 PM.,Are you available for a meeting tomorrow?,business,high,adjective
+average,B1,The typical amount,The average salary is competitive.,We need to improve our average performance.,business,high,noun
+avoid,B1,To keep away from,We need to avoid making mistakes.,Please avoid discussing personal matters.,business,high,verb
+awake,B1,Not sleeping,Please stay awake during the presentation.,We need to be awake to opportunities.,business,low,adjective
+award,B1,A prize or recognition,The company won an award for innovation.,We need to present the award ceremony.,business,medium,noun
+aware,B1,Having knowledge,We are aware of the problem.,Please be aware of the new policy.,business,high,adjective
+away,B1,At a distance,The office is away from the city center.,We need to move away from old methods.,business,high,adverb
+baby,B1,A very young child,The baby products market is growing.,We need to consider baby-friendly policies.,business,low,noun
+back,B1,The rear part,Please sit at the back of the room.,We need to go back to the original plan.,business,high,noun
+background,B1,The area behind something,The employee has a strong background.,We need to check the background of applicants.,business,high,noun
+backward,B1,Towards the rear,The company is moving backward.,We cannot go backward on this decision.,business,medium,adverb
+bad,B1,Of poor quality,The results are not bad.,We need to avoid bad decisions.,business,high,adjective
+bag,B1,A container,Please bring your bag to the meeting.,We need to pack the documents in a bag.,business,low,noun
+balance,B1,An even distribution,We need to maintain work-life balance.,The account balance is sufficient.,business,high,noun
+ball,B1,A round object,The ball is in your court now.,We need to organize a ball for the company.,business,low,noun
+ban,B1,To officially forbid,The company bans smoking in the office.,We need to ban unauthorized access.,business,medium,verb
+bank,B1,A financial institution,The bank approved our loan.,We need to visit the bank today.,business,high,noun
+bar,B1,A place serving drinks,The bar is popular with employees.,We need to discuss this at the bar.,business,low,noun
+base,B1,The bottom support,The company has a strong base.,We need to establish a solid base.,business,high,noun
+basic,B1,Fundamental,We need to cover the basic concepts.,The basic requirements are clear.,business,high,adjective
+basis,B1,The foundation,We meet on a regular basis.,The basis of our argument is sound.,business,high,noun
+bathroom,B1,A room with a bath,The bathroom is on the second floor.,We need to clean the bathroom regularly.,business,low,noun
+battle,B1,A fight between armed forces,The battle for market share is intense.,We need to win the battle for customers.,business,medium,noun
+be,B1,To exist,We need to be more efficient.,The meeting will be at 3 PM.,business,high,verb
+beach,B1,A sandy shore,The company retreat is at the beach.,We need to plan the beach party.,business,low,noun
+bear,B1,To carry or support,We cannot bear the additional costs.,The company must bear the responsibility.,business,medium,verb
+beat,B1,To defeat,We need to beat the competition.,The team beat the deadline.,business,medium,verb
+beautiful,B1,Very attractive,The office has a beautiful view.,We need to create beautiful presentations.,business,medium,adjective
+because,B1,For the reason that,We succeeded because we worked hard.,The project failed because of poor planning.,business,high,conjunction
+become,B1,To begin to be,We need to become more competitive.,The company will become a leader.,business,high,verb
+bed,B1,A piece of furniture for sleeping,The hotel bed is comfortable.,We need to book a bed for the business trip.,business,low,noun
+bedroom,B1,A room for sleeping,The bedroom has a good view.,We need to find a bedroom near the office.,business,low,noun
+before,B1,Earlier than,Please arrive before 9 AM.,We need to finish before the deadline.,business,high,preposition
+begin,B1,To start,We will begin the meeting now.,The project will begin next month.,business,high,verb
+behalf,B1,In the interest of,I speak on behalf of the team.,We act on behalf of the company.,business,medium,noun
+behave,B1,To act in a particular way,Please behave professionally.,We need to behave ethically.,business,medium,verb
+behavior,B1,The way someone acts,Good behavior is expected.,We need to change our behavior.,business,high,noun
+behind,B1,At the back of,The office is behind the building.,We are behind schedule.,business,high,preposition
+believe,B1,To accept as true,We believe in our mission.,I believe the project will succeed.,business,high,verb
+bell,B1,A device that makes a sound,The bell rings at 5 PM.,We need to install a bell system.,business,low,noun
+belong,B1,To be the property of,This document belongs to the company.,We belong to the same industry.,business,medium,verb
+below,B1,At a lower level,The temperature is below freezing.,Our performance is below expectations.,business,high,preposition
+belt,B1,A strip of material,Please fasten your seat belt.,We need to tighten our belt on expenses.,business,low,noun
+bench,B1,A long seat,The bench in the park is comfortable.,We need to install benches in the lobby.,business,low,noun
+bend,B1,To curve or flex,Please bend the rules slightly.,We need to bend the metal into shape.,business,low,verb
+benefit,B1,An advantage,The new policy will benefit all employees.,What are the benefits of this plan?,business,high,noun
+beside,B1,Next to,Please sit beside me.,The office is beside the bank.,business,medium,preposition
+best,B1,Of the highest quality,This is the best solution.,We need to do our best.,business,high,adjective
+bet,B1,To risk money,We bet on the success of the project.,I bet the meeting will be long.,business,low,verb
+better,B1,Of higher quality,We need to do better next time.,The new system is better than the old one.,business,high,adjective
+between,B1,In the space separating,The meeting is between 2 and 4 PM.,We need to choose between two options.,business,high,preposition
+beyond,B1,On the far side of,The office is beyond the bridge.,We need to think beyond the obvious.,business,medium,preposition
+bicycle,B1,A vehicle with two wheels,The bicycle parking is full.,We need to provide bicycle storage.,business,low,noun
+big,B1,Of large size,The company has big plans.,We need to think big.,business,high,adjective
+bill,B1,A statement of money owed,Please pay the bill by Friday.,We need to review the monthly bills.,business,high,noun
+bird,B1,A feathered animal,The bird outside the window is singing.,We need to protect bird habitats.,business,low,noun
+birth,B1,The emergence of a baby,The birth of the company was in 1995.,We celebrate the birth of new ideas.,business,low,noun
+bit,B1,A small piece,We need to save every bit of money.,The information is a bit confusing.,business,high,noun
+bite,B1,To cut with teeth,The dog might bite if provoked.,We need to bite the bullet on this decision.,business,low,verb
+black,B1,Of the darkest color,The black coffee is strong.,We need to avoid black market activities.,business,medium,adjective
+blame,B1,To hold responsible,We cannot blame anyone for this.,The manager blames the system for delays.,business,medium,verb
+blank,B1,Empty or plain,Please fill in the blank spaces.,We need a blank sheet of paper.,business,medium,adjective
+blind,B1,Unable to see,The blind employee uses assistive technology.,We need to be blind to personal differences.,business,low,adjective
+block,B1,To obstruct,The road is blocked by construction.,We need to block unauthorized access.,business,medium,verb
+blood,B1,The red liquid in bodies,The blood test results are normal.,We need to donate blood for the cause.,business,low,noun
+blow,B1,To move air,The wind blows strongly today.,We need to blow the whistle on corruption.,business,low,verb
+blue,B1,Of the color of the sky,The blue sky is beautiful.,We need to avoid blue screen errors.,business,medium,adjective
+board,B1,A flat piece of wood,The board meeting is tomorrow.,We need to present to the board.,business,high,noun
+boat,B1,A vessel for water travel,The boat trip was enjoyable.,We need to book a boat for the event.,business,low,noun
+body,B1,The physical structure,The body of the report is comprehensive.,We need to consider the body of evidence.,business,high,noun
+boil,B1,To heat liquid until it bubbles,Please boil water for tea.,We need to boil down the complex issue.,business,low,verb
+bold,B1,Showing courage,We need to make bold decisions.,The bold text stands out.,business,medium,adjective
+bone,B1,A hard part of the body,The bone structure is strong.,We need to get to the bone of the matter.,business,low,noun
+book,B1,A written work,Please read this book carefully.,We need to book a meeting room.,business,high,noun
+boot,B1,A type of shoe,The boot is waterproof.,We need to boot up the computer.,business,low,noun
+border,B1,The edge of something,The border between countries is clear.,We need to cross the border for business.,business,medium,noun
+born,B1,Brought into existence,The company was born from an idea.,We are born to succeed.,business,medium,verb
+borrow,B1,To take temporarily,We need to borrow money from the bank.,Can I borrow your pen?,business,medium,verb
+boss,B1,A person in charge,The boss is in a meeting.,We need to report to the boss.,business,high,noun
+both,B1,The two together,Both options are acceptable.,We need to consider both sides.,business,high,determiner
+bottle,B1,A container for liquids,The bottle is half empty.,We need to recycle the bottles.,business,low,noun
+bottom,B1,The lowest part,The bottom line is important.,We need to reach the bottom of this issue.,business,high,noun
+bowl,B1,A round container,The bowl is made of ceramic.,We need to serve soup in bowls.,business,low,noun
+box,B1,A container with sides,Please put the documents in the box.,We need to think outside the box.,business,medium,noun
+boy,B1,A male child,The boy is very intelligent.,We need to hire more boys for the team.,business,low,noun
+brain,B1,The organ of thought,The brain is the most complex organ.,We need to use our brains effectively.,business,medium,noun
+branch,B1,A part of a tree,The branch office is in the city center.,We need to open a new branch.,business,high,noun
+brave,B1,Showing courage,We need to be brave in our decisions.,The brave employee spoke up.,business,medium,adjective
+bread,B1,A food made from flour,The bread is fresh from the bakery.,We need to earn our daily bread.,business,low,noun
+break,B1,To separate into pieces,Please don't break the equipment.,We need to break the news gently.,business,high,verb
+breakfast,B1,The first meal of the day,The breakfast meeting is at 8 AM.,We need to serve breakfast to guests.,business,medium,noun
+breast,B1,The front of the body,The breast cancer awareness campaign is important.,We need to support breast health initiatives.,business,low,noun
+breath,B1,Air taken into the lungs,Take a deep breath before speaking.,We need to catch our breath after the sprint.,business,low,noun
+breathe,B1,To take air into the lungs,Please breathe deeply to relax.,We need to breathe life into the project.,business,low,verb
+bridge,B1,A structure over water,The bridge connects the two cities.,We need to build bridges between departments.,business,medium,noun
+brief,B1,Short in duration,Please give a brief summary.,We need to keep the meeting brief.,business,high,adjective
+bright,B1,Giving out light,The bright lights are energy efficient.,We need bright ideas for the project.,business,medium,adjective
+bring,B1,To carry to a place,Please bring the documents to the meeting.,We need to bring the team together.,business,high,verb
+broad,B1,Having great width,The broad street is busy.,We need to take a broad view of the situation.,business,medium,adjective
+broken,B1,Not working,The broken equipment needs repair.,We need to fix the broken system.,business,medium,adjective
+brother,B1,A male sibling,My brother works in the same company.,We need to treat each other like brothers.,business,low,noun
+brown,B1,Of a color between red and yellow,The brown furniture is elegant.,We need to avoid brown outs in power.,business,medium,adjective
+brush,B1,An implement for cleaning,The brush is used for painting.,We need to brush up on our skills.,business,low,noun
+budget,B1,An estimate of income and expenditure,We need to stay within our budget.,The annual budget has been approved.,business,high,noun
+build,B1,To construct,We need to build a new office.,The company builds innovative products.,business,high,verb
+building,B1,A structure with walls,The building has 20 floors.,We need to maintain the building properly.,business,high,noun
+bullet,B1,A small metal projectile,The bullet points are clear.,We need to bite the bullet on this decision.,business,low,noun
+burn,B1,To be on fire,The fire burns brightly.,We need to burn the midnight oil.,business,low,verb
+bus,B1,A large vehicle for passengers,The bus service is reliable.,We need to take the bus to the airport.,business,medium,noun
+business,B1,Commercial activity,The business is growing rapidly.,We need to discuss business matters.,business,high,noun
+busy,B1,Having much to do,The office is very busy today.,We need to manage our busy schedule.,business,high,adjective
+but,B1,However,The plan is good, but we need more time.,We want to succeed, but we need resources.,business,high,conjunction
+butter,B1,A dairy product,The butter is fresh and creamy.,We need to spread butter on the bread.,business,low,noun
+button,B1,A small fastener,Please press the button to start.,We need to button up the presentation.,business,medium,noun
+buy,B1,To obtain by payment,We need to buy new equipment.,The company buys supplies in bulk.,business,high,verb
+buyer,B1,A person who buys,The buyer is interested in our product.,We need to find the right buyer.,business,high,noun
+mister,B1,A formal title for a man,Good morning, mister Johnson.,The mister will see you shortly.,general,high,noun
+vacation,B1,A period of time spent away from work,We're planning a vacation to Europe next month.,Employees are entitled to three weeks of vacation per year.,general,high,noun
+client,B2,A person or organization using services,Our client is satisfied with the results.,The law firm represents many corporate clients.,business,high,noun
+e-book,B1,An electronic version of a book,The library offers many e-books for download.,Students prefer e-books for their portability.,technology,medium,noun
+airport,B1,A place where aircraft take off and land,Please meet me at the airport terminal.,The airport is located 30 minutes from downtown.,travel,high,noun
+memo,B1,A short written message,Please send a memo to all employees.,I received your memo about the meeting schedule.,business,high,noun
+reservation,B1,An arrangement to keep something,We have a reservation for dinner at 8 PM.,Please confirm your hotel reservation.,travel,high,noun
+logical,B2,Reasonable and sensible,Your argument is very logical.,We need a logical approach to solve this problem.,general,medium,adjective
+fax,B1,A document sent by telephone,Please fax the contract to our office.,The fax machine is not working properly.,business,high,noun
+sincerely,B1,In a genuine and honest way,We sincerely appreciate your business.,Yours sincerely, John Smith,general,high,adverb
+sometime,B1,At some unspecified time,We should meet sometime next week.,I'll call you sometime tomorrow.,general,medium,adverb
+supervisor,B2,A person who oversees others,My supervisor approved my vacation request.,The supervisor will conduct the performance review.,business,high,noun
+refund,B2,Money returned for goods or services,We can offer you a full refund.,The customer requested a refund for the defective product.,business,high,noun
+goods,B1,Items for sale or trade,The store sells high-quality goods.,We need to inspect the goods before shipping.,business,high,noun
+workshop,B2,A meeting for discussion or training,We're attending a leadership workshop.,The workshop covers new software features.,business,medium,noun
+downtown,B1,The central business district,Our office is located in downtown Manhattan.,Downtown traffic is heavy during rush hour.,general,high,noun
+deadline,B2,The latest time for completion,The project deadline is next Friday.,We must meet the deadline to avoid penalties.,business,high,noun
+invoice,B2,A bill for goods or services,Please send the invoice to our accounting department.,The invoice shows all charges including tax.,business,high,noun
+brochure,B1,A small book with information,Please take a brochure about our services.,The brochure contains detailed product specifications.,business,medium,noun
+noon,B1,12 o'clock in the day,The meeting is scheduled for noon.,We'll have lunch at noon today.,general,high,noun
+accountant,B2,A person who keeps financial records,Our accountant prepares the tax returns.,The accountant reviewed the financial statements.,business,high,noun
+clerk,B1,A person who works in an office,The clerk will help you with your application.,Please speak to the clerk at the front desk.,business,high,noun
+lobby,B1,The entrance hall of a building,Please wait in the lobby.,The hotel lobby is very elegant.,general,high,noun
+publish,B2,To make information available to the public,We will publish the report next month.,The company publishes quarterly newsletters.,business,high,verb
+enclose,B2,To include something with a letter,Please enclose your resume with the application.,I enclose a copy of the contract.,business,medium,verb
+applicant,B2,A person who applies for something,We have many qualified applicants for this position.,The applicant must have relevant experience.,business,high,noun
+seminar,B2,A meeting for training or discussion,We're organizing a marketing seminar.,The seminar covers new business strategies.,business,medium,noun
+technician,B2,A person skilled in technical work,The technician will repair the computer.,We need a qualified technician for this job.,business,medium,noun
+cloth,B1,Material made from fibers,The cloth is soft and comfortable.,We need to clean the cloth regularly.,general,medium,noun
+fare,B1,The price of a journey,The train fare has increased this year.,Please pay the fare before boarding.,travel,high,noun
+receipt,B1,A document showing payment,Please keep your receipt for returns.,The receipt shows all the items purchased.,business,high,noun
+traveler,B1,A person who travels,The traveler lost his luggage.,Business travelers need reliable transportation.,travel,high,noun
+caller,B1,A person who makes a phone call,The caller wants to speak to the manager.,Please hold for the next caller.,business,medium,noun
+subway,B1,An underground railway,The subway is the fastest way to downtown.,Please take the subway to the airport.,travel,high,noun
+luggage,B1,Bags and suitcases for travel,Please check your luggage at the counter.,The luggage arrived safely at the destination.,travel,high,noun
+shipment,B2,Goods sent by transport,The shipment will arrive tomorrow.,We need to track the shipment status.,business,high,noun
+infer,B2,To conclude from evidence,We can infer from the data that sales are increasing.,The report allows us to infer market trends.,business,medium,verb
+waiter,B1,A person who serves food,The waiter brought our order.,Please ask the waiter for the menu.,general,high,noun
+rental,B2,Payment for the use of something,The car rental is $50 per day.,We need to find a rental property downtown.,business,high,noun
+warranty,B2,A guarantee for a product,The warranty covers repairs for one year.,Please read the warranty terms carefully.,business,high,noun
+cafeteria,B1,A self-service restaurant,The cafeteria serves lunch from 12 to 2 PM.,Employees can eat in the company cafeteria.,general,high,noun
+chef,B1,A professional cook,The chef prepared a delicious meal.,We need to hire a new chef for the restaurant.,general,high,noun
+elevator,B1,A machine that moves people between floors,Please take the elevator to the 10th floor.,The elevator is out of order today.,general,high,noun
+reception,B1,The area where visitors are welcomed,Please wait at the reception desk.,The reception area is beautifully decorated.,business,high,noun
+correctly,B1,In the right way,Please complete the form correctly.,The system is working correctly now.,general,high,adverb
+lease,B2,A contract for renting property,We signed a three-year lease for the office.,The lease expires next month.,business,high,noun
+bicycle,B1,A two-wheeled vehicle,He rides his bicycle to work every day.,The bicycle needs to be repaired.,general,medium,noun
+notify,B2,To inform someone officially,We will notify you when the order is ready.,Please notify the manager about the problem.,business,high,verb
+preview,B2,An advance showing,We'll have a preview of the new product.,The movie preview looks interesting.,general,medium,noun
+attendant,B2,A person who provides service,The flight attendant helped with the luggage.,The parking attendant will assist you.,business,medium,noun
+subscription,B2,A regular payment for a service,We have a monthly subscription to the magazine.,The subscription can be cancelled anytime.,business,high,noun
+convenient,B1,Easy to use or suitable,The location is very convenient for commuting.,Online shopping is convenient and fast.,general,high,adjective
+manual,B2,A book of instructions,Please read the user manual carefully.,The manual explains how to operate the machine.,business,medium,noun
+clue,B1,A piece of information that helps solve something,We need more clues to solve this problem.,The clue led us to the right answer.,general,medium,noun
+garage,B1,A building for storing vehicles,Please park your car in the garage.,The garage door is not working.,general,high,noun
+obtain,B2,To get or acquire something,We need to obtain permission from the manager.,It's difficult to obtain funding for this project.,business,high,verb
+oval,B1,Shaped like an egg,The table has an oval shape.,The oval mirror looks elegant in the room.,general,low,adjective
+inventory,B2,A complete list of items,We need to update our inventory records.,The inventory shows we're running low on supplies.,business,high,noun
+outdoor,B1,Located outside,We prefer outdoor activities on weekends.,The outdoor seating area is very popular.,general,medium,adjective
+suitcase,B1,A case for carrying clothes,Please pack your suitcase for the trip.,The suitcase is too heavy to carry.,travel,high,noun
+destination,B2,The place where someone is going,What's your final destination?,The destination is clearly marked on the map.,travel,high,noun
+occupation,B2,A person's job or profession,What is your current occupation?,The occupation requires special training.,business,high,noun
+postpone,B2,To delay something,We need to postpone the meeting until next week.,The event was postponed due to bad weather.,business,high,verb
+contradict,B2,To say the opposite,The witness statements contradict each other.,Don't contradict your supervisor in public.,general,medium,verb
+umbrella,B1,A device for protection from rain,Don't forget to bring an umbrella.,The umbrella is broken and needs repair.,general,high,noun
+inference,B2,A conclusion reached from evidence,We can make an inference from the data.,The inference is based on solid evidence.,business,medium,noun
+cellphone,B1,A portable telephone,Please turn off your cellphone during the meeting.,The cellphone battery is running low.,technology,high,noun
+compact,B2,Small and efficient,The compact car is perfect for city driving.,We need a compact solution to this problem.,general,medium,adjective
+merchandise,B2,Goods for sale,The merchandise will arrive next week.,We need to display the merchandise properly.,business,high,noun
+receptionist,B2,A person who greets visitors,The receptionist will direct you to the right office.,Please speak to the receptionist for assistance.,business,high,noun
+dentist,B1,A doctor who treats teeth,I have an appointment with the dentist.,The dentist recommended regular checkups.,general,high,noun
+identification,B2,Proof of who you are,Please show your identification at the entrance.,We need proper identification to process your request.,business,high,noun
+coupon,B1,A voucher for a discount,Use this coupon to get 20% off.,The coupon expires at the end of the month.,business,high,noun
+depart,B2,To leave a place,The train will depart at 3 PM.,We need to depart early to avoid traffic.,travel,high,verb
+reschedule,B2,To change the time of something,We need to reschedule the appointment.,The meeting was rescheduled for tomorrow.,business,high,verb
+tactic,B2,A strategy or method,We need a new tactic to increase sales.,The marketing tactic proved successful.,business,medium,noun
+renovation,B2,The process of improving something,The office renovation will take three months.,The renovation includes new furniture and equipment.,business,medium,noun
+upgrade,B2,To improve something,We need to upgrade our computer systems.,The software upgrade includes new features.,business,high,verb
+precede,B2,To come before something,The introduction precedes the main presentation.,Please precede your questions with your name.,business,medium,verb
+replacement,B2,A substitute for something,We need a replacement for the broken part.,The replacement will arrive next week.,business,medium,noun
+dine,B2,To eat dinner,We will dine at the new restaurant tonight.,Business executives often dine with clients.,general,medium,verb
+passport,B1,An official document for travel,Please show your passport at customs.,The passport is valid for five years.,travel,high,noun
+coworker,B2,A person who works with you,My coworker helped me with the project.,We have a good relationship with our coworkers.,business,high,noun
+upcoming,B2,About to happen,The upcoming conference will be very informative.,We're preparing for the upcoming presentation.,business,medium,adjective
+cabinet,B1,A piece of furniture with shelves,The files are stored in the cabinet.,The kitchen cabinet needs to be repaired.,general,medium,noun
+appliance,B1,A device for household use,The kitchen appliance is very efficient.,We need to repair the broken appliance.,general,medium,noun
+explanatory,B2,Intended to explain something,The explanatory notes help understand the process.,Please provide explanatory comments for your proposal.,business,low,adjective
+instructor,B2,A person who teaches,The instructor explained the new software.,We need a qualified instructor for this course.,business,medium,noun
+keyboard,B1,A set of keys for typing,The keyboard is not working properly.,Please clean the keyboard regularly.,technology,high,noun
+media,B2,Means of communication,The media coverage was extensive.,Social media is important for marketing.,business,high,noun
+supermarket,B1,A large self-service store,The supermarket has everything we need.,We shop at the supermarket every week.,general,high,noun
+valid,B2,Legally acceptable,The contract is valid for one year.,Please ensure your ID is valid.,business,high,adjective
+admission,B2,Permission to enter,Admission to the conference is free.,The admission process takes two weeks.,business,medium,noun
+laptop,B1,A portable computer,The laptop is very lightweight.,I use my laptop for work and study.,technology,high,noun
+underline,B2,To emphasize something,Please underline the important points.,The report underlines the need for change.,business,medium,verb

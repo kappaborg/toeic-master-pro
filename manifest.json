@@ -1,0 +1,128 @@
+{
+  "name": "TOEIC Master Pro - Complete TOEIC Test Preparation Platform",
+  "short_name": "TOEIC Master Pro",
+  "description": "Complete TOEIC test preparation platform with vocabulary, reading, listening practice, and full test simulations. Master the TOEIC test with 3000+ business English words and comprehensive study materials.",
+  "version": "3.0.0",
+  "lang": "en",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#667eea",
+  "background_color": "#667eea",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "assets/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "TOEIC Master Pro Home Screen"
+    },
+    {
+      "src": "assets/screenshots/mobile-toeic.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "TOEIC Study Interface"
+    }
+  ],
+  "categories": ["education", "productivity", "business"],
+  "features": [
+    "offline-support",
+    "toeic-preparation",
+    "vocabulary-learning",
+    "reading-comprehension",
+    "test-simulation",
+    "progress-tracking",
+    "adaptive-learning",
+    "spaced-repetition"
+  ],
+  "shortcuts": [
+    {
+      "name": "TOEIC Vocabulary",
+      "short_name": "Vocabulary",
+      "description": "Practice TOEIC vocabulary with spaced repetition",
+      "url": "./?module=vocabulary",
+      "icons": [
+        {
+          "src": "assets/icons/vocab-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "TOEIC Reading",
+      "short_name": "Reading",
+      "description": "Practice TOEIC reading comprehension",
+      "url": "./?module=reading",
+      "icons": [
+        {
+          "src": "assets/icons/reading-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "TOEIC Test Simulation",
+      "short_name": "Test",
+      "description": "Take full TOEIC practice test",
+      "url": "./?module=test",
+      "icons": [
+        {
+          "src": "assets/icons/test-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
+

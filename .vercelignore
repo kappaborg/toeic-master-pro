@@ -1,0 +1,48 @@
+# Development files
+test_*.html
+*.test.js
+*.spec.js
+
+# Documentation
+*.md
+!README.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts (if any)
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Node modules (if using any build tools)
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# Backup files
+*.bak
+*.backup

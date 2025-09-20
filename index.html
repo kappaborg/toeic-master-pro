@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>TOEIC Master Pro - Complete TOEIC Test Preparation Platform</title>
+    
+    <!-- Accessibility Meta Tags -->
+    <meta name="description" content="Complete TOEIC test preparation platform with vocabulary, reading, listening practice, and full test simulations. Master the TOEIC test with 3000+ vocabulary words and comprehensive study materials.">
+    <meta name="keywords" content="TOEIC, TOEIC test, TOEIC preparation, English test, business English, TOEIC vocabulary, TOEIC reading, TOEIC listening, TOEIC practice">
+    <meta name="author" content="TOEIC Master Pro Team">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    
+    <!-- Custom CSS with Tailwind-like utilities -->
+    <link rel="stylesheet" href="assets/css/tailwind-custom.css">
+    
+    <!-- Professional UI Design System -->
+    <link rel="stylesheet" href="assets/css/professional-ui.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Logging Configuration -->
+    <script src="assets/js/logging-config.js"></script>
+    
+    <!-- Logger System -->
+    <script src="assets/js/logger.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounceSoft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            to { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-glow:hover {
+            animation: glow 1s ease-in-out;
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* Futuristic Clock Design */
+        .clock-display {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.2) 0%, 
+                rgba(138, 43, 226, 0.3) 25%, 
+                rgba(255, 20, 147, 0.2) 50%, 
+                rgba(0, 191, 255, 0.3) 75%, 
+                rgba(50, 205, 50, 0.2) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.4),
+                0 0 60px rgba(138, 43, 226, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .clock-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .clock-display:hover::before {
+            left: 100%;
+        }
+        
+        .clock-display:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.3) 0%, 
+                rgba(138, 43, 226, 0.4) 25%, 
+                rgba(255, 20, 147, 0.3) 50%, 
+                rgba(0, 191, 255, 0.4) 75%, 
+                rgba(50, 205, 50, 0.3) 100%);
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.6),
+                0 0 80px rgba(138, 43, 226, 0.4),
+                0 0 120px rgba(255, 20, 147, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px) scale(1.05);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .clock-text {
+            font-family: 'Orbitron', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(138, 43, 226, 0.6),
+                0 0 30px rgba(255, 20, 147, 0.4);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .clock-icon {
+            filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+            transition: all 0.3s ease;
+        }
+        
+        .clock-display:hover .clock-icon {
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 1)) 
+                    drop-shadow(0 0 25px rgba(138, 43, 226, 0.8));
+            transform: rotate(360deg);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .clock-display {
+                padding: 8px 16px !important;
+                gap: 8px !important;
+            }
+            
+            .clock-text {
+                font-size: 0.875rem !important;
+                letter-spacing: 0.5px;
+            }
+            
+            .clock-icon {
+                width: 16px !important;
+                height: 16px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .clock-display {
+                padding: 6px 12px !important;
+                gap: 6px !important;
+            }
+            
+            .clock-text {
+                font-size: 0.75rem !important;
+                letter-spacing: 0.25px;
+            }
+            
+            .clock-icon {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
+        
+        /* Animation for clock updates */
+        @keyframes clockPulse {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 10px rgba(0, 255, 255, 0.8),
+                    0 0 20px rgba(138, 43, 226, 0.6),
+                    0 0 30px rgba(255, 20, 147, 0.4);
+            }
+            50% { 
+                text-shadow: 
+                    0 0 15px rgba(0, 255, 255, 1),
+                    0 0 30px rgba(138, 43, 226, 0.8),
+                    0 0 45px rgba(255, 20, 147, 0.6);
+            }
+        }
+        
+        .clock-text.updating {
+            animation: clockPulse 0.5s ease-in-out;
+        }
+        
+        /* Responsive Navbar */
+        @media (max-width: 1024px) {
+            .navbar-content {
+                padding: 0 1rem;
+            }
+            
+            .navbar-brand span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                gap: 0.5rem;
+            }
+            
+            .clock-display {
+                padding: 6px 12px !important;
+                gap: 8px !important;
+            }
+            
+            .clock-text {
+                font-size: 0.875rem !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .navbar-content {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .navbar-nav {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+            
+            .navbar-brand {
+                order: 1;
+            }
+            
+            .ml-auto {
+                order: 3;
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-container" role="dialog" aria-labelledby="loadingTitle" aria-describedby="loadingDescription">
+            <div class="loading-content">
+                <div class="animate-bounce-soft mb-8">
+                    <i data-lucide="graduation-cap" class="w-20 h-20 mx-auto text-white" aria-hidden="true"></i>
+                </div>
+                <h1 id="loadingTitle" class="heading-1 mb-4">TOEIC Master Pro</h1>
+                <p id="loadingDescription" class="text-xl opacity-90 mb-8">Complete TOEIC Test Preparation Platform</p>
+            <div class="progress-bar-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="loadingProgress" class="progress-bar" style="width: 0%"></div>
+            </div>
+            <p id="loadingText" class="mt-4 opacity-80" aria-live="polite">Initializing...</p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="hidden">
+        <!-- Navigation -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="navbar-content">
+                <a href="#" class="navbar-brand">
+                    <i data-lucide="graduation-cap" class="w-8 h-8" aria-hidden="true"></i>
+                    <span>TOEIC Master Pro</span>
+                </a>
+                <div class="navbar-nav">
+                    <!-- Live Time Display - Center -->
+                    <div class="flex items-center justify-center mx-auto">
+                        <div class="clock-display flex items-center gap-4 px-6 py-4 rounded-full">
+                            <i data-lucide="clock" class="clock-icon w-6 h-6 text-white"></i>
+                            <span class="live-time clock-text text-white text-lg font-bold" data-time-options='{"hour":"2-digit","minute":"2-digit","second":"2-digit"}'></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Language Switcher - Right -->
+                    <div class="ml-auto">
+                        <button id="navbarLanguageToggle" class="nav-language-toggle group">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="globe" class="w-4 h-4 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                                <span class="language-text">EN</span>
+                                <i data-lucide="chevron-down" class="w-3 h-3 group-hover:rotate-180 transition-transform" aria-hidden="true"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Floating Draggable Home Button -->
+        <div id="floatingHomeButton" class="floating-home-btn" draggable="true">
+            <button onclick="goHome()" class="home-btn" aria-label="Return to home screen">
+                <i data-lucide="home" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Game Status Bar -->
+        <div id="statusBar" class="hidden fixed top-20 left-0 right-0 glass-effect z-30 p-4">
+            <div class="max-w-4xl mx-auto flex items-center justify-between text-white">
+                <div class="flex items-center space-x-4">
+                    <span class="bg-primary/30 px-3 py-1 rounded-full text-sm">
+                        Question <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+                    </span>
+                    <div class="w-32 bg-white/20 rounded-full h-2">
+                        <div id="progressBar" class="bg-accent h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="bg-success/30 px-3 py-1 rounded-full text-sm">
+                        <i data-lucide="star" class="w-4 h-4 inline mr-1"></i>
+                        Score: <span id="currentScore">0</span>
+                    </span>
+                    <span class="bg-info/30 px-3 py-1 rounded-full text-sm">
+                        <i data-lucide="target" class="w-4 h-4 inline mr-1"></i>
+                        <span id="accuracy">0%</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="pt-24 pb-8 px-4">
+            <!-- Main Menu -->
+            <div id="mainMenu">
+                <!-- Welcome Screen -->
+                <div id="welcomeScreen" class="screen">
+                <!-- Hero Section -->
+                <section class="max-w-6xl mx-auto text-center mb-16 animate-fade-in">
+                    <!-- Main Title -->
+                    <div class="mb-8">
+                        <i data-lucide="graduation-cap" class="w-24 h-24 mx-auto text-white mb-6 animate-bounce-soft" aria-hidden="true"></i>
+                        <h1 class="heading-1 mb-6">
+                            Master the
+                            <br>
+                            <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">TOEIC Test</span>
+                        </h1>
+                        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+                            Complete TOEIC test preparation platform with vocabulary, reading, listening practice, and full test simulations. Achieve your target score with 3000+ business English words and comprehensive study materials.
+                        </p>
+                    </div>
+                    
+                    <!-- Main Hero Carousel -->
+                    <div class="mb-8">
+                        <div id="mainHeroCarousel" class="h-96 mb-6"></div>
+                    </div>
+                    
+
+                </section>
+
+                <!-- TOEIC Study Modules Grid -->
+                <section class="max-w-7xl mx-auto">
+                    <h2 class="heading-3 text-center mb-12">
+                        TOEIC Study Modules
+                    </h2>
+                    <div class="grid grid-cols-4 gap-6 animate-slide-up">
+                        
+                        <!-- TOEIC Vocabulary -->
+                        <div class="game-card card-interactive" onclick="startTOEICModule('vocabulary')" role="button" tabindex="0" aria-label="Start TOEIC Vocabulary practice">
+                            <div class="game-card-icon">
+                                <i data-lucide="book-open" class="w-8 h-8 text-blue-400" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="heading-6 mb-3">TOEIC Vocabulary</h3>
+                            <p class="text-small text-white/80 mb-4">Master 3000+ business English words with spaced repetition</p>
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <span class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full text-tiny">3000+ Words</span>
+                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny">Spaced Repetition</span>
+                            </div>
+                        </div>
+
+                        <!-- TOEIC Reading -->
+                        <div class="game-card card-interactive" onclick="startTOEICModule('reading')" role="button" tabindex="0" aria-label="Start TOEIC Reading practice">
+                            <div class="game-card-icon">
+                                <i data-lucide="file-text" class="w-8 h-8 text-green-400" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="heading-6 mb-3">TOEIC Reading</h3>
+                            <p class="text-small text-white/80 mb-4">Practice reading comprehension with business texts and passages</p>
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny">Business Texts</span>
+                                <span class="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-tiny">Comprehension</span>
+                            </div>
+                        </div>
+
+                        <!-- TOEIC Listening -->
+                        <div class="game-card card-interactive" onclick="startTOEICModule('listening')" role="button" tabindex="0" aria-label="Start TOEIC Listening practice">
+                            <div class="game-card-icon">
+                                <i data-lucide="headphones" class="w-8 h-8 text-purple-400" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="heading-6 mb-3">TOEIC Listening</h3>
+                            <p class="text-small text-white/80 mb-4">Practice listening skills with business conversations and talks</p>
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <span class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-tiny">Audio Practice</span>
+                                <span class="bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full text-tiny">Business English</span>
+                            </div>
+                        </div>
+
+                        <!-- TOEIC Test Simulation -->
+                        <div class="game-card card-interactive" onclick="startTOEICModule('test')" role="button" tabindex="0" aria-label="Start TOEIC Test Simulation">
+                            <div class="game-card-icon">
+                                <i data-lucide="clipboard-check" class="w-8 h-8 text-yellow-400" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="heading-6 mb-3">TOEIC Test Simulation</h3>
+                            <p class="text-small text-white/80 mb-4">Take full-length TOEIC practice tests with real timing</p>
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <span class="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded-full text-tiny">Full Test</span>
+                                <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded-full text-tiny">Real Timing</span>
+                            </div>
+                        </div>
+
+
+
+                        <!-- TOEIC Study Strategies -->
+                        <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="showTOEICStrategies()">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/30 transition-colors">
+                                    <i data-lucide="lightbulb" class="w-8 h-8 text-purple-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white mb-3">Study Strategies</h3>
+                                <p class="text-white/70 text-sm mb-4">Learn effective TOEIC test-taking strategies and tips</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <span class="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs">Tips</span>
+                                    <span class="bg-success/20 text-success px-2 py-1 rounded-full text-xs">Strategies</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TOEIC Flashcard System -->
+                        <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="startTOEICModule('flashcards')">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-teal-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-teal-500/30 transition-colors">
+                                    <i data-lucide="credit-card" class="w-8 h-8 text-teal-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white mb-3">Flashcard System</h3>
+                                <p class="text-white/70 text-sm mb-4">Review TOEIC vocabulary with intelligent flashcards</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <span class="bg-teal-500/20 text-teal-400 px-2 py-1 rounded-full text-xs">Smart Review</span>
+                                    <span class="bg-info/20 text-info px-2 py-1 rounded-full text-xs">Adaptive</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TOEIC Grammar Practice -->
+                        <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="startTOEICModule('grammar')">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-500/30 transition-colors">
+                                    <i data-lucide="book-text" class="w-8 h-8 text-orange-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white mb-3">Grammar Practice</h3>
+                                <p class="text-white/70 text-sm mb-4">Master TOEIC grammar patterns and structures</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <span class="bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full text-xs">Grammar</span>
+                                    <span class="bg-warning/20 text-warning px-2 py-1 rounded-full text-xs">Patterns</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <!-- TOEIC Test History -->
+                        <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="showTOEICTestHistory()">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-violet-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-violet-500/30 transition-colors">
+                                    <i data-lucide="history" class="w-8 h-8 text-violet-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white mb-3">Test History</h3>
+                                <p class="text-white/70 text-sm mb-4">View your TOEIC practice test results and progress</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <span class="bg-violet-500/20 text-violet-400 px-2 py-1 rounded-full text-xs">History</span>
+                                    <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs">Results</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+                </section>
+
+
+            </div>
+            </div>
+
+            <!-- TOEIC Module Content -->
+            <div id="toeicModuleContent" class="hidden">
+                <!-- TOEIC module content will be loaded here -->
+            </div>
+
+            <!-- Game Screens Container -->
+            <div id="gameScreens" class="hidden">
+                <!-- Game screens will be dynamically loaded here -->
+            </div>
+
+            <!-- Individual Game Screens -->
+            <div id="multipleChoiceScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="conversationScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="modalVerbsScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="timeTellingScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="categorySortScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="visualLearningScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="conversationBuilderScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="prefixSuffixScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="readingComprehensionScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="vocabularyLearningScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="grammarChallengeScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+
+            <div id="listeningPracticeScreen" class="screen hidden">
+                <div class="game-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- Notifications will be added here -->
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <!-- Modals will be added here -->
+    </div>
+
+    <!-- Error Fallback Container -->
+    <div id="errorFallback" class="hidden fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <!-- Error fallback UI will be added here -->
+    </div>
+
+    <!-- Scripts -->
+    <!-- Core Error Handling -->
+    <!-- OPTIMIZED LOADING SEQUENCE - NO DUPLICATES -->
+    
+    <!-- 1. Critical Foundation (Immediate Load) -->
+    <script src="assets/js/error-boundary.js"></script>
+    <script src="assets/js/feature-manager.js"></script>
+    <script src="assets/js/carousel-system.js"></script>
+    <script src="assets/js/language-manager.js"></script>
+    <script src="assets/js/mobile-optimization.js"></script>
+    <script src="assets/js/performance-optimizer.js"></script>
+    
+    <!-- 2. Core Systems (High Priority) -->
+    <script src="assets/js/unified-data-layer.js"></script>
+    <script src="assets/js/real-time-monitor.js"></script>
+    <script src="assets/js/initialization-manager.js"></script>
+    <script src="assets/js/time-tracking-system.js"></script>
+    
+    <!-- 3. UI Systems -->
+    <script src="assets/js/answer-feedback.js"></script>
+    
+    <!-- 4. Application Logic (Deferred for Performance) -->
+    <script src="assets/js/data-manager.js" defer></script>
+    <script src="assets/js/game-engine.js" defer></script>
+    <script src="assets/js/audio-system.js" defer></script>
+    
+    <!-- 5. Advanced Features (Deferred) -->
+    <script src="assets/js/spaced-repetition.js" defer></script>
+    <script src="assets/js/adaptive-learning.js" defer></script>
+    <script src="assets/js/advanced-analytics.js" defer></script>
+
+    <script src="assets/js/enhanced-progress.js" defer></script>
+
+    
+    <!-- 6. UI & Configuration (Deferred) -->
+    <script src="assets/js/ui-manager.js" defer></script>
+    <script src="assets/js/settings-panel.js" defer></script>
+    <script src="assets/js/pwa.js" defer></script>
+    
+    <!-- 7. TOEIC Systems -->
+    <script src="assets/js/toeic-vocabulary-system.js" defer></script>
+    <script src="assets/js/toeic-reading-system.js" defer></script>
+
+    <script src="assets/js/toeic-test-simulator.js" defer></script>
+    <script src="assets/js/toeic-grammar-system.js" defer></script>
+    <!-- TOEIC Study Strategies removed - not used in current implementation -->
+    <!-- TOEIC Progress Analytics removed - not used in current implementation -->
+    
+    <!-- 8. Advanced Analytics System -->
+    <script src="assets/js/advanced-analytics-system.js"></script>
+    <script src="assets/js/analytics-dashboard.js"></script>
+    
+    <!-- 9. Login System (Before App) -->
+    <script src="assets/js/login-system.js"></script>
+    
+    <!-- 10. Admin Dashboard (Before App) -->
+    <script src="assets/js/admin-dashboard.js"></script>
+    
+    <!-- 11. Main Application (Last) -->
+    <script src="assets/js/app.js"></script>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // TOEIC Module Functions (delegated to app.js)
+        window.startTOEICModule = function(moduleType, options = {}) {
+            console.log(`🎯 Starting TOEIC module: ${moduleType}`);
+            if (window.app && window.app.startTOEICModule) {
+                window.app.startTOEICModule(moduleType, options);
+            } else {
+                console.error('❌ App not initialized');
+            }
+        };
+        
+        
+        window.showTOEICStrategies = function() {
+            console.log('💡 Showing TOEIC Study Strategies');
+            if (window.TOEICStudyStrategies) {
+                window.toeicStrategies = new window.TOEICStudyStrategies();
+                const strategies = window.toeicStrategies.getStrategiesForSection('listening');
+                console.log('💡 Study strategies:', strategies);
+                // Show strategies UI
+            }
+        };
+        
+        
+
+        
+        window.showTOEICTestHistory = function() {
+            console.log('📋 Showing TOEIC Test History');
+            if (window.TOEICTestSimulator) {
+                window.toeicTestSimulator = new window.TOEICTestSimulator();
+                const testHistory = window.toeicTestSimulator.getTestHistory();
+                console.log('📋 Test history:', testHistory);
+                // Show test history UI
+            }
+        };
+        
+
+        
+
+    </script>
+</body>
+</html>

@@ -38,7 +38,7 @@ class App {
         }
         
         // Optimize performance monitoring
-        if (window.performanceOptimizer) {
+        if (window.performanceOptimizer && typeof window.performanceOptimizer.enableProductionMode === 'function') {
             window.performanceOptimizer.enableProductionMode();
         }
         
@@ -88,6 +88,11 @@ class App {
     
     // Check user authentication
     checkAuthentication() {
+        // If we're on the login page, don't check authentication
+        if (window.location.pathname === '/login.html' || window.location.pathname.includes('login.html')) {
+            return true;
+        }
+        
         // Wait for login system to be available
         if (!window.loginSystem) {
             console.log('⏳ Waiting for login system to load...');
@@ -96,9 +101,7 @@ class App {
                 if (!window.loginSystem) {
                     console.error('❌ Login system not available after timeout');
                     // Redirect to login page
-                    if (window.location.pathname !== '/login.html' && !window.location.pathname.includes('login.html')) {
-                        window.location.href = 'login.html';
-                    }
+                    window.location.href = 'login.html';
                 } else {
                     this.checkAuthentication();
                 }
@@ -109,10 +112,7 @@ class App {
         // Check if user is logged in
         if (!window.loginSystem.isLoggedIn()) {
             console.log('🔐 User not authenticated, redirecting to login...');
-            // Only redirect if not already on login page
-            if (window.location.pathname !== '/login.html' && !window.location.pathname.includes('login.html')) {
-                window.location.href = 'login.html';
-            }
+            window.location.href = 'login.html';
             return false;
         }
         
@@ -299,8 +299,15 @@ class App {
     
     async initialize() {
         try {
+            // Set a timeout for initialization to prevent hanging
+            const initTimeout = setTimeout(() => {
+                console.error('❌ Initialization timeout - forcing app to load');
+                this.forceAppLoad();
+            }, 30000); // 30 second timeout
+            
             // Check authentication first
             if (!this.checkAuthentication()) {
+                clearTimeout(initTimeout);
                 return;
             }
             
@@ -406,7 +413,31 @@ class App {
         } catch (error) {
             console.error('❌ Failed to initialize app:', error);
             this.handleInitializationError(error);
+        } finally {
+            // Clear the timeout
+            if (typeof initTimeout !== 'undefined') {
+                clearTimeout(initTimeout);
+            }
         }
+    }
+    
+    forceAppLoad() {
+        console.log('🚀 Force loading app...');
+        // Hide loading screen
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+        
+        // Show main content
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+        }
+        
+        // Initialize basic functionality
+        this.showWelcomeScreen();
+        console.log('✅ App force loaded successfully');
     }
     
     async initializePWA() {

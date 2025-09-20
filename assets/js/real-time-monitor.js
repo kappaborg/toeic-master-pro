@@ -265,7 +265,7 @@ class RealTimeMonitor {
     }
     
     logError(type, details) {
-        console.error(`❌ ${type}:`, details);
+        console.error(`❌ ${type}:`, JSON.stringify(details, null, 2));
         
         // Send error to analytics if available
         if (window.advancedAnalytics) {

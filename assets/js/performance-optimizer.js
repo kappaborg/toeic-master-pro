@@ -606,6 +606,12 @@ class PerformanceOptimizer {
             } : null
         };
     }
+    
+    enableProductionMode() {
+        console.log('⚡ Production mode enabled for Performance Optimizer');
+        this.isProduction = true;
+        this.enableAdvancedOptimizations();
+    }
 }
 
 // Utility functions for bundle optimization

@@ -41,7 +41,7 @@ class ErrorBoundary {
     }
     
     handleError(errorInfo) {
-        console.error('🚨 Error caught by boundary:', errorInfo);
+        console.error('🚨 Error caught by boundary:', JSON.stringify(errorInfo, null, 2));
         
         // Log error
         this.errors.push({

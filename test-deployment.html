@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Test - TOEIC Master Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); border: 1px solid rgba(34, 197, 94, 0.5); }
+        .error { background: rgba(239, 68, 68, 0.3); border: 1px solid rgba(239, 68, 68, 0.5); }
+        .warning { background: rgba(245, 158, 11, 0.3); border: 1px solid rgba(245, 158, 11, 0.5); }
+        button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <h1>🔧 TOEIC Master Pro - Deployment Test</h1>
+    
+    <div class="test-container">
+        <h2>📊 Deployment Status</h2>
+        <div id="deploymentStatus">
+            <div class="status warning">Testing deployment...</div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🧪 File Tests</h2>
+        <div id="fileTests">
+            <div class="status warning">Testing files...</div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🔧 Console Tests</h2>
+        <div id="consoleTests">
+            <div class="status warning">Testing console...</div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>🎯 Actions</h2>
+        <button onclick="testFiles()">Test Files</button>
+        <button onclick="testConsole()">Test Console</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        <button onclick="goToApp()">Go to App</button>
+    </div>
+
+    <script>
+        // Test deployment status
+        function updateStatus(elementId, message, type = 'warning') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        // Test files
+        async function testFiles() {
+            updateStatus('fileTests', 'Testing files...', 'warning');
+            
+            const files = [
+                'assets/js/app.js',
+                'assets/js/performance-optimizer.js',
+                'assets/js/login-system.js',
+                'assets/icons/icon-192.png',
+                'assets/icons/icon-152.png'
+            ];
+            
+            let results = [];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        results.push(`✅ ${file} - OK`);
+                    } else {
+                        results.push(`❌ ${file} - ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${file} - Error: ${error.message}`);
+                }
+            }
+            
+            updateStatus('fileTests', results.join('<br>'), 'success');
+        }
+        
+        // Test console
+        function testConsole() {
+            updateStatus('consoleTests', 'Testing console...', 'warning');
+            
+            let results = [];
+            
+            // Test if performance optimizer has the method
+            if (window.performanceOptimizer) {
+                if (typeof window.performanceOptimizer.enableProductionMode === 'function') {
+                    results.push('✅ performanceOptimizer.enableProductionMode - Available');
+                } else {
+                    results.push('❌ performanceOptimizer.enableProductionMode - Not a function');
+                }
+            } else {
+                results.push('❌ performanceOptimizer - Not available');
+            }
+            
+            // Test if login system is available
+            if (window.loginSystem) {
+                results.push('✅ loginSystem - Available');
+            } else {
+                results.push('❌ loginSystem - Not available');
+            }
+            
+            // Test if app is available
+            if (window.app) {
+                results.push('✅ app - Available');
+            } else {
+                results.push('❌ app - Not available');
+            }
+            
+            updateStatus('consoleTests', results.join('<br>'), 'success');
+        }
+        
+        // Clear cache
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            localStorage.clear();
+            sessionStorage.clear();
+            updateStatus('deploymentStatus', 'Cache cleared! Please refresh the page.', 'success');
+        }
+        
+        // Go to app
+        function goToApp() {
+            window.location.href = '/';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('deploymentStatus', 'Deployment test ready!', 'success');
+            testFiles();
+            testConsole();
+        });
+        
+        // Override console to capture errors
+        const originalError = console.error;
+        console.error = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('enableProductionMode')) {
+                updateStatus('consoleTests', '❌ enableProductionMode error detected!', 'error');
+            }
+            originalError.apply(console, args);
+        };
+    </script>
+</body>
+</html>

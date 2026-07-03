@@ -181,25 +181,30 @@ class UIManager {
     updateStatusBar(data) {
         const elements = {
             score: document.getElementById('currentScore'),
-            level: document.getElementById('currentLevel'),
-            progress: document.getElementById('gameProgress'),
-            streak: document.getElementById('currentStreak')
+            progressBar: document.getElementById('progressBar'),
+            currentQuestion: document.getElementById('currentQuestion'),
+            totalQuestions: document.getElementById('totalQuestions'),
+            accuracy: document.getElementById('accuracy')
         };
-        
+
         if (data.score !== undefined && elements.score) {
             elements.score.textContent = data.score;
         }
-        
-        if (data.level && elements.level) {
-            elements.level.textContent = data.level;
+
+        if (data.progress !== undefined && elements.progressBar) {
+            elements.progressBar.style.width = `${data.progress}%`;
         }
-        
-        if (data.progress !== undefined && elements.progress) {
-            elements.progress.style.width = `${data.progress}%`;
+
+        if (data.currentQuestion !== undefined && elements.currentQuestion) {
+            elements.currentQuestion.textContent = data.currentQuestion;
         }
-        
-        if (data.streak !== undefined && elements.streak) {
-            elements.streak.textContent = data.streak;
+
+        if (data.totalQuestions !== undefined && elements.totalQuestions) {
+            elements.totalQuestions.textContent = data.totalQuestions;
+        }
+
+        if (data.accuracy !== undefined && elements.accuracy) {
+            elements.accuracy.textContent = `${data.accuracy}%`;
         }
     }
     

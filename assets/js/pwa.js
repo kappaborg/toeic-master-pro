@@ -406,6 +406,7 @@ class PWAManager {
 
 // Global PWA manager instance
 window.pwaManager = null;
+window.PWAManager = PWAManager;
 
 // Initialize PWA Manager immediately (will be called by App)
 if (!window.pwaManager) {

@@ -132,7 +132,7 @@ class DataManager {
         try {
             console.log('📚 Loading vocabulary...');
             
-            const response = await fetch('./assets/data/words.csv');
+            const response = await fetch('./assets/data/toeic_vocabulary.csv');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -152,12 +152,16 @@ class DataManager {
         const lines = csvText.split('\n');
         const headers = lines[0].split(',').map(h => h.trim());
         
-        // Expected headers: word,level,example1,example2,example3
+        // Expected headers: word,level,meaning,example1,example2,category,toeic_frequency,part_of_speech
+        // (example3, meaning and category are optional — missing columns fall back to derived values)
         const wordIndex = headers.indexOf('word');
         const levelIndex = headers.indexOf('level');
         const example1Index = headers.indexOf('example1');
         const example2Index = headers.indexOf('example2');
         const example3Index = headers.indexOf('example3');
+        const meaningIndex = headers.indexOf('meaning');
+        const categoryIndex = headers.indexOf('category');
+        const partOfSpeechIndex = headers.indexOf('part_of_speech');
         
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
@@ -166,24 +170,28 @@ class DataManager {
             // Handle CSV parsing with potential commas in examples
             const values = this.parseCSVLine(line);
             
-            if (values.length >= 5) {
-                const word = values[wordIndex].trim();
-                const level = values[levelIndex].trim();
+            if (values.length >= 4) {
+                const word = values[wordIndex]?.trim() || '';
+                const level = values[levelIndex]?.trim() || '';
                 const examples = [
                     values[example1Index]?.trim() || '',
                     values[example2Index]?.trim() || '',
                     values[example3Index]?.trim() || ''
                 ].filter(ex => ex.length > 0);
-                
+                const meaning = meaningIndex >= 0 ? (values[meaningIndex]?.trim() || '') : '';
+                const category = categoryIndex >= 0 ? (values[categoryIndex]?.trim() || '') : '';
+                const partOfSpeech = partOfSpeechIndex >= 0 ? (values[partOfSpeechIndex]?.trim() || '') : '';
+
                 if (word && level) {
                     this.vocabulary.set(word.toLowerCase(), {
                         word: word,
                         level: level,
                         examples: examples,
                         difficulty: this.calculateDifficulty(level, word),
-                        category: this.determineCategory(word, examples),
+                        category: category || this.determineCategory(word, examples),
                         phonetic: this.generatePhonetic(word),
-                        meaning: this.extractMeaning(examples[0] || ''),
+                        meaning: meaning || this.extractMeaning(examples[0] || ''),
+                        partOfSpeech: partOfSpeech,
                         lastReviewed: null,
                         masteryLevel: 0,
                         correctAttempts: 0,

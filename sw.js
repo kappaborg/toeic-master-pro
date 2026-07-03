@@ -1,8 +1,8 @@
 // WordMaster Pro - Service Worker
 // Version 2.0.0 - Professional ESL Learning Platform
 
-const CACHE_NAME = 'toeic-master-pro-v3.0.0';
-const DATA_CACHE_NAME = 'toeic-data-v3.0.0';
+const CACHE_NAME = 'toeic-master-pro-v3.1.0';
+const DATA_CACHE_NAME = 'toeic-data-v3.1.0';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [
@@ -26,7 +26,8 @@ const FILES_TO_CACHE = [
     './assets/js/real-time-monitor.js',
     './assets/js/spaced-repetition.js',
     './assets/js/audio-system.js',
-    './assets/js/advanced-analytics.js',
+    './assets/js/advanced-analytics-system.js',
+    './assets/js/analytics-dashboard.js',
     // './assets/js/gamification-system.js', // Removed - file deleted
     './assets/js/enhanced-progress.js',
     './assets/js/adaptive-learning.js',
@@ -57,37 +58,29 @@ const FILES_TO_CACHE = [
     './assets/screenshots/mobile-toeic.png',
     // './assets/images/students-learning.jpg', // Removed - not used
     // API files removed - directory doesn't exist
+    './assets/vendor/lucide.min.js',
     // External resources
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap',
-    'https://unpkg.com/lucide@latest/dist/umd/lucide.js'
-];
-
-// Data URLs for dynamic caching
-const DATA_URLS = [
-    './api/progress.json',
-    './api/statistics.json',
-    './api/achievements.json'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap'
 ];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
     console.log('[ServiceWorker] Install');
-    
+
     event.waitUntil(
-        Promise.all([
-            // Cache app shell
-            caches.open(CACHE_NAME).then((cache) => {
-                console.log('[ServiceWorker] Caching app shell');
-                return cache.addAll(FILES_TO_CACHE);
-            }),
-            // Cache data
-            caches.open(DATA_CACHE_NAME).then((cache) => {
-                console.log('[ServiceWorker] Caching data');
-                return cache.addAll(DATA_URLS);
-            })
-        ])
+        // Cache files individually so one failed fetch can't block install
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('[ServiceWorker] Caching app shell');
+            return Promise.allSettled(
+                FILES_TO_CACHE.map((file) =>
+                    cache.add(file).catch((err) => {
+                        console.warn('[ServiceWorker] Failed to cache', file, err);
+                    })
+                )
+            );
+        })
     );
-    
+
     // Force the waiting service worker to become the active service worker
     self.skipWaiting();
 });

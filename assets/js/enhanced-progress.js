@@ -171,16 +171,37 @@ class EnhancedProgress {
     }
     
     updateTimeTracking() {
-        const now = new Date();
-        const today = now.toDateString();
-        const weekStart = new Date(now.setDate(now.getDate() - now.getDay())).toDateString();
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toDateString();
-        
+        const today = new Date().toDateString();
+
+        // Compute period starts from fresh Date objects to avoid mutation bugs
+        const weekStartDate = new Date();
+        weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay());
+        const weekStart = weekStartDate.toDateString();
+
+        const monthNow = new Date();
+        const monthStart = new Date(monthNow.getFullYear(), monthNow.getMonth(), 1).toDateString();
+
+        const tracking = this.progressData.timeTracking;
+
+        // Reset counters when a new period starts
+        if (tracking.lastDailyReset !== today) {
+            tracking.daily = 0;
+            tracking.lastDailyReset = today;
+        }
+        if (tracking.lastWeeklyReset !== weekStart) {
+            tracking.weekly = 0;
+            tracking.lastWeeklyReset = weekStart;
+        }
+        if (tracking.lastMonthlyReset !== monthStart) {
+            tracking.monthly = 0;
+            tracking.lastMonthlyReset = monthStart;
+        }
+
         // Update daily time (increment by 1 minute for each question)
-        this.progressData.timeTracking.daily += 1;
-        this.progressData.timeTracking.weekly += 1;
-        this.progressData.timeTracking.monthly += 1;
-        this.progressData.timeTracking.total += 1;
+        tracking.daily += 1;
+        tracking.weekly += 1;
+        tracking.monthly += 1;
+        tracking.total += 1;
     }
     
     checkAchievements() {
@@ -374,12 +395,16 @@ class EnhancedProgress {
                 case 'word_learned':
                     this.progressData.totalXP += data.isCorrect ? 10 : 2;
                     this.progressData.currentXP += data.isCorrect ? 10 : 2;
-                    this.calculateLevel();
+                    if (this.checkLevelUp()) {
+                        this.triggerLevelUp();
+                    }
                     break;
                 case 'question_answered':
                     this.progressData.totalXP += data.isCorrect ? 5 : 1;
                     this.progressData.currentXP += data.isCorrect ? 5 : 1;
-                    this.calculateLevel();
+                    if (this.checkLevelUp()) {
+                        this.triggerLevelUp();
+                    }
                     break;
                 case 'session_completed':
                     this.progressData.timeTracking.daily += data.duration || 0;

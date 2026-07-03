@@ -988,16 +988,34 @@ class TOEICGrammarSystem {
         
         const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
         
-        // Record answer
-        this.currentSession.answers.push({
+        // Record answer (keyed by question id so re-answering via
+        // Previous navigation replaces the old answer instead of double-counting)
+        const answerRecord = {
             questionId: currentQuestion.id,
             selectedAnswer: selectedAnswer,
             correctAnswer: currentQuestion.correctAnswer,
             isCorrect: isCorrect,
             timeSpent: timeSpent,
             timestamp: Date.now()
-        });
-        
+        };
+
+        const existingIndex = this.currentSession.answers.findIndex(
+            answer => answer.questionId === currentQuestion.id
+        );
+
+        if (existingIndex !== -1) {
+            // Remove the previous answer's contribution to the stats
+            const previousAnswer = this.currentSession.answers[existingIndex];
+            if (previousAnswer.isCorrect) {
+                this.sessionStats.correctAnswers--;
+            } else {
+                this.sessionStats.incorrectAnswers--;
+            }
+            this.currentSession.answers[existingIndex] = answerRecord;
+        } else {
+            this.currentSession.answers.push(answerRecord);
+        }
+
         // Update stats
         if (isCorrect) {
             this.sessionStats.correctAnswers++;

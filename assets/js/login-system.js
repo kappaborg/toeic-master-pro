@@ -1,6 +1,9 @@
 // Login System - Authentication for TOEIC Master Pro
 // Handles student and admin login with secure credential validation
 
+// Stored sessions older than this are considered expired
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 class LoginSystem {
     constructor() {
         this.currentUser = null;
@@ -40,6 +43,15 @@ class LoginSystem {
             const savedUser = localStorage.getItem('toeic_current_user');
             if (savedUser) {
                 const user = JSON.parse(savedUser);
+
+                // Reject expired sessions
+                const loginTime = Date.parse(user.loginTime);
+                if (!Number.isFinite(loginTime) || Date.now() - loginTime > SESSION_DURATION_MS) {
+                    console.log('⏰ Stored session expired, clearing it');
+                    localStorage.removeItem('toeic_current_user');
+                    return false;
+                }
+
                 this.currentUser = user;
                 this.isAuthenticated = true;
                 console.log('✅ User session restored:', user.displayName);

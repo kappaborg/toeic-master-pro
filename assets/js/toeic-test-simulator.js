@@ -48,74 +48,21 @@ class TOEICTestSimulator {
      * Start a full TOEIC test (Listening + Reading)
      */
     startFullTest() {
-        const testId = 'full_' + Date.now();
-        const testSession = {
-            id: testId,
-            type: 'full',
-            startTime: Date.now(),
-            listening: {
-                startTime: Date.now(),
-                endTime: null,
-                answers: [],
-                score: 0
-            },
-            reading: {
-                startTime: null,
-                endTime: null,
-                answers: [],
-                score: 0
-            },
-            totalScore: 0,
-            status: 'active'
-        };
-        
-        this.testSessions.set(testId, testSession);
-        this.currentTest = testSession;
-        
-        console.log('📝 Started full TOEIC test:', testId);
-        return testSession;
+        return this.startTest({ type: 'full' });
     }
-    
+
     /**
      * Start a listening-only test
      */
     startListeningTest() {
-        const testId = 'listening_' + Date.now();
-        const testSession = {
-            id: testId,
-            type: 'listening',
-            startTime: Date.now(),
-            answers: [],
-            score: 0,
-            status: 'active'
-        };
-        
-        this.testSessions.set(testId, testSession);
-        this.currentTest = testSession;
-        
-        console.log('🎧 Started listening TOEIC test:', testId);
-        return testSession;
+        return this.startTest({ type: 'listening' });
     }
-    
+
     /**
      * Start a reading-only test
      */
     startReadingTest() {
-        const testId = 'reading_' + Date.now();
-        const testSession = {
-            id: testId,
-            type: 'reading',
-            startTime: Date.now(),
-            answers: [],
-            score: 0,
-            status: 'active'
-        };
-        
-        this.testSessions.set(testId, testSession);
-        this.currentTest = testSession;
-        
-        console.log('📖 Started reading TOEIC test:', testId);
-        return testSession;
+        return this.startTest({ type: 'reading' });
     }
     
     generateListeningScoreTable() {
@@ -194,7 +141,10 @@ class TOEICTestSimulator {
         };
         
         this.testSessions.set(testId, this.currentTest);
-        
+
+        // Activate the first section so getCurrentQuestion() can serve questions
+        this.startSection(this.currentTest.currentSection);
+
         console.log(`🎯 Started TOEIC test: ${testType} (ID: ${testId})`);
         return this.currentTest;
     }
@@ -546,30 +496,18 @@ The International Energy Agency predicts that renewable energy will account for 
         
         // Complete any remaining sections
         for (const [sectionName, section] of Object.entries(this.currentTest.sections)) {
-            if (section.status === 'in_progress') {
+            if (section.status !== 'completed') {
                 section.status = 'completed';
                 section.endTime = Date.now();
-                section.score = this.calculateSectionScore(section);
+                section.score = this.calculateSectionScore(section, sectionName);
             }
         }
-        
-        // Complete the test
+
+        // Complete the test (owns the single history record)
         this.completeTest();
-        
-        // Generate results
-        const results = this.generateTestResults();
-        
-        // Save to history
-        this.testHistory.push({
-            id: this.currentTest.id,
-            type: this.currentTest.type,
-            date: new Date().toISOString(),
-            results: results
-        });
-        this.saveTestHistory();
-        
+
         console.log('✅ Test submitted successfully');
-        return results;
+        return this.currentTest.results;
     }
     
     // Complete a section
@@ -581,33 +519,39 @@ The International Energy Agency predicts that renewable energy will account for 
         
         section.status = 'completed';
         section.endTime = Date.now();
-        section.score = this.calculateSectionScore(section);
-        
-        console.log(`✅ Completed ${sectionName} section with score: ${section.score}`);
-        
-        // Check if test is complete
-        if (this.isTestComplete()) {
+        section.score = this.calculateSectionScore(section, sectionName);
+
+        console.log(`✅ Completed ${sectionName} section with score:`, section.score);
+
+        // Advance to the next pending section (e.g. listening → reading in a full test)
+        const pendingSection = Object.keys(this.currentTest.sections)
+            .find(name => this.currentTest.sections[name].status === 'pending');
+        if (pendingSection) {
+            this.startSection(pendingSection);
+        } else if (this.isTestComplete()) {
             this.completeTest();
         }
-        
+
         return true;
     }
-    
+
     // Calculate section score
-    calculateSectionScore(section) {
+    calculateSectionScore(section, sectionName) {
         let correctAnswers = 0;
         const totalQuestions = section.questions.length;
-        
+
         for (const [questionNumber, answerData] of Object.entries(section.answers)) {
             const question = section.questions.find(q => q.number == questionNumber);
             if (question && answerData.answer === question.correctAnswer) {
                 correctAnswers++;
             }
         }
-        
+
         const rawScore = Math.round((correctAnswers / totalQuestions) * 100);
-        const scaledScore = this.scoringSystem[section.status === 'completed' ? 'listening' : 'reading'].rawToScaled[rawScore];
-        
+        // Score with the conversion table for this section, not the section's status
+        const scoringTable = this.scoringSystem[sectionName] || this.scoringSystem.listening;
+        const scaledScore = scoringTable.rawToScaled[rawScore];
+
         return {
             raw: rawScore,
             scaled: scaledScore,
@@ -633,22 +577,37 @@ The International Energy Agency predicts that renewable energy will account for 
     // Complete the test
     completeTest() {
         if (!this.currentTest) return false;
-        
+
+        // Guard against double completion (completeSection + submitTest can both land here)
+        if (this.currentTest.status === 'completed') return this.currentTest;
+
         this.currentTest.status = 'completed';
         this.currentTest.endTime = Date.now();
         this.currentTest.score = this.calculateTotalScore();
         this.currentTest.results = this.generateTestResults();
-        
-        // Add to test history
+
+        // Add one normalized record to test history
+        const sectionScores = Object.values(this.currentTest.sections)
+            .map(s => s.score)
+            .filter(Boolean);
+        const accuracy = sectionScores.length > 0
+            ? Math.round(sectionScores.reduce((sum, s) => sum + s.accuracy, 0) / sectionScores.length)
+            : 0;
+
         this.testHistory.push({
-            ...this.currentTest,
-            completedAt: new Date().toISOString()
+            id: this.currentTest.id,
+            type: this.currentTest.type,
+            date: new Date().toISOString(),
+            completedAt: new Date().toISOString(),
+            score: this.currentTest.score,
+            accuracy: accuracy,
+            results: this.currentTest.results
         });
-        
+
         this.saveTestHistory();
-        
+
         console.log(`🎯 Test completed! Total score: ${this.currentTest.score.total}`);
-        
+
         return this.currentTest;
     }
     
@@ -810,7 +769,12 @@ The International Energy Agency predicts that renewable energy will account for 
             };
         }
         
-        const scores = this.testHistory.map(test => test.score.total);
+        const scores = this.testHistory
+            .map(test => test.score?.total)
+            .filter(score => typeof score === 'number');
+        if (scores.length === 0) {
+            return { totalTests: this.testHistory.length, averageScore: 0, bestScore: 0, improvement: 0, trend: 'stable' };
+        }
         const averageScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
         const bestScore = Math.max(...scores);
         
@@ -853,23 +817,26 @@ The International Energy Agency predicts that renewable energy will account for 
     // Resume test
     resumeTest() {
         if (!this.currentTest || this.currentTest.status !== 'paused') return false;
-        
+
         this.currentTest.status = 'in_progress';
         if (this.currentTest.pausedAt) {
+            // Accumulate paused time so it doesn't count against the clock
             const pauseDuration = Date.now() - this.currentTest.pausedAt;
-            this.currentTest.timeRemaining -= pauseDuration;
+            this.currentTest.totalPausedTime = (this.currentTest.totalPausedTime || 0) + pauseDuration;
             delete this.currentTest.pausedAt;
         }
-        
+
         console.log('▶️ Test resumed');
         return true;
     }
-    
+
     // Get time remaining
     getTimeRemaining() {
         if (!this.currentTest) return 0;
-        
-        const elapsed = Date.now() - this.currentTest.startTime;
+
+        // While paused, freeze the clock at the moment of pausing
+        const now = this.currentTest.pausedAt || Date.now();
+        const elapsed = now - this.currentTest.startTime - (this.currentTest.totalPausedTime || 0);
         return Math.max(0, this.currentTest.timeRemaining - elapsed);
     }
     

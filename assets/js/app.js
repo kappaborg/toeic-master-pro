@@ -298,9 +298,10 @@ class App {
     }
     
     async initialize() {
+        let initTimeout;
         try {
             // Set a timeout for initialization to prevent hanging
-            const initTimeout = setTimeout(() => {
+            initTimeout = setTimeout(() => {
                 console.error('❌ Initialization timeout - forcing app to load');
                 this.forceAppLoad();
             }, 30000); // 30 second timeout
@@ -395,42 +396,27 @@ class App {
                 }
             }, 1000);
 
-            // FORCE CACHE CLEAR: Clear all cached data
-            setTimeout(() => {
-                if ('caches' in window) {
-                    caches.keys().then(names => {
-                        names.forEach(name => {
-                            caches.delete(name);
-                            console.log('🗑️ Cache cleared:', name);
-                        });
-                    });
-                }
-                // Clear localStorage for fresh start
-                localStorage.clear();
-                console.log('🗑️ LocalStorage cleared for fresh start');
-            }, 500);
-            
         } catch (error) {
             console.error('❌ Failed to initialize app:', error);
             this.handleInitializationError(error);
         } finally {
             // Clear the timeout
-            if (typeof initTimeout !== 'undefined') {
+            if (initTimeout) {
                 clearTimeout(initTimeout);
             }
         }
     }
-    
+
     forceAppLoad() {
         console.log('🚀 Force loading app...');
         // Hide loading screen
-        const loadingScreen = document.getElementById('loading-screen');
+        const loadingScreen = document.getElementById('loadingScreen');
         if (loadingScreen) {
             loadingScreen.style.display = 'none';
         }
-        
+
         // Show main content
-        const mainContent = document.getElementById('main-content');
+        const mainContent = document.getElementById('app');
         if (mainContent) {
             mainContent.style.display = 'block';
         }
@@ -697,6 +683,16 @@ class App {
         if (window.UIManager) {
             window.uiManager = new window.UIManager();
         }
+
+        // These modules wait for App to instantiate them (no auto-init)
+        if (window.SettingsPanel && !window.settingsPanel) {
+            window.settingsPanel = new window.SettingsPanel();
+            console.log('⚙️ Settings panel initialized');
+        }
+        if (window.PWAManager && !window.pwaManager) {
+            window.pwaManager = new window.PWAManager();
+            console.log('📱 PWA manager initialized');
+        }
     }
     
     initializeFallbackData() {
@@ -895,15 +891,20 @@ class App {
                     touchSwipe: true
                 });
                 console.log('🎠 Main hero carousel initialized successfully');
-                
-                // Listen for language changes to update carousel
-                window.addEventListener('languageChanged', () => {
-                    console.log('🌍 Language changed, updating carousel...');
-                    // Reinitialize carousel with new language
-                    setTimeout(() => {
-                        this.initializeCarousels();
-                    }, 100);
-                });
+
+                // Listen for language changes to update carousel — register
+                // once, or every rebuild would stack another listener that
+                // itself triggers more rebuilds
+                if (!this.languageListenerBound) {
+                    this.languageListenerBound = true;
+                    window.addEventListener('languageChanged', () => {
+                        console.log('🌍 Language changed, updating carousel...');
+                        // Reinitialize carousel with new language
+                        setTimeout(() => {
+                            this.initializeCarousels();
+                        }, 100);
+                    });
+                }
             } else {
                 console.warn('⚠️ Carousel system not available, using fallback');
                 this.createFallbackHeroSection();
@@ -992,21 +993,21 @@ class App {
     }
     
     calculateCurrentStreak(sessions) {
-        // Calculate current daily study streak
+        // Calculate current daily study streak over unique study days,
+        // so multiple sessions on the same day don't break the count
+        const uniqueDays = [...new Set(sessions.map(s => new Date(s.date).toDateString()))];
         let streak = 0;
-        const today = new Date().toDateString();
-        
-        for (let i = sessions.length - 1; i >= 0; i--) {
-            const sessionDate = new Date(sessions[i].date).toDateString();
+
+        for (let i = uniqueDays.length - 1; i >= 0; i--) {
             const expectedDate = new Date(Date.now() - (streak * 24 * 60 * 60 * 1000)).toDateString();
-            
-            if (sessionDate === expectedDate) {
+
+            if (uniqueDays[i] === expectedDate) {
                 streak++;
             } else {
                 break;
             }
         }
-        
+
         return streak;
     }
     
@@ -1711,10 +1712,7 @@ class App {
         // Show next question button
         this.showNextQuestionButton();
 
-        // Record the answer
-        window.toeicReading.recordAnswer(question.id, answerIndex, 0);
-
-        // Update stats
+        // Update stats (answer already recorded above)
         this.updateReadingSessionStats();
     }
 
@@ -2977,22 +2975,29 @@ class App {
     // End current session and return to main menu
     endCurrentSession() {
         console.log('🔄 Ending current session...');
-        
-        // Hide any active modules
-        const activeModules = document.querySelectorAll('.toeic-module-screen');
-        activeModules.forEach(module => {
-            module.classList.add('hidden');
-        });
-        
+
+        // Hide the TOEIC module container (un-hidden by showTOEICModuleScreen)
+        const moduleContent = document.getElementById('toeicModuleContent');
+        if (moduleContent) {
+            moduleContent.classList.add('hidden');
+        }
+
+        // Remove the dynamically created vocabulary screen entirely so its
+        // duplicate element IDs can't hijack later getElementById lookups
+        const vocabScreen = document.getElementById('vocabularyLearningScreen');
+        if (vocabScreen) {
+            vocabScreen.remove();
+        }
+
         // Show main menu
         const mainMenu = document.getElementById('mainMenu');
         if (mainMenu) {
             mainMenu.classList.remove('hidden');
         }
-        
+
         // Reset current module
         this.currentTOEICModule = null;
-        
+
         // Clear any active sessions
         if (window.toeicVocabulary && window.toeicVocabulary.currentSession) {
             window.toeicVocabulary.endSession();
@@ -3000,15 +3005,30 @@ class App {
         if (window.toeicReading && window.toeicReading.currentSession) {
             window.toeicReading.endSession();
         }
-        
-        // Clear reading timers
+
+        // Clear timers
         if (this.readingTimer) {
             clearInterval(this.readingTimer);
             this.readingTimer = null;
         }
+        this.readingSessionStartTime = null;
+        this.readingSessionActive = null;
         if (this.questionCountdownTimer) {
             clearInterval(this.questionCountdownTimer);
             this.questionCountdownTimer = null;
+        }
+        if (this.testTimer) {
+            clearInterval(this.testTimer);
+            this.testTimer = null;
+        }
+        this.testTimerSeconds = 0;
+        if (this.flashcardContinueTimer) {
+            clearTimeout(this.flashcardContinueTimer);
+            this.flashcardContinueTimer = null;
+        }
+        if (this.grammarAdvanceTimer) {
+            clearTimeout(this.grammarAdvanceTimer);
+            this.grammarAdvanceTimer = null;
         }
         
         // Remove any immediate feedback
@@ -3356,19 +3376,31 @@ class App {
         // Add to page
         document.body.appendChild(notificationOverlay);
         
-        // Auto-continue after 5 seconds
-        setTimeout(() => {
+        // Auto-continue after 5 seconds (cancelled if the user acts first)
+        this.flashcardContinueTimer = setTimeout(() => {
+            this.flashcardContinueTimer = null;
             this.continueFlashcardSession();
         }, 5000);
     }
-    
+
     continueFlashcardSession() {
+        // Cancel a pending auto-continue so it can't fire twice
+        if (this.flashcardContinueTimer) {
+            clearTimeout(this.flashcardContinueTimer);
+            this.flashcardContinueTimer = null;
+        }
+
         // Remove notification overlay
         const existingOverlay = document.getElementById('flashcardProgressNotification');
         if (existingOverlay && existingOverlay.parentNode) {
             existingOverlay.parentNode.removeChild(existingOverlay);
         }
-        
+
+        // Nothing to continue if the session has already ended
+        if (!window.toeicVocabulary || !window.toeicVocabulary.currentSession) {
+            return;
+        }
+
         // Continue with next word
         const hasNext = window.toeicVocabulary.nextWord();
         if (hasNext) {
@@ -3379,18 +3411,30 @@ class App {
             this.endFlashcardSession();
         }
     }
-    
+
     endFlashcardSession() {
         if (!window.toeicVocabulary) return;
-        
+
+        // Cancel a pending auto-continue so it can't run on the ended session
+        if (this.flashcardContinueTimer) {
+            clearTimeout(this.flashcardContinueTimer);
+            this.flashcardContinueTimer = null;
+        }
+
         const results = window.toeicVocabulary.completeSession();
         this.showFlashcardResults(results);
     }
-    
+
     showFlashcardResults(results) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
-        
+
+        if (!results) {
+            // Session was already completed elsewhere — go back to the module screen
+            this.showTOEICModuleScreen('flashcards');
+            return;
+        }
+
         const accuracy = results.totalWords > 0 ? Math.round((results.correctAnswers / results.totalWords) * 100) : 0;
         
         content.innerHTML = `
@@ -3596,7 +3640,9 @@ class App {
         }
         
         // Wait 10 seconds before moving to next question to show feedback
-        setTimeout(() => {
+        // (cancelled if the user clicks Continue first)
+        this.grammarAdvanceTimer = setTimeout(() => {
+            this.grammarAdvanceTimer = null;
             this.continueToNextGrammarQuestion();
         }, 10000);
     }
@@ -3891,6 +3937,16 @@ class App {
     }
     
     continueToNextGrammarQuestion() {
+        // Cancel a pending auto-advance so it can't skip an extra question
+        if (this.grammarAdvanceTimer) {
+            clearTimeout(this.grammarAdvanceTimer);
+            this.grammarAdvanceTimer = null;
+        }
+
+        if (!window.toeicGrammar || !window.toeicGrammar.currentSession) {
+            return;
+        }
+
         // Move to next question
         const hasNext = window.toeicGrammar.nextQuestion();
         if (hasNext) {
@@ -4023,11 +4079,6 @@ class App {
         this.showTOEICTestHistory();
     }
     
-    showSettings() {
-        // Settings module removed - show main menu instead
-        this.showWelcomeScreen();
-    }
-    
     // Generic TOEIC Module Screen Handler
     showTOEICModuleScreen(moduleType, options = {}) {
         const content = document.getElementById('toeicModuleContent');
@@ -4081,7 +4132,7 @@ class App {
     }
     
     // Module-specific screen handlers
-    showVocabularyModule(options) {
+    showVocabularyModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
             <div class="text-center">
@@ -4101,7 +4152,7 @@ class App {
         `;
     }
     
-    showReadingModule(options) {
+    showReadingModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
         
@@ -4321,18 +4372,18 @@ class App {
                              style="width: ${progress}%"></div>
                     </div>
                     
-                    <!-- Session Stats -->
+                    <!-- Session Stats (ids prefixed to avoid clashing with the global status bar / vocab screen) -->
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="bg-green-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-green-300" id="correctCount">0</div>
+                            <div class="text-lg font-bold text-green-300" id="readingCorrectCount">0</div>
                             <div class="text-white/80 text-sm">Correct</div>
                         </div>
                         <div class="bg-red-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-red-300" id="incorrectCount">0</div>
+                            <div class="text-lg font-bold text-red-300" id="readingIncorrectCount">0</div>
                             <div class="text-white/80 text-sm">Incorrect</div>
                         </div>
                         <div class="bg-blue-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-blue-300" id="accuracy">0%</div>
+                            <div class="text-lg font-bold text-blue-300" id="readingAccuracy">0%</div>
                             <div class="text-white/80 text-sm">Accuracy</div>
                         </div>
                     </div>
@@ -4468,9 +4519,17 @@ class App {
     initializeReadingSession(session) {
         // Initialize selected answer
         this.selectedReadingAnswer = undefined;
-        
-        // Start session timer
-        this.readingSessionStartTime = Date.now();
+
+        // Start session timer — this runs on every question render, so never
+        // stack intervals and only set the start time once per session
+        if (this.readingTimer) {
+            clearInterval(this.readingTimer);
+            this.readingTimer = null;
+        }
+        if (!this.readingSessionStartTime || this.readingSessionActive !== session) {
+            this.readingSessionStartTime = Date.now();
+            this.readingSessionActive = session;
+        }
         this.readingTimer = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.readingSessionStartTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
@@ -4610,9 +4669,9 @@ class App {
         if (!window.toeicReading) return;
         
         const stats = window.toeicReading.getSessionStats();
-        const correctElement = document.getElementById('correctCount');
-        const incorrectElement = document.getElementById('incorrectCount');
-        const accuracyElement = document.getElementById('accuracy');
+        const correctElement = document.getElementById('readingCorrectCount');
+        const incorrectElement = document.getElementById('readingIncorrectCount');
+        const accuracyElement = document.getElementById('readingAccuracy');
         
         if (correctElement) correctElement.textContent = stats.correctAnswers;
         if (incorrectElement) incorrectElement.textContent = stats.incorrectAnswers;
@@ -5303,7 +5362,7 @@ class App {
         }
     }
     
-    showTestModule(options) {
+    showTestModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
@@ -5401,9 +5460,12 @@ class App {
             return;
         }
         
-        const testSimulator = new window.TOEICTestSimulator();
-        const testSession = testSimulator.startFullTest();
-        
+        if (!window.toeicTestSimulator) {
+            window.toeicTestSimulator = new window.TOEICTestSimulator();
+        }
+        const testSession = window.toeicTestSimulator.startTest({ type: 'full' });
+        this.testTimerSeconds = 0; // fresh clock for a new test
+
         this.showTestInterface(testSession, 'full');
     }
     
@@ -5415,9 +5477,12 @@ class App {
             return;
         }
         
-        const testSimulator = new window.TOEICTestSimulator();
-        const testSession = testSimulator.startListeningTest();
-        
+        if (!window.toeicTestSimulator) {
+            window.toeicTestSimulator = new window.TOEICTestSimulator();
+        }
+        const testSession = window.toeicTestSimulator.startTest({ type: 'listening' });
+        this.testTimerSeconds = 0; // fresh clock for a new test
+
         this.showTestInterface(testSession, 'listening');
     }
     
@@ -5429,9 +5494,12 @@ class App {
             return;
         }
         
-        const testSimulator = new window.TOEICTestSimulator();
-        const testSession = testSimulator.startReadingTest();
-        
+        if (!window.toeicTestSimulator) {
+            window.toeicTestSimulator = new window.TOEICTestSimulator();
+        }
+        const testSession = window.toeicTestSimulator.startTest({ type: 'reading' });
+        this.testTimerSeconds = 0; // fresh clock for a new test
+
         this.showTestInterface(testSession, 'reading');
     }
     
@@ -5462,19 +5530,19 @@ class App {
                             <div class="text-sm text-white/80">Incorrect</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-400">${testSession.currentQuestion || 1}/${testInfo.totalQuestions}</div>
+                            <div class="text-2xl font-bold text-blue-400">${(testSession.currentQuestion || 0) + 1}/${testInfo.totalQuestions}</div>
                             <div class="text-sm text-white/80">Progress</div>
                         </div>
                     </div>
-                    
+
                     <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="progressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${((testSession.currentQuestion || 1) / testInfo.totalQuestions) * 100}%"></div>
+                        <div id="progressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${(((testSession.currentQuestion || 0) + 1) / testInfo.totalQuestions) * 100}%"></div>
                     </div>
                 </div>
-                
+
                 <div class="glass-effect rounded-xl p-6">
                     <div id="testQuestion" class="mb-6">
-                        <h4 class="text-lg font-semibold text-white mb-4">Question ${testSession.currentQuestion || 1}</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4">Question ${(testSession.currentQuestion || 0) + 1}</h4>
                         <div class="text-white/90 mb-6">
                             ${this.generateTestQuestion(testSession, testType)}
                         </div>
@@ -5485,7 +5553,7 @@ class App {
                     </div>
                     
                     <div class="flex justify-between">
-                        <button id="prevBtn" onclick="window.app.previousTestQuestion()" class="btn btn-secondary" ${testSession.currentQuestion <= 1 ? 'disabled' : ''}>
+                        <button id="prevBtn" onclick="window.app.previousTestQuestion()" class="btn btn-secondary" ${(testSession.currentQuestion || 0) < 1 ? 'disabled' : ''}>
                             <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
                             Previous
                         </button>
@@ -5635,21 +5703,37 @@ class App {
     }
     
     startTestTimer(duration) {
-        // Parse duration (e.g., "2:30:00" or "0:45:00")
-        const parts = duration.split(':');
-        let totalSeconds = 0;
-        
-        if (parts.length === 3) {
-            totalSeconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
-        } else if (parts.length === 2) {
-            totalSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        // Never stack timers: re-rendering the interface calls this again
+        if (this.testTimer) {
+            clearInterval(this.testTimer);
+            this.testTimer = null;
         }
-        
+
+        // Keep the remaining time across re-renders; only parse the full
+        // duration when a new test starts (no simulator session in progress
+        // resets it via startFullTOEICTest et al. clearing testTimerSeconds)
+        let totalSeconds;
+        if (typeof this.testTimerSeconds === 'number' && this.testTimerSeconds > 0) {
+            totalSeconds = this.testTimerSeconds;
+        } else {
+            // Parse duration (e.g., "2:30:00" or "0:45:00")
+            const parts = duration.split(':');
+            totalSeconds = 0;
+            if (parts.length === 3) {
+                totalSeconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+            } else if (parts.length === 2) {
+                totalSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            }
+        }
+        this.testTimerSeconds = totalSeconds;
+
         this.testTimer = setInterval(() => {
             totalSeconds--;
-            
+            this.testTimerSeconds = totalSeconds;
+
             if (totalSeconds <= 0) {
                 clearInterval(this.testTimer);
+                this.testTimer = null;
                 this.submitTest();
                 return;
             }
@@ -5684,16 +5768,19 @@ class App {
             return;
         }
         
-        // Get current answer if selected
+        // Record the answer if selected — answerQuestion() advances the
+        // question pointer internally, so don't also call nextQuestion()
         const selectedAnswer = document.querySelector('input[name="testAnswer"]:checked');
+        let hasNext;
         if (selectedAnswer) {
             const answerIndex = parseInt(selectedAnswer.value);
             window.toeicTestSimulator.answerQuestion(answerIndex);
             console.log(`📝 Answered question with: ${answerIndex}`);
+            hasNext = window.toeicTestSimulator.getCurrentQuestion() !== null;
+        } else {
+            hasNext = window.toeicTestSimulator.nextQuestion();
         }
-        
-        // Move to next question
-        const hasNext = window.toeicTestSimulator.nextQuestion();
+
         if (hasNext) {
             // Refresh the test interface
             const currentTest = window.toeicTestSimulator.currentTest;
@@ -5744,18 +5831,20 @@ class App {
         // Submit the test
         const results = window.toeicTestSimulator.submitTest();
         console.log('📊 Test results:', results);
-        
-        // Track analytics
-        if (window.advancedAnalytics && typeof window.advancedAnalytics.trackTestScore === 'function') {
-            window.advancedAnalytics.trackTestScore('toeic_test', results.totalScore, {
-                correctAnswers: results.correctAnswers,
-                incorrectAnswers: results.incorrectAnswers,
-                totalQuestions: results.totalQuestions,
-                timeSpent: results.timeSpent,
-                accuracy: results.accuracy
+        this.testTimerSeconds = 0;
+
+        // Track analytics using the real result shape
+        if (results && window.advancedAnalytics && typeof window.advancedAnalytics.trackTestScore === 'function') {
+            const sectionScores = Object.values(results.sections || {}).map(s => s.score).filter(Boolean);
+            window.advancedAnalytics.trackTestScore('toeic_test', results.overall?.total || 0, {
+                correctAnswers: sectionScores.reduce((sum, s) => sum + s.correct, 0),
+                totalQuestions: sectionScores.reduce((sum, s) => sum + s.total, 0),
+                accuracy: sectionScores.length > 0
+                    ? Math.round(sectionScores.reduce((sum, s) => sum + s.accuracy, 0) / sectionScores.length)
+                    : 0
             });
         }
-        
+
         // Show test results
         this.showTestResults(results);
     }
@@ -5773,33 +5862,43 @@ class App {
         };
     }
     
-    showTestResults() {
+    showTestResults(results) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
-        
+
+        // Derive real numbers from the simulator's result shape
+        const sectionScores = Object.values(results?.sections || {}).map(s => s.score).filter(Boolean);
+        const correctAnswers = sectionScores.reduce((sum, s) => sum + s.correct, 0);
+        const totalQuestions = sectionScores.reduce((sum, s) => sum + s.total, 0);
+        const incorrectAnswers = Math.max(0, totalQuestions - correctAnswers);
+        const toeicScore = results?.overall?.total ?? 0;
+        const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+        const level = results?.overall?.level;
+
         content.innerHTML = `
             <div class="max-w-2xl mx-auto text-center">
                 <div class="glass-effect rounded-xl p-8 mb-6">
                     <h3 class="text-2xl font-bold text-white mb-6">🎉 Test Complete!</h3>
-                    
+                    ${level ? `<p class="text-white/80 mb-6">Estimated level: <span class="font-bold text-white">${level.level}</span> — ${level.description}</p>` : ''}
+
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-500/20 rounded-lg p-4">
-                            <div class="text-2xl font-bold text-green-400">85</div>
+                            <div class="text-2xl font-bold text-green-400">${correctAnswers}</div>
                             <div class="text-white/80">Correct Answers</div>
                         </div>
                         <div class="bg-red-500/20 rounded-lg p-4">
-                            <div class="text-2xl font-bold text-red-400">15</div>
+                            <div class="text-2xl font-bold text-red-400">${incorrectAnswers}</div>
                             <div class="text-white/80">Incorrect Answers</div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-blue-500/20 rounded-lg p-4">
-                            <div class="text-2xl font-bold text-blue-400">850</div>
+                            <div class="text-2xl font-bold text-blue-400">${toeicScore}</div>
                             <div class="text-white/80">TOEIC Score</div>
                         </div>
                         <div class="bg-purple-500/20 rounded-lg p-4">
-                            <div class="text-2xl font-bold text-purple-400">85%</div>
+                            <div class="text-2xl font-bold text-purple-400">${accuracy}%</div>
                             <div class="text-white/80">Accuracy</div>
                         </div>
                     </div>
@@ -5839,11 +5938,11 @@ class App {
             <div class="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg">
                 <div>
                     <div class="text-white font-medium">${test.type} Test</div>
-                    <div class="text-white/60 text-sm">${new Date(test.date).toLocaleDateString()}</div>
+                    <div class="text-white/60 text-sm">${new Date(test.date || test.completedAt).toLocaleDateString()}</div>
                 </div>
                 <div class="text-right">
-                    <div class="text-green-400 font-bold">${test.score}</div>
-                    <div class="text-white/60 text-sm">${test.accuracy}%</div>
+                    <div class="text-green-400 font-bold">${test.score?.total ?? '—'}</div>
+                    <div class="text-white/60 text-sm">${typeof test.accuracy === 'number' ? test.accuracy + '%' : ''}</div>
                 </div>
             </div>
         `).join('');
@@ -5905,7 +6004,7 @@ class App {
         `;
     }
     
-    showFlashcardModule(options) {
+    showFlashcardModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
         
@@ -5919,7 +6018,7 @@ class App {
         this.initializeFlashcardModule();
     }
     
-    showGrammarModule(options) {
+    showGrammarModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
         
@@ -5933,7 +6032,7 @@ class App {
         this.initializeGrammarModule();
     }
     
-    showProgressModule(options) {
+    showProgressModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
         
@@ -5964,7 +6063,7 @@ class App {
         }
     }
     
-    showSettingsModule(options) {
+    showSettingsModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
             <div class="text-center">
@@ -6025,23 +6124,20 @@ window.startReadingSession = function() {
 
 
 window.startFullTest = function() {
-    if (window.app && window.toeicTestSimulator) {
-        const test = window.toeicTestSimulator.startTest({ type: 'full' });
-        console.log('📝 Full TOEIC test started');
+    if (window.app) {
+        window.app.startFullTest();
     }
 };
 
 window.startListeningTest = function() {
-    if (window.app && window.toeicTestSimulator) {
-        const test = window.toeicTestSimulator.startTest({ type: 'listening' });
-        console.log('🎧 Listening test started');
+    if (window.app) {
+        window.app.startListeningTest();
     }
 };
 
 window.startReadingTest = function() {
-    if (window.app && window.toeicTestSimulator) {
-        const test = window.toeicTestSimulator.startTest({ type: 'reading' });
-        console.log('📖 Reading test started');
+    if (window.app) {
+        window.app.startReadingTest();
     }
 };
 

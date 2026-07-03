@@ -6,25 +6,28 @@ class BaseGame {
     constructor() {
         this.currentQuestionData = null;
         this.isInitialized = false;
+        this.questionNumber = 0;
     }
-    
+
     async initialize(options = {}) {
         window.logger?.debug(`Initializing ${this.constructor.name}...`);
         this.isInitialized = true;
     }
-    
+
     start(options = {}) {
         window.logger?.debug(`Starting ${this.constructor.name}...`);
         this.isActive = true;
         this.startTime = Date.now();
-        
+        this.questionNumber = 0;
+
         // Start the first question
         this.nextQuestion();
     }
-    
+
     async nextQuestion() {
         try {
-            const questionData = await this.generateQuestion(0);
+            const questionData = await this.generateQuestion(this.questionNumber);
+            this.questionNumber++;
             this.currentQuestionData = questionData;
             await this.displayQuestion(questionData);
         } catch (error) {
@@ -433,11 +436,11 @@ class MultipleChoiceGame extends BaseGame {
             throw new Error('Data manager not available');
         }
         
-        // Enhanced question types with more variety
+        // Question types limited to those with real data behind them —
+        // synonym/antonym fall back to a meaning question for words not in
+        // their lookup tables, usage/category/level use the CSV columns
         const questionTypes = [
-            'meaning', 'synonym', 'antonym', 'word_form', 'collocation',
-            'idiom', 'phrasal_verb', 'word_family', 'pronunciation', 'etymology',
-            'context', 'definition', 'usage', 'category', 'level'
+            'meaning', 'synonym', 'antonym', 'usage', 'category', 'level'
         ];
         const selectedType = questionTypes[questionNumber % questionTypes.length];
         
@@ -535,25 +538,25 @@ class MultipleChoiceGame extends BaseGame {
     }
     
     generateMeaningQuestion() {
-        // Generate 4 choices (1 correct + 3 wrong)
-        this.choices = [this.currentWord.examples[0]]; // Correct answer
-        this.correctAnswerIndex = 0;
-        
-        // Get 3 wrong answers
+        // Prefer the real dictionary meaning; fall back to the first example
+        const correctAnswer = this.currentWord.meaning || this.currentWord.examples[0];
+        this.choices = [correctAnswer];
+
+        // Get 3 distinct wrong answers (sample without replacement, no duplicates)
         const eligibleWords = Array.from(window.dataManager.vocabulary.values());
-        const wrongWords = eligibleWords.filter(w => w.word !== this.currentWord.word);
-        for (let i = 0; i < 3 && i < wrongWords.length; i++) {
-            const randomWrong = wrongWords[Math.floor(Math.random() * wrongWords.length)];
-            if (randomWrong.examples && randomWrong.examples[0]) {
-                this.choices.push(randomWrong.examples[0]);
+        const wrongWords = this.shuffleArray(eligibleWords.filter(w => w.word !== this.currentWord.word));
+        for (const wrongWord of wrongWords) {
+            if (this.choices.length >= 4) break;
+            const text = wrongWord.meaning || (wrongWord.examples && wrongWord.examples[0]);
+            if (text && !this.choices.includes(text)) {
+                this.choices.push(text);
             }
         }
-        
+
         // Shuffle choices but remember correct position
-        const correctAnswer = this.choices[0];
         this.choices = this.shuffleArray(this.choices);
         this.correctAnswerIndex = this.choices.indexOf(correctAnswer);
-        
+
         return {
             type: 'meaning',
             word: this.currentWord.word,
@@ -566,16 +569,20 @@ class MultipleChoiceGame extends BaseGame {
     
     generateSynonymQuestion() {
         const synonyms = this.getSynonyms(this.currentWord.word);
+        if (!synonyms || synonyms.length === 0) {
+            // No synonym data for this word — never leak the word itself as the answer
+            return this.generateMeaningQuestion();
+        }
         const wrongAnswers = this.getRandomWrongAnswers(3);
-        
-        this.choices = [synonyms[0] || this.currentWord.word, ...wrongAnswers];
+
+        this.choices = [synonyms[0], ...wrongAnswers];
         this.correctAnswerIndex = 0;
-        
+
         // Shuffle choices
         const correctAnswer = this.choices[0];
         this.choices = this.shuffleArray(this.choices);
         this.correctAnswerIndex = this.choices.indexOf(correctAnswer);
-        
+
         return {
             type: 'synonym',
             word: this.currentWord.word,
@@ -585,19 +592,23 @@ class MultipleChoiceGame extends BaseGame {
             correctIndex: this.correctAnswerIndex
         };
     }
-    
+
     generateAntonymQuestion() {
         const antonyms = this.getAntonyms(this.currentWord.word);
+        if (!antonyms || antonyms.length === 0) {
+            // No antonym data for this word
+            return this.generateMeaningQuestion();
+        }
         const wrongAnswers = this.getRandomWrongAnswers(3);
-        
-        this.choices = [antonyms[0] || 'opposite', ...wrongAnswers];
+
+        this.choices = [antonyms[0], ...wrongAnswers];
         this.correctAnswerIndex = 0;
-        
+
         // Shuffle choices
         const correctAnswer = this.choices[0];
         this.choices = this.shuffleArray(this.choices);
         this.correctAnswerIndex = this.choices.indexOf(correctAnswer);
-        
+
         return {
             type: 'antonym',
             word: this.currentWord.word,
@@ -817,22 +828,22 @@ class MultipleChoiceGame extends BaseGame {
     }
     
     generateUsageQuestion() {
-        const usages = [
-            'As a noun',
-            'As a verb',
-            'As an adjective',
-            'As an adverb',
-            'As a preposition',
-            'As a conjunction',
-            'As an interjection',
-            'As a pronoun',
-            'As an article',
-            'As a determiner'
-        ];
-        
-        this.choices = usages;
-        this.correctAnswerIndex = Math.floor(Math.random() * usages.length);
-        
+        // Grade against the word's real part of speech from the vocabulary data
+        const posLabels = {
+            noun: 'As a noun',
+            verb: 'As a verb',
+            adjective: 'As an adjective',
+            adverb: 'As an adverb'
+        };
+        const pos = (this.currentWord.partOfSpeech || '').toLowerCase();
+        const correctAnswer = posLabels[pos];
+        if (!correctAnswer) {
+            return this.generateMeaningQuestion();
+        }
+
+        this.choices = this.shuffleArray(Object.values(posLabels));
+        this.correctAnswerIndex = this.choices.indexOf(correctAnswer);
+
         return {
             type: 'usage',
             word: this.currentWord.word,
@@ -842,24 +853,27 @@ class MultipleChoiceGame extends BaseGame {
             correctIndex: this.correctAnswerIndex
         };
     }
-    
+
     generateCategoryQuestion() {
-        const categories = [
-            'Food and Drinks',
-            'Family and Relationships',
-            'Work and Business',
-            'Travel and Transportation',
-            'Health and Medicine',
-            'Education and Learning',
-            'Sports and Recreation',
-            'Technology and Science',
-            'Arts and Entertainment',
-            'Nature and Environment'
-        ];
-        
-        this.choices = categories;
-        this.correctAnswerIndex = Math.floor(Math.random() * categories.length);
-        
+        // Grade against the word's real category, with other real categories as distractors
+        const wordCategory = this.currentWord.category;
+        if (!wordCategory) {
+            return this.generateMeaningQuestion();
+        }
+
+        const allCategories = [...new Set(
+            Array.from(window.dataManager.vocabulary.values())
+                .map(w => w.category)
+                .filter(Boolean)
+        )];
+        if (allCategories.length < 4 || !allCategories.includes(wordCategory)) {
+            return this.generateMeaningQuestion();
+        }
+
+        const wrongCategories = this.shuffleArray(allCategories.filter(c => c !== wordCategory)).slice(0, 3);
+        this.choices = this.shuffleArray([wordCategory, ...wrongCategories]);
+        this.correctAnswerIndex = this.choices.indexOf(wordCategory);
+
         return {
             type: 'category',
             word: this.currentWord.word,
@@ -869,13 +883,28 @@ class MultipleChoiceGame extends BaseGame {
             correctIndex: this.correctAnswerIndex
         };
     }
-    
+
     generateLevelQuestion() {
-        const levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-        
-        this.choices = levels;
-        this.correctAnswerIndex = levels.indexOf(this.currentWord.level || 'Intermediate');
-        
+        // Word levels are CEFR codes (A1–C2) — map them to labelled choices
+        const levelLabels = {
+            A1: 'Beginner (A1)',
+            A2: 'Elementary (A2)',
+            B1: 'Intermediate (B1)',
+            B2: 'Upper-Intermediate (B2)',
+            C1: 'Advanced (C1)',
+            C2: 'Proficient (C2)'
+        };
+        const correctAnswer = levelLabels[this.currentWord.level];
+        if (!correctAnswer) {
+            return this.generateMeaningQuestion();
+        }
+
+        const wrongLevels = this.shuffleArray(
+            Object.values(levelLabels).filter(label => label !== correctAnswer)
+        ).slice(0, 3);
+        this.choices = this.shuffleArray([correctAnswer, ...wrongLevels]);
+        this.correctAnswerIndex = this.choices.indexOf(correctAnswer);
+
         return {
             type: 'level',
             word: this.currentWord.word,
@@ -909,15 +938,21 @@ class MultipleChoiceGame extends BaseGame {
             }
         }
         
-        // Fill remaining slots with random words
-        while (wrongAnswers.length < count) {
+        // Fill remaining slots with random words (attempt-capped so a small
+        // vocabulary without examples can't hard-lock the tab)
+        let attempts = 0;
+        while (wrongAnswers.length < count && attempts < 50) {
+            attempts++;
             const randomWord = window.dataManager.getRandomWords(1)[0];
             if (randomWord && !usedWords.has(randomWord.word) && randomWord.examples && randomWord.examples[0]) {
                 wrongAnswers.push(randomWord.examples[0]);
                 usedWords.add(randomWord.word);
             }
         }
-        
+        while (wrongAnswers.length < count) {
+            wrongAnswers.push(`Option ${wrongAnswers.length + 1}`);
+        }
+
         return wrongAnswers.slice(0, count);
     }
     
@@ -2305,31 +2340,20 @@ class TimeTellingGame extends BaseGame {
     }
     
     getRandomExpressions(count, exclude) {
+        // Exclude ALL expressions of the current time (e.g. "quarter past three"
+        // AND "three fifteen"), otherwise a correct alternate becomes a "wrong" choice
+        const currentExpressions = this.currentTime ? this.currentTime.expressions : [exclude];
         const allExpressions = this.timeExpressions.flatMap(t => t.expressions);
-        const filtered = allExpressions.filter(exp => exp !== exclude);
-        const result = [];
-        
-        for (let i = 0; i < count && i < filtered.length; i++) {
-            const randomExp = filtered[Math.floor(Math.random() * filtered.length)];
-            if (!result.includes(randomExp)) {
-                result.push(randomExp);
-            }
-        }
-        return result;
+        // Shuffle the deduplicated pool and take the first N — always yields
+        // `count` distinct wrong answers when enough exist
+        const pool = [...new Set(allExpressions.filter(exp => !currentExpressions.includes(exp)))];
+        return this.shuffleArray(pool).slice(0, count);
     }
-    
+
     getRandomTimes(count, exclude) {
         const allTimes = this.timeExpressions.map(t => t.time);
-        const filtered = allTimes.filter(time => time !== exclude);
-        const result = [];
-        
-        for (let i = 0; i < count && i < filtered.length; i++) {
-            const randomTime = filtered[Math.floor(Math.random() * filtered.length)];
-            if (!result.includes(randomTime)) {
-                result.push(randomTime);
-            }
-        }
-        return result;
+        const pool = [...new Set(allTimes.filter(time => time !== exclude))];
+        return this.shuffleArray(pool).slice(0, count);
     }
     
     shuffleArray(array) {
@@ -2847,13 +2871,17 @@ class VisualLearningGame extends BaseGame {
     }
     
     async checkAnswer(answerIndex, responseTime) {
-        const questionData = await this.generateQuestion(0);
+        // Grade against the question currently on screen, never a regenerated one
+        const questionData = this.currentQuestionData;
+        if (!questionData) {
+            return { isCorrect: false, correctAnswer: '', explanation: 'No active question.', points: 0, word: this.currentWord, feedbackDuration: 3000 };
+        }
         const isCorrect = answerIndex === questionData.correctIndex;
-        
+
         return {
             isCorrect: isCorrect,
             correctAnswer: questionData.choices[questionData.correctIndex],
-            explanation: isCorrect ? 
+            explanation: isCorrect ?
                 `Perfect! "${this.currentWord}" fits perfectly in this context.` :
                 `Not quite. "${questionData.choices[questionData.correctIndex]}" is more appropriate for this scenario.`,
             points: isCorrect ? 10 : 0,
@@ -2930,15 +2958,15 @@ class VisualLearningGame extends BaseGame {
     
     async selectChoice(index) {
         // Use new unified feedback system
-        if (window.answerFeedback && this.currentQuestion) {
-            window.answerFeedback.showFeedback(index, this.currentQuestion.correctIndex, '.visual-choice');
+        if (window.answerFeedback && this.currentQuestionData) {
+            window.answerFeedback.showFeedback(index, this.currentQuestionData.correctIndex, '.visual-choice');
         }
-        
+
         if (window.gameEngine) {
             await window.gameEngine.submitAnswer(index);
         }
     }
-    
+
     handleNumberKey(number) {
         if (number >= 1 && number <= 4) {
             this.selectChoice(number - 1);
@@ -3099,8 +3127,8 @@ class ConversationBuilderGame extends BaseGame {
     
     async selectChoice(index) {
         // Use new unified feedback system
-        if (window.answerFeedback && this.currentQuestion) {
-            window.answerFeedback.showFeedback(index, this.currentQuestion.correctIndex, '.conversation-builder-choice');
+        if (window.answerFeedback && this.currentQuestionData) {
+            window.answerFeedback.showFeedback(index, this.currentQuestionData.correctIndex, '.conversation-builder-choice');
         }
         
         if (window.gameEngine) {
@@ -3252,13 +3280,17 @@ class PrefixSuffixGame extends BaseGame {
     }
     
     async checkAnswer(answerIndex, responseTime) {
-        const questionData = await this.generateQuestion(0);
+        // Grade against the question currently on screen, never a regenerated one
+        const questionData = this.currentQuestionData;
+        if (!questionData) {
+            return { isCorrect: false, correctAnswer: '', explanation: 'No active question.', points: 0, word: 'word formation', feedbackDuration: 3000 };
+        }
         const isCorrect = answerIndex === questionData.correctIndex;
-        
+
         return {
             isCorrect: isCorrect,
             correctAnswer: questionData.choices[questionData.correctIndex],
-            explanation: isCorrect ? 
+            explanation: isCorrect ?
                 `Excellent! ${questionData.explanation || 'You understand word formation well!'}` :
                 `Not quite. ${questionData.explanation || 'Try to remember the meaning of this affix.'}`,
             points: isCorrect ? 10 : 0,
@@ -3658,8 +3690,8 @@ class ReadingComprehensionGame extends BaseGame {
     
     async selectChoice(index) {
         // Use new unified feedback system
-        if (window.answerFeedback && this.currentQuestion) {
-            window.answerFeedback.showFeedback(index, this.currentQuestion.correctIndex, '.reading-choice');
+        if (window.answerFeedback && this.currentQuestionData) {
+            window.answerFeedback.showFeedback(index, this.currentQuestionData.correctIndex, '.reading-choice');
         }
         
         if (window.gameEngine) {
@@ -3771,11 +3803,10 @@ class VocabularyLearningGame extends BaseGame {
     }
     
     generatePracticeQuestion() {
-        const practiceTypes = [
-            'meaning', 'example', 'complete', 'synonym', 'antonym', 
-            'word_form', 'collocation', 'idiom', 'phrasal_verb', 
-            'word_family', 'pronunciation', 'etymology', 'context_clue'
-        ];
+        // Only types backed by real vocabulary data. The synonym/idiom/etc.
+        // types relied on small hardcoded lookup tables that miss for TOEIC
+        // words, leaking the word itself as the "correct" answer.
+        const practiceTypes = ['meaning', 'example', 'complete'];
         this.practiceType = practiceTypes[Math.floor(Math.random() * practiceTypes.length)];
         
         if (this.practiceType === 'meaning') {
@@ -4407,8 +4438,8 @@ class VocabularyLearningGame extends BaseGame {
     
     async selectChoice(index) {
         // Use new unified feedback system
-        if (window.answerFeedback && this.currentQuestion) {
-            window.answerFeedback.showFeedback(index, this.currentQuestion.correctIndex, '.vocab-choice');
+        if (window.answerFeedback && this.currentQuestionData) {
+            window.answerFeedback.showFeedback(index, this.currentQuestionData.correctIndex, '.vocab-choice');
         }
         
         if (window.gameEngine) {
@@ -4893,11 +4924,13 @@ class GameEngine {
             const result = await this.currentGame.checkAnswer(answerIndex, actualResponseTime);
             this.recordAnswer(result);
             
-            // Record for spaced repetition system
-            if (window.spacedRepetition && result.word) {
+            // Record for spaced repetition system — only for real vocabulary
+            // words, not game labels like "reading comprehension" or contexts
+            if (window.spacedRepetition && result.word &&
+                window.dataManager?.vocabulary?.has(String(result.word).toLowerCase())) {
                 window.spacedRepetition.recordReview(
-                    result.word, 
-                    result.isCorrect, 
+                    result.word,
+                    result.isCorrect,
                     actualResponseTime
                 );
             }
@@ -4961,23 +4994,27 @@ class GameEngine {
             console.warn('⚠️ No active game for next question');
             return;
         }
-        
+
         console.log('➡️ Moving to next question...');
-        
+
+        // Reset feedback system so the old next-button/lock state is cleared
+        try {
+            if (window.answerFeedback && typeof window.answerFeedback.reset === 'function') {
+                window.answerFeedback.reset();
+            }
+        } catch (error) {
+            console.error('🚨 Error during answer feedback reset:', error);
+        }
+
         // Hide next question button
         this.hideNextQuestionButton();
-        
+
         // Re-enable choice buttons
         this.resetChoiceButtons();
-        
-        // Generate and display next question
-        if (this.currentGame.nextQuestion) {
-            this.currentGame.nextQuestion();
-        } else {
-            console.log('🔄 Generating new question...');
-            // Fallback: generate new question
-            this.currentGame.nextQuestion();
-        }
+
+        // Generate and display next question — never restart the game here,
+        // restarting wipes sessionData and the running score
+        this.currentGame.nextQuestion();
     }
     
     resetChoiceButtons() {
@@ -5119,40 +5156,6 @@ class GameEngine {
         return this.sessionData;
     }
     
-    /**
-     * Proceed to next question
-     */
-    nextQuestion() {
-        if (!this.currentGame) {
-            console.warn('No active game for next question');
-            return;
-        }
-
-        // Reset feedback system with safety wrapper
-        try {
-            if (window.answerFeedback && typeof window.answerFeedback.reset === 'function') {
-                window.answerFeedback.reset();
-            }
-        } catch (error) {
-            console.error('🚨 Error during answer feedback reset:', error);
-        }
-
-        // Store current game type before generating next question
-        const currentGameType = this.currentGame.gameType || this.currentGameMode;
-        
-        // Generate next question for current game
-        if (this.currentGame.generateNextQuestion) {
-            this.currentGame.generateNextQuestion();
-        } else if (currentGameType) {
-            // Default behavior - restart the game mode
-            this.startGame(currentGameType);
-        } else {
-            console.warn('Cannot determine current game type for next question');
-            // Fallback to multiple choice
-            this.startGame('multipleChoice');
-        }
-    }
-
     /**
      * Continue vocabulary learning progression
      */

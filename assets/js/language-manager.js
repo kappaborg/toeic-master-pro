@@ -238,8 +238,9 @@ class LanguageManager {
     updateSpecificElements(language) {
         const translations = this.translations[language];
         
-        // Update welcome screen
-        const welcomeTitle = document.querySelector('.heading-1');
+        // Update welcome screen (scoped to #welcomeScreen so the loading
+        // screen title is never overwritten)
+        const welcomeTitle = document.querySelector('#welcomeScreen .heading-1');
         if (welcomeTitle) {
             welcomeTitle.innerHTML = `
                 ${translations['welcome.title']}
@@ -247,11 +248,11 @@ class LanguageManager {
                 <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">${translations['welcome.subtitle']}</span>
             `;
         }
-        
-        const welcomeDesc = document.querySelector('.text-xl.text-white\\/90');
-        if (welcomeDesc) {
-            welcomeDesc.textContent = translations['welcome.description'];
-        }
+
+        // NOTE: 'welcome.description' still contains legacy WordMaster ESL copy
+        // ("10 interactive game modes", "731+ vocabulary words") that does not
+        // match the current TOEIC welcome content, so the description in the
+        // DOM is intentionally left alone until those keys are updated.
         
         // Update action buttons
         const startLearningBtn = document.querySelector('button[onclick="startLearning()"]');

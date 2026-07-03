@@ -586,18 +586,10 @@ class SettingsPanel {
     
     // Show analytics dashboard
     showAnalytics() {
-        if (window.advancedAnalytics) {
-            const dashboard = window.advancedAnalytics.createAnalyticsDashboard();
-            
-            // Create modal
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4';
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.remove();
-            };
-            
-            modal.appendChild(dashboard);
-            document.body.appendChild(modal);
+        if (window.analyticsDashboard && typeof window.analyticsDashboard.showDashboard === 'function') {
+            window.analyticsDashboard.showDashboard();
+        } else {
+            console.warn('⚠️ Analytics dashboard is not available');
         }
     }
 }

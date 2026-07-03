@@ -1,5 +1,9 @@
 # Development files
+test-*.html
 test_*.html
+debug.html
+redirect.html
+deploy.sh
 *.test.js
 *.spec.js
 

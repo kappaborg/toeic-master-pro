@@ -439,7 +439,13 @@ class TOEICVocabularySystem {
         const reviewedWords = this.userProgress.size;
         const masteredWords = Array.from(this.userProgress.values())
             .filter(progress => progress.masteryLevel >= 5).length;
-        
+
+        const learningWords = Array.from(this.userProgress.values())
+            .filter(progress => progress.masteryLevel >= 1 && progress.masteryLevel < 5).length;
+
+        const strugglingWords = Array.from(this.userProgress.values())
+            .filter(progress => progress.incorrectCount > progress.correctCount).length;
+
         const totalCorrect = Array.from(this.userProgress.values())
             .reduce((sum, progress) => sum + progress.correctCount, 0);
         
@@ -456,6 +462,8 @@ class TOEICVocabularySystem {
             totalWords,
             reviewedWords,
             masteredWords,
+            learningWords,
+            strugglingWords,
             totalCorrect,
             totalIncorrect,
             overallAccuracy: Math.round(overallAccuracy),
@@ -678,10 +686,11 @@ class TOEICVocabularySystem {
         this.currentWord = null;
         this.sessionStartTime = null;
         this.sessionStats = {
-            correct: 0,
-            incorrect: 0,
-            total: 0,
-            timeSpent: 0
+            totalWords: 0,
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            timeSpent: 0,
+            startTime: null
         };
         console.log('✅ TOEIC Vocabulary session ended');
     }

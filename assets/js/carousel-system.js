@@ -162,44 +162,46 @@ class CarouselSystem {
                 
                 console.log('🎯 Hero carousel item clicked:', item.title);
                 
-                // Handle TOEIC application clicks
+                // Handle TOEIC application clicks — route through
+                // showTOEICModuleScreen so the module container is un-hidden
+                // and the main menu hidden
                 switch(item.key) {
                     case 'toeicVocabulary':
-                        if (window.app && window.app.showFlashcardModule) {
-                            window.app.showFlashcardModule({ mode: 'spaced_repetition' });
+                        if (window.app && window.app.showTOEICModuleScreen) {
+                            window.app.showTOEICModuleScreen('flashcards', { mode: 'spaced_repetition' });
                         } else if (window.startVocabularySession) {
                             window.startVocabularySession();
                         }
                         break;
-                        
+
                     case 'toeicReading':
-                        if (window.app && window.app.showReadingModule) {
-                            window.app.showReadingModule();
+                        if (window.app && window.app.showTOEICModuleScreen) {
+                            window.app.showTOEICModuleScreen('reading', {});
                         } else if (window.startReadingSession) {
                             window.startReadingSession();
                         }
                         break;
-                        
+
 
                     case 'toeicGrammar':
-                        if (window.app && window.app.showGrammarModule) {
-                            window.app.showGrammarModule();
+                        if (window.app && window.app.showTOEICModuleScreen) {
+                            window.app.showTOEICModuleScreen('grammar', {});
                         } else if (window.startGrammarSession) {
                             window.startGrammarSession();
                         }
                         break;
-                        
+
                     case 'toeicTestSimulator':
-                        if (window.app && window.app.showTestSimulatorModule) {
-                            window.app.showTestSimulatorModule();
+                        if (window.app && window.app.showTOEICModuleScreen) {
+                            window.app.showTOEICModuleScreen('test', {});
                         } else if (window.startFullTest) {
                             window.startFullTest();
                         }
                         break;
-                        
+
                     case 'toeicFlashcards':
-                        if (window.app && window.app.showFlashcardModule) {
-                            window.app.showFlashcardModule({ mode: 'flashcard_review' });
+                        if (window.app && window.app.showTOEICModuleScreen) {
+                            window.app.showTOEICModuleScreen('flashcards', { mode: 'flashcard_review' });
                         } else if (window.startVocabularySession) {
                             window.startVocabularySession();
                         }

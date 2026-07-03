@@ -103,7 +103,7 @@ class AdaptiveLearningEngine {
         
         wordData.attempts++;
         wordData.lastSeen = now;
-        wordData.averageTime = (wordData.averageTime + responseTime) / 2;
+        wordData.averageTime = wordData.averageTime + (responseTime - wordData.averageTime) / wordData.attempts;
         
         if (isCorrect) {
             wordData.successes++;
@@ -222,23 +222,24 @@ class AdaptiveLearningEngine {
         let currentStreak = 0;
         let longestStreak = 0;
         
-        // Calculate based on daily sessions
-        for (let i = sessions.length - 1; i >= 0; i--) {
-            const sessionDate = new Date(sessions[i].date).toDateString();
+        // Calculate based on daily sessions (de-duplicate to unique study days first)
+        const uniqueDays = [...new Set(sessions.map(session => new Date(session.date).toDateString()))];
+
+        for (let i = uniqueDays.length - 1; i >= 0; i--) {
             const expectedDate = new Date(Date.now() - (currentStreak * 24 * 60 * 60 * 1000)).toDateString();
-            
-            if (sessionDate === expectedDate) {
+
+            if (uniqueDays[i] === expectedDate) {
                 currentStreak++;
             } else {
                 break;
             }
         }
-        
-        longestStreak = Math.max(...sessions.map((_, index) => {
+
+        longestStreak = Math.max(...uniqueDays.map((_, index) => {
             let streak = 0;
-            for (let j = index; j < sessions.length; j++) {
-                if (new Date(sessions[j].date).toDateString() === 
-                    new Date(sessions[index].date).getTime() + (streak * 24 * 60 * 60 * 1000)) {
+            for (let j = index; j < uniqueDays.length; j++) {
+                if (uniqueDays[j] ===
+                    new Date(new Date(uniqueDays[index]).getTime() + streak * 24 * 60 * 60 * 1000).toDateString()) {
                     streak++;
                 } else {
                     break;
@@ -264,7 +265,9 @@ class AdaptiveLearningEngine {
         ).length;
         
         const totalWordsInLevel = this.getTotalWordsInLevel(currentLevel);
-        const progressPercentage = Math.round((masteredWordsInLevel / totalWordsInLevel) * 100);
+        const progressPercentage = totalWordsInLevel > 0
+            ? Math.round((masteredWordsInLevel / totalWordsInLevel) * 100)
+            : 0;
         
         return {
             currentLevel,
@@ -417,7 +420,7 @@ class AchievementSystem {
                 description: 'Try all available game modes',
                 icon: '🗺️',
                 category: 'exploration',
-                requirement: { type: 'gameModesPlayed', count: 8 }
+                requirement: { type: 'gameModesPlayed', count: 12 }
             },
             {
                 id: 'time_master',

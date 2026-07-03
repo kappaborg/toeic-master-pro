@@ -17,14 +17,14 @@ class SpacedRepetitionSystem {
     // Main SRS calculation based on SM-2 algorithm
     calculateNextReview(word, quality, previousInterval = 1, easeFactor = 2.5) {
         // Quality: 0=forgot, 1=hard, 2=good, 3=easy, 4=perfect
-        
-        let newEaseFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+        // Ease delta adapted to the 0-4 scale: quality 4 gives +0.1, lower quality reduces ease
+        let newEaseFactor = easeFactor + (0.1 - (4 - quality) * (0.08 + (4 - quality) * 0.02));
         newEaseFactor = Math.max(this.minEaseFactor, Math.min(this.maxEaseFactor, newEaseFactor));
         
         let newInterval;
         
-        if (quality < 2) {
-            // Failed recall - reset to beginning
+        if (quality === 0) {
+            // Failed recall (incorrect answer) - reset to beginning
             newInterval = 1;
             newEaseFactor = Math.max(1.3, easeFactor - 0.2);
         } else {
@@ -58,13 +58,14 @@ class SpacedRepetitionSystem {
         if (!isCorrect) {
             quality = 0; // Forgot
         } else {
-            // Quality based on response time and difficulty
+            // Quality based on response time; correct answers score at least 2
+            // (responseTime includes reading time, so slow-correct is not a failure)
             if (responseTime < 2000) {
-                quality = difficulty === 'easy' ? 4 : 3; // Perfect or Easy
+                quality = 4; // Perfect
             } else if (responseTime < 5000) {
-                quality = 2; // Good
+                quality = 3; // Easy
             } else {
-                quality = 1; // Hard
+                quality = 2; // Good
             }
         }
         
@@ -86,9 +87,10 @@ class SpacedRepetitionSystem {
         // Update statistics
         newSchedule.successRate = this.calculateSuccessRate(word, isCorrect);
         newSchedule.averageTime = this.calculateAverageTime(word, responseTime);
-        newSchedule.difficulty = this.calculateWordDifficulty(word, quality);
-        
+
+        // Store the fresh schedule first so difficulty is computed from up-to-date stats
         this.wordSchedules.set(word, newSchedule);
+        newSchedule.difficulty = this.calculateWordDifficulty(word, quality);
         this.saveSchedules();
         
         console.log(`📅 SRS: ${word} -> Next review in ${newSchedule.interval} days`);

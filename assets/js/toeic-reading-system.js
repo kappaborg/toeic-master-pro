@@ -641,12 +641,7 @@ Website: www.premiumoffices.com`,
         ];
         
         // Text completion questions
-        const textCompletion = [
-            {
-                id: 'q_text_001',
-                passageId: null,
-                type: 'text_completion',
-                passage: `Dear Team,
+        const textCompletionPassage = `Dear Team,
 
 I am writing to inform you about the upcoming changes to our company policies. Starting next month, we will be implementing a new remote work policy that will allow employees to work from home up to three days per week.
 
@@ -657,31 +652,39 @@ Please note that this policy applies to all full-time employees. If you have any
 Thank you for your continued dedication to our company.
 
 Best regards,
-HR Department`,
-                questions: [
-                    {
-                        question: 'What is the main topic of this memo?',
-                        options: [
-                            'New remote work policy',
-                            'Employee feedback system',
-                            'Work-life balance programs',
-                            'Human resources procedures'
-                        ],
-                        correctAnswer: 0,
-                        explanation: 'The memo is primarily about implementing a new remote work policy.'
-                    },
-                    {
-                        question: 'How many days per week can employees work from home?',
-                        options: [
-                            'Two days',
-                            'Three days',
-                            'Four days',
-                            'Five days'
-                        ],
-                        correctAnswer: 1,
-                        explanation: 'The memo states that employees can work from home up to three days per week.'
-                    }
+HR Department`;
+
+        const textCompletion = [
+            {
+                id: 'q_text_001a',
+                passageId: null,
+                type: 'text_completion',
+                passage: textCompletionPassage,
+                question: 'What is the main topic of this memo?',
+                options: [
+                    'New remote work policy',
+                    'Employee feedback system',
+                    'Work-life balance programs',
+                    'Human resources procedures'
                 ],
+                correctAnswer: 0,
+                explanation: 'The memo is primarily about implementing a new remote work policy.',
+                difficulty: 'B1'
+            },
+            {
+                id: 'q_text_001b',
+                passageId: null,
+                type: 'text_completion',
+                passage: textCompletionPassage,
+                question: 'How many days per week can employees work from home?',
+                options: [
+                    'Two days',
+                    'Three days',
+                    'Four days',
+                    'Five days'
+                ],
+                correctAnswer: 1,
+                explanation: 'The memo states that employees can work from home up to three days per week.',
                 difficulty: 'B1'
             }
         ];
@@ -1077,7 +1080,7 @@ Management`,
             ...this.sessionStats,
             accuracy: Math.round(accuracy),
             timeSpent: timeSpent,
-            questionsRemaining: this.currentSession.length
+            questionsRemaining: this.currentSession?.length ?? 0
         };
     }
     
@@ -1151,10 +1154,11 @@ Management`,
         this.currentQuestion = null;
         this.sessionStartTime = null;
         this.sessionStats = {
-            correct: 0,
-            incorrect: 0,
-            total: 0,
-            timeSpent: 0
+            totalQuestions: 0,
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            timeSpent: 0,
+            startTime: null
         };
         console.log('✅ TOEIC Reading session ended');
     }
@@ -1331,15 +1335,9 @@ Management`,
         }
         
         const isCorrect = selectedAnswer === question.correctAnswer;
-        
-        // Update session stats
-        if (isCorrect) {
-            this.sessionStats.correctAnswers++;
-        } else {
-            this.sessionStats.incorrectAnswers++;
-        }
-        
+
         // Record answer in user progress with lastAnswer field
+        // (recordAnswer owns the session stats increments)
         this.recordAnswer(questionId, selectedAnswer, isCorrect ? 1 : 0);
         
         // Store the last answer for review purposes

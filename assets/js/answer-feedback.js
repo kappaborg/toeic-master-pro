@@ -416,7 +416,7 @@ class AnswerFeedback {
         // Remove any other next buttons
         anyNextButtons.forEach(btn => {
             if (btn && btn.parentNode) {
-                btn.parentNode.remove();
+                btn.remove();
                 console.log('🧹 Removed orphan next button');
             }
         });

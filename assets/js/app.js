@@ -5596,71 +5596,66 @@ class App {
             return `<p class="text-yellow-400">${t('test.noQuestion')}</p>`;
         }
 
-        // Generate question based on type
-        if (question.type === 'photograph') {
+        // The listening banks have no real audio, but every question
+        // carries a transcript so it can be practiced as written text
+        const transcriptBlock = question.transcript ? `
+            <div class="bg-gray-800 rounded-lg p-6 mb-4 text-left">
+                <p class="text-white/50 text-sm mb-2">${t('test.transcript')}</p>
+                <p class="text-white/90 whitespace-pre-line">${question.transcript}</p>
+            </div>
+        ` : '';
+
+        // Generate question based on type (types come from
+        // toeic-test-simulator.js: photographs, questionResponse,
+        // conversations, talks, incompleteSentences, textCompletion,
+        // readingComprehension)
+        if (question.type === 'photographs') {
             return `
                 <div class="text-center mb-6">
                     <p class="text-lg mb-4">${t('test.lookAtPhoto')}</p>
-                    <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">${t('test.photoPlaceholder')}</p>
-                    </div>
+                    ${transcriptBlock}
                 </div>
             `;
-        } else if (question.type === 'question_response') {
+        } else if (question.type === 'questionResponse') {
             return `
                 <div class="text-center mb-6">
                     <p class="text-lg mb-4">${t('test.listenQuestion')}</p>
-                    <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">${t('test.audioPlaceholder')}</p>
-                    </div>
+                    ${transcriptBlock}
                 </div>
             `;
-        } else if (question.type === 'conversation') {
+        } else if (question.type === 'conversations') {
             return `
                 <div class="mb-6">
                     <p class="text-lg mb-4">${t('test.listenConversation')}</p>
-                    <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">${t('test.conversationPlaceholder')}</p>
-                    </div>
+                    ${transcriptBlock}
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
             `;
-        } else if (question.type === 'talk') {
+        } else if (question.type === 'talks') {
             return `
                 <div class="mb-6">
                     <p class="text-lg mb-4">${t('test.listenTalk')}</p>
-                    <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">${t('test.talkPlaceholder')}</p>
-                    </div>
+                    ${transcriptBlock}
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
             `;
-        } else if (question.type === 'incomplete_sentences') {
+        } else if (question.type === 'incompleteSentences') {
             return `
                 <div class="mb-6">
-                    <p class="text-white/90 mb-4">${question.question}</p>
+                    <p class="text-white/90 mb-4">${question.sentence || question.question}</p>
                 </div>
             `;
-        } else if (question.type === 'text_completion') {
-            return `
-                <div class="mb-6">
-                    <div class="bg-gray-800 rounded-lg p-6 mb-4">
-                        <p class="text-white/90 whitespace-pre-line">${question.passage}</p>
-                    </div>
-                    <p class="text-white/90 mb-4">${question.question}</p>
-                </div>
-            `;
-        } else if (question.type === 'reading_comprehension') {
+        } else if (question.type === 'textCompletion' || question.type === 'readingComprehension') {
             return `
                 <div class="mb-6">
                     <div class="bg-gray-800 rounded-lg p-6 mb-4">
-                        <p class="text-white/90 whitespace-pre-line">${question.passage}</p>
+                        <p class="text-white/90 whitespace-pre-line">${typeof question.passage === 'object' ? (question.passage.title ? question.passage.title + '\n\n' : '') + question.passage.content : question.passage}</p>
                     </div>
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
             `;
         }
-        
+
         return `<p class="text-red-400">${t('test.unknownType')}</p>`;
     }
 

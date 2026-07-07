@@ -248,7 +248,7 @@ class CarouselSystem {
                         </div>
                         
                         <!-- Play Button -->
-                        <button class="mt-4 w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-lg" onclick="window.gameEngine.startGame('${item.gameMode}')">
+                        <button class="mt-4 w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-lg" onclick="if (window.gameEngine) { window.gameEngine.startGame('${item.gameMode}'); } else { console.warn('Game engine not ready yet'); }">
                             <i data-lucide="play" class="w-4 h-4 inline mr-2"></i>
                             Play Now
                         </button>
@@ -333,15 +333,25 @@ class CarouselSystem {
      * Add touch/swipe support
      */
     addTouchSupport(wrapper, carouselId) {
-        wrapper.addEventListener('touchstart', (e) => this.handleTouchStart(e, carouselId));
-        wrapper.addEventListener('touchmove', (e) => this.handleTouchMove(e, carouselId));
-        wrapper.addEventListener('touchend', (e) => this.handleTouchEnd(e, carouselId));
-        
-        // Mouse drag support
-        wrapper.addEventListener('mousedown', (e) => this.handleMouseDown(e, carouselId));
-        wrapper.addEventListener('mousemove', (e) => this.handleMouseMove(e, carouselId));
-        wrapper.addEventListener('mouseup', (e) => this.handleMouseUp(e, carouselId));
-        wrapper.addEventListener('mouseleave', (e) => this.handleMouseLeave(e, carouselId));
+        // Keep references so destroyCarousel can actually remove them
+        // (removeEventListener with a fresh arrow function is a no-op)
+        const handlers = {
+            touchstart: (e) => this.handleTouchStart(e, carouselId),
+            touchmove: (e) => this.handleTouchMove(e, carouselId),
+            touchend: (e) => this.handleTouchEnd(e, carouselId),
+            mousedown: (e) => this.handleMouseDown(e, carouselId),
+            mousemove: (e) => this.handleMouseMove(e, carouselId),
+            mouseup: (e) => this.handleMouseUp(e, carouselId),
+            mouseleave: (e) => this.handleMouseLeave(e, carouselId)
+        };
+        Object.keys(handlers).forEach(event => {
+            wrapper.addEventListener(event, handlers[event]);
+        });
+
+        const carousel = this.carousels.get(carouselId);
+        if (carousel) {
+            carousel.touchHandlers = handlers;
+        }
     }
     
     /**
@@ -562,11 +572,13 @@ class CarouselSystem {
         // Stop autoplay
         this.stopAutoplay(carouselId);
         
-        // Remove event listeners
+        // Remove event listeners using the stored references
         const wrapper = carousel.wrapper;
-        wrapper.removeEventListener('touchstart', this.handleTouchStart);
-        wrapper.removeEventListener('touchmove', this.handleTouchMove);
-        wrapper.removeEventListener('touchend', this.handleTouchEnd);
+        if (wrapper && carousel.touchHandlers) {
+            Object.keys(carousel.touchHandlers).forEach(event => {
+                wrapper.removeEventListener(event, carousel.touchHandlers[event]);
+            });
+        }
         
         // Clear container
         carousel.container.innerHTML = '';

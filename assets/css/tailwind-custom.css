@@ -725,3 +725,88 @@ button, [type='button'], [type='reset'], [type='submit'] { -webkit-appearance: b
     .gamification-card, .notification-enter, .fab { display: none !important; }
 }
 
+
+/* ------------------------------------------------------------------
+   Missing utility classes (audit 2026-07-07)
+   Classes used in index.html / JS-generated HTML that had no
+   definition and silently rendered as nothing.
+   ------------------------------------------------------------------ */
+
+/* Badge text colors (module cards) */
+.text-blue-300 { color: #93c5fd; }
+.text-blue-400 { color: #60a5fa; }
+.text-cyan-300 { color: #67e8f9; }
+.text-green-300 { color: #86efac; }
+.text-orange-300 { color: #fdba74; }
+.text-orange-400 { color: #fb923c; }
+.text-pink-400 { color: #f472b6; }
+.text-purple-300 { color: #d8b4fe; }
+.text-purple-400 { color: #c084fc; }
+.text-red-300 { color: #fca5a5; }
+.text-teal-400 { color: #2dd4bf; }
+.text-violet-400 { color: #a78bfa; }
+.text-yellow-300 { color: #fde047; }
+.text-yellow-400 { color: #facc15; }
+.text-transparent { color: transparent; }
+.text-white\/60 { color: rgb(255 255 255 / 0.6); }
+
+/* Badge / surface backgrounds */
+.bg-cyan-500\/20 { background-color: rgb(6 182 212 / 0.2); }
+.bg-orange-500\/20 { background-color: rgb(249 115 22 / 0.2); }
+.bg-pink-500\/20 { background-color: rgb(236 72 153 / 0.2); }
+.bg-pink-500\/30 { background-color: rgb(236 72 153 / 0.3); }
+.bg-purple-500\/20 { background-color: rgb(168 85 247 / 0.2); }
+.bg-purple-500\/30 { background-color: rgb(168 85 247 / 0.3); }
+.bg-teal-500\/20 { background-color: rgb(20 184 166 / 0.2); }
+.bg-teal-500\/30 { background-color: rgb(20 184 166 / 0.3); }
+.bg-violet-500\/20 { background-color: rgb(139 92 246 / 0.2); }
+.bg-violet-500\/30 { background-color: rgb(139 92 246 / 0.3); }
+.bg-yellow-500\/20 { background-color: rgb(234 179 8 / 0.2); }
+.bg-info\/20 { background-color: rgb(66 153 225 / 0.2); }
+.bg-info\/30 { background-color: rgb(66 153 225 / 0.3); }
+.bg-warning\/20 { background-color: rgb(237 137 54 / 0.2); }
+.bg-white\/10 { background-color: rgb(255 255 255 / 0.1); }
+.bg-white\/15 { background-color: rgb(255 255 255 / 0.15); }
+.bg-black\/80 { background-color: rgb(0 0 0 / 0.8); }
+
+/* Gradient utilities (welcome heading, primary buttons) */
+.bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-from, transparent), var(--tw-gradient-to, transparent)); }
+.from-purple-400 { --tw-gradient-from: #c084fc; }
+.from-purple-500 { --tw-gradient-from: #a855f7; }
+.to-pink-400 { --tw-gradient-to: #f472b6; }
+.to-pink-500 { --tw-gradient-to: #ec4899; }
+.bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+
+/* Sizing / spacing */
+.h-3 { height: 0.75rem; }
+.w-3 { width: 0.75rem; }
+.h-7 { height: 1.75rem; }
+.w-7 { width: 1.75rem; }
+.h-96 { height: 24rem; }
+.leading-7 { line-height: 1.75rem; }
+.px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+.px-8 { padding-left: 2rem; padding-right: 2rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-10 { margin-bottom: 2.5rem; }
+.ml-2 { margin-left: 0.5rem; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.max-w-chat { max-width: 80%; }
+
+/* Effects */
+.hover\:opacity-90:hover { opacity: 0.9; }
+.transition-opacity { transition: opacity 0.2s ease; }
+.transition-transform { transition: transform 0.2s ease; }
+.z-60 { z-index: 60; }
+
+/* group-hover variants (module card icons) */
+.group:hover .group-hover\:scale-110 { transform: scale(1.1); }
+.group:hover .group-hover\:rotate-180 { transform: rotate(180deg); }
+.group:hover .group-hover\:bg-orange-500\/30 { background-color: rgb(249 115 22 / 0.3); }
+.group:hover .group-hover\:bg-pink-500\/30 { background-color: rgb(236 72 153 / 0.3); }
+.group:hover .group-hover\:bg-purple-500\/30 { background-color: rgb(168 85 247 / 0.3); }
+.group:hover .group-hover\:bg-teal-500\/30 { background-color: rgb(20 184 166 / 0.3); }
+.group:hover .group-hover\:bg-violet-500\/30 { background-color: rgb(139 92 246 / 0.3); }

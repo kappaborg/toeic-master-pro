@@ -22,9 +22,12 @@ class DailyConversationSystem {
         this.progress = this.loadProgress();
 
         // Re-render the current view when the language switches so all
-        // chrome picks up the new translations
+        // chrome picks up the new translations. Re-rendering rebuilds the
+        // question options unanswered, so the answered flag must be reset
+        // too or the question would be stuck with no Next button.
         window.addEventListener('languageChanged', () => {
             if (document.getElementById('dailyConversationRoot')) {
+                this.answered = false;
                 this.render();
             }
         });
@@ -574,11 +577,13 @@ class DailyConversationSystem {
             container.innerHTML = '';
             container.classList.add('hidden');
         }
+        // #mainMenu is the PARENT of #welcomeScreen — it must be unhidden
+        // explicitly, or showWelcomeScreen() unhides a child inside a
+        // display:none parent and the page stays blank
+        const mainMenu = document.getElementById('mainMenu');
+        if (mainMenu) mainMenu.classList.remove('hidden');
         if (window.app && typeof window.app.showWelcomeScreen === 'function') {
             window.app.showWelcomeScreen();
-        } else {
-            const mainMenu = document.getElementById('mainMenu');
-            if (mainMenu) mainMenu.classList.remove('hidden');
         }
     }
 
@@ -651,7 +656,7 @@ class DailyConversationSystem {
             const left = i % 2 === 0;
             return `
                 <div class="flex ${left ? 'justify-start' : 'justify-end'} mb-3">
-                    <div class="max-w-[80%] ${left ? 'bg-white/10' : 'bg-purple-500/30'} rounded-2xl px-4 py-3">
+                    <div class="max-w-chat ${left ? 'bg-white/10' : 'bg-purple-500/30'} rounded-2xl px-4 py-3">
                         <div class="text-xs text-white/60 mb-1">${line.speaker}</div>
                         <div class="text-white">${line.text}</div>
                     </div>

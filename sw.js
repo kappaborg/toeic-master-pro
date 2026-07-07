@@ -168,7 +168,7 @@ self.addEventListener('push', (event) => {
     const options = {
         body: event.data ? event.data.text() : 'New vocabulary challenge available!',
         icon: './assets/icons/icon-192.png',
-        badge: './assets/icons/badge-72.png',
+        badge: './assets/icons/icon-72.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -178,18 +178,18 @@ self.addEventListener('push', (event) => {
             {
                 action: 'explore',
                 title: 'Start Learning',
-                icon: './assets/icons/play-icon.png'
+                icon: './assets/icons/icon-96.png'
             },
             {
                 action: 'close',
                 title: 'Close',
-                icon: './assets/icons/close-icon.png'
+                icon: './assets/icons/icon-72.png'
             }
         ]
     };
-    
+
     event.waitUntil(
-        self.registration.showNotification('WordMaster Pro', options)
+        self.registration.showNotification('TOEIC Master Pro', options)
     );
 });
 

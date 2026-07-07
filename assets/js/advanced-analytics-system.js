@@ -456,27 +456,24 @@ class AdvancedAnalyticsSystem {
      * Measure network latency
      */
     measureNetworkLatency() {
+        // Static site — there is no /api/ping backend, so probe a real
+        // small asset instead. Cache-busting query keeps it honest.
         const start = Date.now();
-        fetch('/api/ping', { method: 'HEAD' })
+        fetch(`./favicon.ico?ping=${Date.now()}`, { method: 'HEAD', cache: 'no-store' })
             .then(() => {
                 const latency = Date.now() - start;
                 this.performanceMetrics.networkLatency.push({
                     latency,
                     timestamp: Date.now()
                 });
-                
+
                 // Keep only last 50 entries
                 if (this.performanceMetrics.networkLatency.length > 50) {
                     this.performanceMetrics.networkLatency.shift();
                 }
             })
             .catch(() => {
-                // Fallback: measure local performance
-                const latency = Date.now() - start;
-                this.performanceMetrics.networkLatency.push({
-                    latency,
-                    timestamp: Date.now()
-                });
+                // Offline or blocked — record nothing rather than a fake value
             });
     }
     

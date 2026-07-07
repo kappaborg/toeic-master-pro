@@ -678,6 +678,14 @@
         };
         
         
+        // Fallback in case daily-conversation-system.js (deferred) has not
+        // loaded yet or failed to load — the real script overwrites this
+        if (typeof window.startDailyConversation !== 'function') {
+            window.startDailyConversation = function() {
+                console.error('❌ Daily Conversation system not loaded yet');
+            };
+        }
+
         window.showTOEICStrategies = function() {
             console.log('💡 Showing TOEIC Study Strategies');
             // Strategies module was removed from the build — show the

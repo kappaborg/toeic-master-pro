@@ -62,6 +62,10 @@ class LanguageManager {
                 'status.question': 'Question',
                 'status.score': 'Score:',
 
+                // Floating Game Controls (game-engine tooltips)
+                'control.progress': 'Toggle Progress Panel (Drag to move)',
+                'control.home': 'Go to Home (Drag to move)',
+
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': 'Check Answer',
                 'quiz.nextQuestion': 'Next Question',
@@ -279,6 +283,7 @@ class LanguageManager {
                 'test.timeRemaining': 'Time Remaining',
                 'test.submitTest': 'Submit Test',
                 'test.lookAtPhoto': 'Look at the photograph.',
+                'test.transcript': 'Transcript (audio text)',
                 'test.photoPlaceholder': '[Photograph would be displayed here]',
                 'test.listenQuestion': 'Listen to the question.',
                 'test.audioPlaceholder': '[Audio would be played here]',
@@ -458,6 +463,10 @@ class LanguageManager {
                 // Status Bar
                 'status.question': '题目',
                 'status.score': '得分:',
+
+                // Floating Game Controls (game-engine tooltips)
+                'control.progress': '切换进度面板（拖拽移动）',
+                'control.home': '返回首页（拖拽移动）',
 
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': '检查答案',
@@ -676,6 +685,7 @@ class LanguageManager {
                 'test.timeRemaining': '剩余时间',
                 'test.submitTest': '提交测试',
                 'test.lookAtPhoto': '请看照片。',
+                'test.transcript': '听力原文',
                 'test.photoPlaceholder': '[照片将在此处显示]',
                 'test.listenQuestion': '请听问题。',
                 'test.audioPlaceholder': '[音频将在此处播放]',

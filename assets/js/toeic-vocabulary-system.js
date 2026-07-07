@@ -279,14 +279,14 @@ class TOEICVocabularySystem {
         
         const word = this.currentSession[0];
         const wordData = this.vocabulary.get(word);
-        
+
         return {
             word: word,
             definition: wordData.meaning,
             example: wordData.examples,
             difficulty: wordData.level,
             category: wordData.category,
-            synonyms: wordData.synonyms,
+            synonyms: wordData.synonyms || [],
             progress: this.userProgress.get(word) || {
                 masteryLevel: 0,
                 lastReviewed: null,

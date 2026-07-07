@@ -144,7 +144,7 @@ class App {
                 <div class="text-2xl">👋</div>
                 <div>
                     <div class="font-semibold text-lg">${welcomeInfo.greeting}</div>
-                    <div class="text-sm opacity-90">Ready to master TOEIC?</div>
+                    <div class="text-sm opacity-90">${t('welcome.ready')}</div>
                 </div>
                 <button onclick="this.parentElement.parentElement.remove()" class="text-white/80 hover:text-white text-xl ml-2">×</button>
             </div>
@@ -185,20 +185,18 @@ class App {
             const adminButton = welcomeInfo.isAdmin ? `
                 <button id="adminDashboardBtn" class="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 px-3 py-1 rounded-full text-xs transition-colors flex items-center space-x-1">
                     <span>👨‍💼</span>
-                    <span>Admin Panel</span>
+                    <span data-i18n="common.adminPanel">${t('common.adminPanel')}</span>
                 </button>
             ` : '';
             
             userInfo.innerHTML = `
-                <span class="text-sm">Welcome,</span>
+                <span class="text-sm" data-i18n="common.welcome">${t('common.welcome')}</span>
                 <span class="font-semibold">${welcomeInfo.name}</span>
                 <span class="px-2 py-1 text-xs rounded-full ${welcomeInfo.isAdmin ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300'}">
                     ${welcomeInfo.role}
                 </span>
                 ${adminButton}
-                <button onclick="window.app.logout()" class="text-white/70 hover:text-white text-sm underline">
-                    Logout
-                </button>
+                <button onclick="window.app.logout()" class="text-white/70 hover:text-white text-sm underline" data-i18n="common.logout">${t('common.logout')}</button>
             `;
             navbar.appendChild(userInfo);
             
@@ -831,52 +829,54 @@ class App {
         if (!window.carouselSystem) return;
         
         // Main Hero Carousel - Replaces the main card
+        // (t() at build time is enough here: the carousel is rebuilt on
+        // the 'languageChanged' event, see listener below)
         const mainHeroItems = [
             {
                 type: 'hero',
                 key: 'toeicVocabulary',
                 icon: '📚',
-                title: 'TOEIC Vocabulary',
-                description: 'Master essential TOEIC vocabulary with spaced repetition and interactive flashcards',
-                highlight: '620+ Words',
-                action: 'Start Vocabulary'
+                title: t('hero.vocabulary.title'),
+                description: t('hero.vocabulary.desc'),
+                highlight: t('hero.vocabulary.highlight'),
+                action: t('hero.vocabulary.action')
             },
             {
                 type: 'hero',
                 key: 'toeicReading',
                 icon: '📖',
-                title: 'TOEIC Reading',
-                description: 'Practice reading comprehension with real TOEIC-style passages and questions',
-                highlight: '25 Questions',
-                action: 'Start Reading'
+                title: t('hero.reading.title'),
+                description: t('hero.reading.desc'),
+                highlight: t('hero.reading.highlight'),
+                action: t('hero.reading.action')
             },
 
             {
                 type: 'hero',
                 key: 'toeicGrammar',
                 icon: '📝',
-                title: 'TOEIC Grammar',
-                description: 'Master essential grammar patterns with 22 practice questions and explanations',
-                highlight: '8 Categories',
-                action: 'Start Grammar'
+                title: t('hero.grammar.title'),
+                description: t('hero.grammar.desc'),
+                highlight: t('hero.grammar.highlight'),
+                action: t('hero.grammar.action')
             },
             {
                 type: 'hero',
                 key: 'toeicTestSimulator',
                 icon: '📋',
-                title: 'TOEIC Test Simulator',
-                description: 'Take full-length practice tests to simulate the real TOEIC exam experience',
-                highlight: 'Full Test',
-                action: 'Start Test'
+                title: t('hero.test.title'),
+                description: t('hero.test.desc'),
+                highlight: t('hero.test.highlight'),
+                action: t('hero.test.action')
             },
             {
                 type: 'hero',
                 key: 'toeicFlashcards',
                 icon: '🃏',
-                title: 'TOEIC Flashcards',
-                description: 'Review vocabulary with intelligent flashcards and spaced repetition system',
-                highlight: 'Smart Learning',
-                action: 'Start Flashcards'
+                title: t('hero.flashcards.title'),
+                description: t('hero.flashcards.desc'),
+                highlight: t('hero.flashcards.highlight'),
+                action: t('hero.flashcards.action')
             }
         ];
         
@@ -927,18 +927,16 @@ class App {
         carouselContainer.innerHTML = `
             <div class="hero-fallback glass-effect rounded-2xl p-8 text-center">
                 <div class="text-6xl mb-4">🎓</div>
-                <h1 class="text-4xl font-bold text-white mb-4">Master English Vocabulary</h1>
-                <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-                    Professional ESL learning platform with 12 interactive game modes and 731+ vocabulary words across all levels
-                </p>
+                <h1 class="text-4xl font-bold text-white mb-4" data-i18n="hero.fallback.title">${t('hero.fallback.title')}</h1>
+                <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-i18n="hero.fallback.desc">${t('hero.fallback.desc')}</p>
                 <div class="flex flex-wrap gap-4 justify-center">
                     <button onclick="startGame('multipleChoice')" class="btn-primary glass-effect px-8 py-3 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300">
                         <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>
-                        Start Learning
+                        <span data-i18n="hero.fallback.startLearning">${t('hero.fallback.startLearning')}</span>
                     </button>
                     <button onclick="startGame('vocabularyLearning')" class="btn-secondary glass-effect px-8 py-3 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300">
                         <i data-lucide="library" class="w-5 h-5 inline mr-2"></i>
-                        Vocabulary Mode
+                        <span data-i18n="hero.fallback.vocabularyMode">${t('hero.fallback.vocabularyMode')}</span>
                     </button>
                 </div>
             </div>
@@ -1293,37 +1291,37 @@ class App {
             <div class="max-w-4xl mx-auto">
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-white mb-2">TOEIC Vocabulary Learning</h1>
-                        <p class="text-white/80">Master business English vocabulary with spaced repetition</p>
+                        <h1 class="text-3xl font-bold text-white mb-2" data-i18n="vocab.learningTitle">${t('vocab.learningTitle')}</h1>
+                        <p class="text-white/80" data-i18n="vocab.learningSubtitle">${t('vocab.learningSubtitle')}</p>
                         <div class="flex items-center gap-4 mt-2">
-                            <span class="text-sm text-white/60" id="totalVocabularyCount">Loading vocabulary...</span>
+                            <span class="text-sm text-white/60" id="totalVocabularyCount">${t('vocab.loadingVocabulary')}</span>
                             <button onclick="window.app.forceReloadVocabulary()" class="text-xs bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1 rounded-full text-blue-300 transition-colors">
                                 <i data-lucide="refresh-cw" class="w-3 h-3 mr-1"></i>
-                                Reload Vocabulary
+                                <span data-i18n="vocab.reloadVocabulary">${t('vocab.reloadVocabulary')}</span>
                             </button>
                         </div>
                     </div>
                     <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                         <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                        Exit Session
+                        <span data-i18n="common.exitSession">${t('common.exitSession')}</span>
                     </button>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div class="bg-blue-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1">Words Remaining</h3>
+                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="vocab.wordsRemaining">${t('vocab.wordsRemaining')}</h3>
                         <p class="text-2xl font-bold text-blue-300" id="wordsRemaining">${session.length}</p>
                     </div>
                     <div class="bg-green-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1">Correct</h3>
+                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="common.correct">${t('common.correct')}</h3>
                         <p class="text-2xl font-bold text-green-300" id="correctCount">0</p>
                     </div>
                     <div class="bg-red-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1">Incorrect</h3>
+                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="common.incorrect">${t('common.incorrect')}</h3>
                         <p class="text-2xl font-bold text-red-300" id="incorrectCount">0</p>
                     </div>
                     <div class="bg-purple-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1">Accuracy</h3>
+                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
                         <p class="text-2xl font-bold text-purple-300" id="sessionAccuracy">0%</p>
                     </div>
                 </div>
@@ -1342,16 +1340,16 @@ class App {
                                     <span class="text-green-300 text-sm font-medium" id="wordFrequency">high</span>
                                 </div>
                             </div>
-                            <h2 class="text-5xl font-bold text-white mb-4 tracking-wide" id="currentWord">Loading...</h2>
+                            <h2 class="text-5xl font-bold text-white mb-4 tracking-wide" id="currentWord">${t('quiz.loading')}</h2>
                             <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
                         </div>
                         
                         <div class="mb-8">
                             <div class="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-                                <p class="text-white/80 text-lg mb-4" id="wordMeaning">Click "Show Meaning" to reveal the definition</p>
+                                <p class="text-white/80 text-lg mb-4" id="wordMeaning">${t('vocab.clickToReveal')}</p>
                                 <button onclick="window.app.showWordMeaning()" class="btn btn-primary btn-lg" id="showMeaningBtn">
                                     <i data-lucide="eye" class="w-5 h-5 mr-2"></i>
-                                    Show Meaning
+                                    <span data-i18n="vocab.showMeaning">${t('vocab.showMeaning')}</span>
                                 </button>
                             </div>
                         </div>
@@ -1360,7 +1358,7 @@ class App {
                             <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                                 <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
                                     <i data-lucide="book-open" class="w-5 h-5 mr-2 text-blue-400"></i>
-                                    Example Sentences
+                                    <span data-i18n="vocab.exampleSentences">${t('vocab.exampleSentences')}</span>
                                 </h3>
                                 <div class="space-y-4" id="examplesList"></div>
                             </div>
@@ -1368,15 +1366,15 @@ class App {
                         
                         <div id="answerButtons" class="hidden">
                             <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                                <p class="text-white/80 mb-6 text-center text-lg">Did you know this word?</p>
+                                <p class="text-white/80 mb-6 text-center text-lg" data-i18n="vocab.didYouKnow">${t('vocab.didYouKnow')}</p>
                                 <div class="flex gap-6 justify-center">
                                     <button onclick="window.app.recordVocabularyAnswer(true)" class="btn btn-success btn-lg px-8 py-4 text-lg">
                                         <i data-lucide="check" class="w-6 h-6 mr-3"></i>
-                                        I Know It
+                                        <span data-i18n="vocab.iKnowIt">${t('vocab.iKnowIt')}</span>
                                     </button>
                                     <button onclick="window.app.recordVocabularyAnswer(false)" class="btn btn-danger btn-lg px-8 py-4 text-lg">
                                         <i data-lucide="x" class="w-6 h-6 mr-3"></i>
-                                        I Don't Know
+                                        <span data-i18n="vocab.iDontKnow">${t('vocab.iDontKnow')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -1386,16 +1384,16 @@ class App {
                 
                 <div id="sessionComplete" class="hidden text-center">
                     <div class="bg-green-500/20 rounded-2xl p-8">
-                        <h2 class="text-3xl font-bold text-white mb-4">Session Complete!</h2>
-                        <p class="text-white/80 mb-6">Great job! You've completed this vocabulary session.</p>
+                        <h2 class="text-3xl font-bold text-white mb-4" data-i18n="vocab.sessionComplete">${t('vocab.sessionComplete')}</h2>
+                        <p class="text-white/80 mb-6" data-i18n="vocab.sessionCompleteDesc">${t('vocab.sessionCompleteDesc')}</p>
                         <div class="flex gap-4 justify-center">
                             <button onclick="window.app.startNewVocabularySession()" class="btn btn-primary">
                                 <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                                Start New Session
+                                <span data-i18n="vocab.startNewSession">${t('vocab.startNewSession')}</span>
                             </button>
                             <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                                 <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                                Back to Home
+                                <span data-i18n="common.backToHome">${t('common.backToHome')}</span>
                             </button>
                         </div>
                     </div>
@@ -1427,9 +1425,9 @@ class App {
                 <div class="flex items-center justify-between mb-8">
                     <button onclick="window.app.showWelcomeScreen()" class="btn btn-glass">
                         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
-                        Back to Home
+                        <span data-i18n="common.backToHome">${t('common.backToHome')}</span>
                     </button>
-                    <h1 class="text-3xl font-bold text-white">TOEIC ${this.capitalizeFirst(moduleType)}</h1>
+                    <h1 class="text-3xl font-bold text-white" data-i18n="module.${moduleType}.title">${t('module.' + moduleType + '.title')}</h1>
                     <div class="w-24"></div>
                 </div>
                 
@@ -1472,27 +1470,27 @@ class App {
         
         content.innerHTML = `
             <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">TOEIC Vocabulary Practice</h2>
-                <p class="text-white/80 mb-6">Master 3000+ business English words with spaced repetition</p>
-                
+                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="vocab.practiceTitle">${t('vocab.practiceTitle')}</h2>
+                <p class="text-white/80 mb-6" data-i18n="module.vocabulary.desc">${t('module.vocabulary.desc')}</p>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-blue-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Words Studied</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="vocab.wordsStudied">${t('vocab.wordsStudied')}</h3>
                         <p class="text-3xl font-bold text-blue-300" id="wordsStudied">0</p>
                     </div>
                     <div class="bg-green-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Accuracy</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
                         <p class="text-3xl font-bold text-green-300" id="vocabularyAccuracy">0%</p>
                     </div>
                     <div class="bg-purple-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Mastery Level</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="vocab.masteryLevel">${t('vocab.masteryLevel')}</h3>
                         <p class="text-3xl font-bold text-purple-300" id="masteryLevel">A1</p>
                     </div>
                 </div>
-                
+
                 <button onclick="window.startVocabularySession()" class="btn btn-primary btn-lg">
                     <i data-lucide="play" class="w-6 h-6 mr-2"></i>
-                    Start Vocabulary Session
+                    <span data-i18n="vocab.startSession">${t('vocab.startSession')}</span>
                 </button>
             </div>
         `;
@@ -1507,32 +1505,32 @@ class App {
         
         content.innerHTML = `
             <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">TOEIC Reading Practice</h2>
-                <p class="text-white/80 mb-6">Practice reading comprehension with business texts and passages</p>
-                
+                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="reading.practiceTitle">${t('reading.practiceTitle')}</h2>
+                <p class="text-white/80 mb-6" data-i18n="module.reading.desc">${t('module.reading.desc')}</p>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-green-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Passages Read</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="reading.passagesRead">${t('reading.passagesRead')}</h3>
                         <p class="text-3xl font-bold text-green-300" id="passagesRead">0</p>
                     </div>
                     <div class="bg-blue-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Accuracy</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
                         <p class="text-3xl font-bold text-blue-300" id="readingAccuracy">0%</p>
                     </div>
                     <div class="bg-orange-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Reading Speed</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="reading.speed">${t('reading.speed')}</h3>
                         <p class="text-3xl font-bold text-orange-300" id="readingSpeed">0 WPM</p>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <button onclick="window.startReadingSession()" class="btn btn-primary btn-lg">
                         <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        Start Reading Session
+                        <span data-i18n="reading.startSession">${t('reading.startSession')}</span>
                     </button>
                     <button onclick="window.app.showReadingPractice()" class="btn btn-secondary btn-lg">
                         <i data-lucide="file-text" class="w-6 h-6 mr-2"></i>
-                        Practice Mode
+                        <span data-i18n="reading.practiceMode">${t('reading.practiceMode')}</span>
                     </button>
                 </div>
             </div>
@@ -1580,10 +1578,10 @@ class App {
             console.log('❌ No passage or question available');
             content.innerHTML = `
                 <div class="text-center">
-                    <h3 class="text-xl font-bold text-white mb-4">No Reading Materials Available</h3>
-                    <p class="text-white/80 mb-6">Please check back later for new reading passages.</p>
+                    <h3 class="text-xl font-bold text-white mb-4">${t('reading.noMaterials')}</h3>
+                    <p class="text-white/80 mb-6">${t('reading.checkBackLater')}</p>
                     <button onclick="window.app.initializeReadingModule()" class="btn btn-primary">
-                        Back to Reading Module
+                        ${t('reading.backToReadingModule')}
                     </button>
                 </div>
             `;
@@ -1593,24 +1591,24 @@ class App {
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-white">Reading Comprehension</h3>
+                    <h3 class="text-xl font-bold text-white">${t('reading.comprehension')}</h3>
                     <div class="flex items-center gap-4">
-                        <span class="text-white/80">Question ${(session.currentQuestionIndex || 0) + 1} of ${session.length}</span>
+                        <span class="text-white/80">${t('quiz.questionOf', { current: (session.currentQuestionIndex || 0) + 1, total: session.length })}</span>
                         <button onclick="window.app.endCurrentSession()" class="btn btn-glass btn-sm">
-                            End Session
+                            ${t('common.endSession')}
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h4 class="text-lg font-semibold text-white mb-4">Passage</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">${t('reading.passage')}</h4>
                     <div class="text-white/90 leading-relaxed" id="passageContent">
                         ${passage.content}
                     </div>
                 </div>
                 
                 <div class="glass-effect rounded-xl p-6">
-                    <h4 class="text-lg font-semibold text-white mb-4">Question</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')}</h4>
                     <p class="text-white/90 mb-4">${question.question}</p>
                     
                     <div class="space-y-3" id="questionOptions">
@@ -1624,10 +1622,10 @@ class App {
                     
                     <div class="flex justify-between items-center mt-6">
                         <button onclick="window.app.submitReadingAnswer()" class="btn btn-primary" id="submitBtn" disabled>
-                            Submit Answer
+                            ${t('reading.submitAnswer')}
                         </button>
                         <div class="text-white/80">
-                            <span id="sessionStats">Correct: 0 | Incorrect: 0 | Time: 0s</span>
+                            <span id="sessionStats">${t('reading.sessionStats', { correct: 0, incorrect: 0, time: 0 })}</span>
                         </div>
                     </div>
                 </div>
@@ -1748,12 +1746,12 @@ class App {
                 // Correct answer - always green
                 console.log(`🎯 Marking option ${index} as CORRECT`);
                 label.classList.add('reading-answer-correct');
-                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-green-400 font-semibold">✓ Correct</span>`;
+                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-green-400 font-semibold">${t('quiz.correctMark')}</span>`;
             } else if (index === selectedIndex && !isCorrect) {
                 // Wrong selected answer - red
                 console.log(`🎯 Marking option ${index} as WRONG (selected but incorrect)`);
                 label.classList.add('reading-answer-incorrect');
-                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-red-400 font-semibold">✗ Wrong</span>`;
+                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-red-400 font-semibold">${t('quiz.wrongMark')}</span>`;
             } else {
                 // Other options - subtle styling
                 console.log(`🎯 Marking option ${index} as DISABLED`);
@@ -1787,10 +1785,10 @@ class App {
             <div class="flex items-center gap-2">
                 <i data-lucide="${isCorrect ? 'check-circle' : 'x-circle'}" class="w-5 h-5"></i>
                 <span class="font-semibold">
-                    ${isCorrect ? 'Correct!' : 'Incorrect!'}
+                    ${isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
                 </span>
             </div>
-            ${!isCorrect ? `<p class="mt-2 text-sm">The correct answer is <strong>${correctAnswerLetter}</strong></p>` : ''}
+            ${!isCorrect ? `<p class="mt-2 text-sm">${t('quiz.correctAnswerIs')} <strong>${correctAnswerLetter}</strong></p>` : ''}
         `;
         
         feedbackContainer.appendChild(feedbackDiv);
@@ -1811,7 +1809,7 @@ class App {
         const nextBtn = document.createElement('button');
         nextBtn.id = 'nextQuestionBtn';
         nextBtn.className = 'btn btn-primary';
-        nextBtn.innerHTML = '<i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i>Next Question';
+        nextBtn.innerHTML = `<i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i>${t('quiz.nextQuestion')}`;
         nextBtn.onclick = () => this.goToNextReadingQuestion();
 
         // Insert next to the submit button position
@@ -1852,38 +1850,38 @@ class App {
         content.innerHTML = `
             <div class="max-w-2xl mx-auto text-center">
                 <div class="glass-effect rounded-xl p-8 mb-6">
-                    <h3 class="text-2xl font-bold text-white mb-6">📚 Reading Session Complete!</h3>
-                    
+                    <h3 class="text-2xl font-bold text-white mb-6">📚 ${t('reading.sessionComplete')}</h3>
+
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-green-400">${stats.correctAnswers || 0}</div>
-                            <div class="text-white/80">Correct</div>
+                            <div class="text-white/80">${t('common.correct')}</div>
                         </div>
                         <div class="bg-red-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-red-400">${stats.incorrectAnswers || 0}</div>
-                            <div class="text-white/80">Incorrect</div>
+                            <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-blue-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-blue-400">${accuracy}%</div>
-                            <div class="text-white/80">Accuracy</div>
+                            <div class="text-white/80">${t('quiz.accuracy')}</div>
                         </div>
                         <div class="bg-purple-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-purple-400">${Math.round((stats.timeSpent || 0) / 1000)}s</div>
-                            <div class="text-white/80">Time</div>
+                            <div class="text-white/80">${t('common.time')}</div>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-center gap-4">
                         <button onclick="window.app.initializeReadingModule()" class="btn btn-primary">
                             <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
-                            Back to Reading
+                            ${t('reading.backToReading')}
                         </button>
                         <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                             <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                            Main Menu
+                            ${t('common.mainMenu')}
                         </button>
                     </div>
                 </div>
@@ -1903,7 +1901,11 @@ class App {
         const statsElement = document.getElementById('sessionStats');
         
         if (statsElement) {
-            statsElement.textContent = `Correct: ${stats.correctAnswers} | Incorrect: ${stats.incorrectAnswers} | Time: ${Math.round(stats.timeSpent / 1000)}s`;
+            statsElement.textContent = t('reading.sessionStats', {
+                correct: stats.correctAnswers,
+                incorrect: stats.incorrectAnswers,
+                time: Math.round(stats.timeSpent / 1000)
+            });
         }
     }
     
@@ -1937,20 +1939,20 @@ class App {
         
         content.innerHTML = `
             <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">TOEIC Listening Practice</h2>
-                <p class="text-white/80 mb-6">Practice listening skills with business conversations and talks</p>
-                
+                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="listening.practiceTitle">${t('listening.practiceTitle')}</h2>
+                <p class="text-white/80 mb-6" data-i18n="module.listening.desc">${t('module.listening.desc')}</p>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-purple-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Exercises Completed</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="listening.exercisesCompleted">${t('listening.exercisesCompleted')}</h3>
                         <p class="text-3xl font-bold text-purple-300" id="exercisesCompleted">0</p>
                     </div>
                     <div class="bg-cyan-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Accuracy</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
                         <p class="text-3xl font-bold text-cyan-300" id="listeningAccuracy">0%</p>
                     </div>
                     <div class="bg-pink-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Response Time</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="listening.responseTime">${t('listening.responseTime')}</h3>
                         <p class="text-3xl font-bold text-pink-300" id="responseTime">0s</p>
                     </div>
                 </div>
@@ -1971,36 +1973,36 @@ class App {
         
         content.innerHTML = `
             <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">TOEIC Test Simulation</h2>
-                <p class="text-white/80 mb-6">Take full-length TOEIC practice tests with real timing</p>
-                
+                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="module.test.title">${t('module.test.title')}</h2>
+                <p class="text-white/80 mb-6" data-i18n="module.test.desc">${t('module.test.desc')}</p>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-yellow-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Tests Completed</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.testsCompleted">${t('test.testsCompleted')}</h3>
                         <p class="text-3xl font-bold text-yellow-300" id="testsCompleted">0</p>
                     </div>
                     <div class="bg-red-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Best Score</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.bestScore">${t('test.bestScore')}</h3>
                         <p class="text-3xl font-bold text-red-300" id="bestScore">0</p>
                     </div>
                     <div class="bg-indigo-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2">Average Score</h3>
+                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.averageScore">${t('test.averageScore')}</h3>
                         <p class="text-3xl font-bold text-indigo-300" id="averageScore">0</p>
                     </div>
                 </div>
-                
+
                 <div class="space-y-4">
                     <button onclick="window.app.startFullTest()" class="btn btn-primary btn-lg w-full">
                         <i data-lucide="clipboard-check" class="w-6 h-6 mr-2"></i>
-                        Start Full TOEIC Test (2 hours)
+                        <span data-i18n="test.startFullTimed">${t('test.startFullTimed')}</span>
                     </button>
                     <button onclick="window.app.startListeningTest()" class="btn btn-secondary btn-lg w-full">
                         <i data-lucide="headphones" class="w-6 h-6 mr-2"></i>
-                        Listening Section Only (45 min)
+                        <span data-i18n="test.listeningOnly">${t('test.listeningOnly')}</span>
                     </button>
                     <button onclick="window.app.startReadingTest()" class="btn btn-secondary btn-lg w-full">
                         <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        Reading Section Only (75 min)
+                        <span data-i18n="test.readingOnly">${t('test.readingOnly')}</span>
                     </button>
                 </div>
             </div>
@@ -2019,80 +2021,78 @@ class App {
             <div class="max-w-4xl mx-auto">
                 <!-- Header -->
                 <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-2">TOEIC Vocabulary Flashcards</h2>
-                    <p class="text-white/60">Master TOEIC vocabulary with intelligent spaced repetition</p>
+                    <h2 class="text-2xl font-bold text-white mb-2" data-i18n="flashcards.title">${t('flashcards.title')}</h2>
+                    <p class="text-white/60" data-i18n="flashcards.subtitle">${t('flashcards.subtitle')}</p>
                 </div>
-                
+
                 <!-- Progress Summary -->
                 ${progressSummary ? `
                 <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h3 class="text-xl font-bold text-white mb-4">Your Progress</h3>
+                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="common.yourProgress">${t('common.yourProgress')}</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-blue-400">${progressSummary.totalWords}</div>
-                            <div class="text-white/80 text-sm">Total Words</div>
+                            <div class="text-white/80 text-sm" data-i18n="flashcards.totalWords">${t('flashcards.totalWords')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-green-400">${progressSummary.masteredWords}</div>
-                            <div class="text-white/80 text-sm">Mastered</div>
+                            <div class="text-white/80 text-sm" data-i18n="flashcards.mastered">${t('flashcards.mastered')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-yellow-400">${progressSummary.learningWords}</div>
-                            <div class="text-white/80 text-sm">Learning</div>
+                            <div class="text-white/80 text-sm" data-i18n="flashcards.learning">${t('flashcards.learning')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-purple-400">${Math.round(progressSummary.masteryPercentage)}%</div>
-                            <div class="text-white/80 text-sm">Mastery</div>
+                            <div class="text-white/80 text-sm" data-i18n="flashcards.mastery">${t('flashcards.mastery')}</div>
                         </div>
                     </div>
                 </div>
                 ` : ''}
-                
+
                 <!-- Main Flashcard App -->
                 <div class="glass-effect rounded-xl p-8 mb-6 text-center">
                     <div class="mb-6">
                         <div class="text-6xl mb-4">🃏</div>
-                        <h3 class="text-2xl font-bold text-white mb-2">Smart Vocabulary Learning</h3>
-                        <p class="text-white/80 text-lg mb-4">
-                            Our intelligent system adapts to your learning pace and shows you the right words at the right time.
-                        </p>
+                        <h3 class="text-2xl font-bold text-white mb-2" data-i18n="flashcards.smartLearning">${t('flashcards.smartLearning')}</h3>
+                        <p class="text-white/80 text-lg mb-4" data-i18n="flashcards.smartLearningDesc">${t('flashcards.smartLearningDesc')}</p>
                     </div>
-                    
+
                     <div class="bg-white/5 rounded-lg p-6 mb-6">
-                        <h4 class="text-lg font-semibold text-white mb-3">How it works:</h4>
+                        <h4 class="text-lg font-semibold text-white mb-3" data-i18n="flashcards.howItWorks">${t('flashcards.howItWorks')}</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-white/80">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                                <span>Study 20 words at a time</span>
+                                <span data-i18n="flashcards.step1">${t('flashcards.step1')}</span>
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                                <span>Mark words you know or don't know</span>
+                                <span data-i18n="flashcards.step2">${t('flashcards.step2')}</span>
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                                <span>Get new words every 20 completed</span>
+                                <span data-i18n="flashcards.step3">${t('flashcards.step3')}</span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <button onclick="window.app.startFlashcardReview('spaced_repetition')" class="btn btn-primary text-lg px-8 py-4">
                         <i data-lucide="play" class="w-6 h-6 mr-3"></i>
-                        Start Learning
+                        <span data-i18n="flashcards.startLearning">${t('flashcards.startLearning')}</span>
                     </button>
                 </div>
-                
+
                 <!-- Quick Actions -->
                 <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold text-white mb-4">Quick Actions</h3>
+                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="flashcards.quickActions">${t('flashcards.quickActions')}</h3>
                     <div class="flex flex-wrap gap-4">
                         <button onclick="window.app.showVocabularyProgress()" class="btn btn-secondary">
                             <i data-lucide="bar-chart-3" class="w-5 h-5 mr-2"></i>
-                            View Progress
+                            <span data-i18n="flashcards.viewProgress">${t('flashcards.viewProgress')}</span>
                         </button>
                         <button onclick="window.app.showFlashcardSettings()" class="btn btn-secondary">
                             <i data-lucide="settings" class="w-5 h-5 mr-2"></i>
-                            Settings
+                            <span data-i18n="settings.title">${t('settings.title')}</span>
                         </button>
                     </div>
                 </div>
@@ -2115,26 +2115,26 @@ class App {
         content.innerHTML = `
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-white mb-4">TOEIC Grammar Practice</h2>
-                    <p class="text-white/80 text-lg">Master essential grammar patterns for TOEIC success</p>
+                    <h2 class="text-3xl font-bold text-white mb-4" data-i18n="grammar.practiceTitle">${t('grammar.practiceTitle')}</h2>
+                    <p class="text-white/80 text-lg" data-i18n="grammar.practiceSubtitle">${t('grammar.practiceSubtitle')}</p>
                 </div>
-                
+
                 <!-- Progress Overview -->
                 ${progressSummary ? `
                 <div class="glass-effect rounded-xl p-6 mb-8">
-                    <h3 class="text-xl font-bold text-white mb-4">Your Progress</h3>
+                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="common.yourProgress">${t('common.yourProgress')}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-400">${progressSummary.masteredCategories}</div>
-                            <div class="text-white/80">Mastered Categories</div>
+                            <div class="text-white/80" data-i18n="grammar.masteredCategories">${t('grammar.masteredCategories')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-green-400">${progressSummary.totalCategories}</div>
-                            <div class="text-white/80">Total Categories</div>
+                            <div class="text-white/80" data-i18n="grammar.totalCategories">${t('grammar.totalCategories')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-purple-400">${Math.round((progressSummary.masteredCategories / progressSummary.totalCategories) * 100)}%</div>
-                            <div class="text-white/80">Completion</div>
+                            <div class="text-white/80" data-i18n="grammar.completion">${t('grammar.completion')}</div>
                         </div>
                     </div>
                 </div>
@@ -2165,7 +2165,7 @@ class App {
                                 <p class="text-white/80 text-sm mb-4">${category.description}</p>
                                 ${progress ? `
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm text-white/60">Accuracy</span>
+                                    <span class="text-sm text-white/60" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
                                     <span class="text-sm font-semibold text-${accuracy >= 80 ? 'green' : accuracy >= 60 ? 'yellow' : 'red'}-400">${accuracy}%</span>
                                 </div>
                                 <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
@@ -2182,15 +2182,15 @@ class App {
                 <div class="flex flex-wrap gap-4 justify-center">
                     <button onclick="window.app.startGrammarPractice('all')" class="btn btn-primary btn-lg">
                         <i data-lucide="book-text" class="w-6 h-6 mr-2"></i>
-                        Practice All Categories
+                        <span data-i18n="grammar.practiceAll">${t('grammar.practiceAll')}</span>
                     </button>
                     <button onclick="window.app.startGrammarPractice('mixed')" class="btn btn-secondary btn-lg">
                         <i data-lucide="shuffle" class="w-6 h-6 mr-2"></i>
-                        Mixed Practice
+                        <span data-i18n="grammar.mixedPractice">${t('grammar.mixedPractice')}</span>
                     </button>
                     <button onclick="window.app.showGrammarRules()" class="btn btn-outline btn-lg">
                         <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        View Grammar Rules
+                        <span data-i18n="grammar.viewRules">${t('grammar.viewRules')}</span>
                     </button>
                 </div>
             </div>
@@ -2545,8 +2545,8 @@ class App {
         if (window.uiManager) {
             const settingsContent = this.generateSettingsContent();
             window.uiManager.showModal(settingsContent, {
-                title: 'Settings',
-                actions: '<button class="px-4 py-2 bg-accent rounded-lg text-white" onclick="this.closest(\'.modal-overlay\').remove()">Close</button>'
+                title: t('settings.title'),
+                actions: `<button class="px-4 py-2 bg-accent rounded-lg text-white" onclick="this.closest('.modal-overlay').remove()">${t('common.close')}</button>`
             });
         }
     }
@@ -2555,33 +2555,33 @@ class App {
         return `
             <div class="space-y-4">
                 <div>
-                    <label class="block text-white/80 mb-2">Difficulty Level</label>
+                    <label class="block text-white/80 mb-2">${t('settings.difficulty')}</label>
                     <select class="w-full p-2 rounded bg-white/20 text-white">
-                        <option value="easy">Easy</option>
-                        <option value="normal" selected>Normal</option>
-                        <option value="hard">Hard</option>
-                        <option value="expert">Expert</option>
+                        <option value="easy">${t('settings.easy')}</option>
+                        <option value="normal" selected>${t('settings.normal')}</option>
+                        <option value="hard">${t('settings.hard')}</option>
+                        <option value="expert">${t('settings.expert')}</option>
                     </select>
                 </div>
-                
+
                 <div>
                     <label class="flex items-center text-white/80">
                         <input type="checkbox" class="mr-2" checked>
-                        Sound Effects
+                        ${t('settings.soundEffects')}
                     </label>
                 </div>
-                
+
                 <div>
                     <label class="flex items-center text-white/80">
                         <input type="checkbox" class="mr-2" checked>
-                        Adaptive Difficulty
+                        ${t('settings.adaptiveDifficulty')}
                     </label>
                 </div>
-                
+
                 <div>
                     <label class="flex items-center text-white/80">
                         <input type="checkbox" class="mr-2" checked>
-                        Achievement Notifications
+                        ${t('settings.achievementNotifications')}
                     </label>
                 </div>
             </div>
@@ -2592,8 +2592,8 @@ class App {
         if (window.uiManager) {
             const helpContent = this.generateHelpContent();
             window.uiManager.showModal(helpContent, {
-                title: 'How to Play',
-                actions: '<button class="px-4 py-2 bg-accent rounded-lg text-white" onclick="this.closest(\'.modal-overlay\').remove()">Got it!</button>'
+                title: t('help.title'),
+                actions: `<button class="px-4 py-2 bg-accent rounded-lg text-white" onclick="this.closest('.modal-overlay').remove()">${t('help.gotIt')}</button>`
             });
         }
     }
@@ -2602,32 +2602,32 @@ class App {
         return `
             <div class="space-y-4 text-sm">
                 <div>
-                    <h4 class="font-semibold mb-2">🎮 Game Controls</h4>
+                    <h4 class="font-semibold mb-2">🎮 ${t('help.gameControls')}</h4>
                     <ul class="space-y-1 text-white/80">
-                        <li>• Use mouse/touch to select answers</li>
-                        <li>• Press 1-4 keys for quick selection</li>
-                        <li>• ESC key to exit games</li>
-                        <li>• Ctrl+P to open Progress Dashboard</li>
+                        <li>• ${t('help.control1')}</li>
+                        <li>• ${t('help.control2')}</li>
+                        <li>• ${t('help.control3')}</li>
+                        <li>• ${t('help.control4')}</li>
                     </ul>
                 </div>
-                
+
                 <div>
-                    <h4 class="font-semibold mb-2">📚 Learning System</h4>
+                    <h4 class="font-semibold mb-2">📚 ${t('help.learningSystem')}</h4>
                     <ul class="space-y-1 text-white/80">
-                        <li>• Words are reviewed based on spaced repetition</li>
-                        <li>• Difficulty adapts to your performance</li>
-                        <li>• Track progress in the dashboard</li>
-                        <li>• Earn achievements for milestones</li>
+                        <li>• ${t('help.learning1')}</li>
+                        <li>• ${t('help.learning2')}</li>
+                        <li>• ${t('help.learning3')}</li>
+                        <li>• ${t('help.learning4')}</li>
                     </ul>
                 </div>
-                
+
                 <div>
-                    <h4 class="font-semibold mb-2">🏆 Scoring</h4>
+                    <h4 class="font-semibold mb-2">🏆 ${t('help.scoring')}</h4>
                     <ul class="space-y-1 text-white/80">
-                        <li>• Correct answers: +10 points</li>
-                        <li>• Fast answers: bonus points</li>
-                        <li>• Consecutive correct: streak bonus</li>
-                        <li>• Daily practice: streak rewards</li>
+                        <li>• ${t('help.scoring1')}</li>
+                        <li>• ${t('help.scoring2')}</li>
+                        <li>• ${t('help.scoring3')}</li>
+                        <li>• ${t('help.scoring4')}</li>
                     </ul>
                 </div>
             </div>
@@ -2703,10 +2703,10 @@ class App {
             loadingScreen.innerHTML = `
                 <div class="text-center text-white">
                     <i data-lucide="alert-circle" class="w-20 h-20 mx-auto mb-8 text-red-400"></i>
-                    <h1 class="text-4xl font-bold mb-4">Oops! Something went wrong</h1>
-                    <p class="text-xl mb-8">We're having trouble starting the app.</p>
+                    <h1 class="text-4xl font-bold mb-4">${t('error.title')}</h1>
+                    <p class="text-xl mb-8">${t('error.desc')}</p>
                     <button onclick="location.reload()" class="px-6 py-3 bg-accent hover:bg-accent/80 rounded-lg transition-colors duration-300">
-                        Try Again
+                        ${t('error.tryAgain')}
                     </button>
                 </div>
             `;
@@ -2764,10 +2764,10 @@ class App {
         if (countElement && window.toeicVocabulary) {
             const totalWords = window.toeicVocabulary.vocabulary.size;
             if (totalWords > 0) {
-                countElement.textContent = `Total vocabulary: ${totalWords} words`;
+                countElement.textContent = t('vocab.totalVocabulary', { count: totalWords });
                 countElement.className = 'text-sm text-green-400';
             } else {
-                countElement.textContent = 'Using fallback vocabulary (2 words) - Click "Reload Vocabulary" to load CSV';
+                countElement.textContent = t('vocab.fallbackVocabulary');
                 countElement.className = 'text-sm text-yellow-400';
             }
         }
@@ -2814,7 +2814,7 @@ class App {
         if (wordLevelEl) wordLevelEl.textContent = wordData.level || 'B1';
         if (wordCategoryEl) wordCategoryEl.textContent = wordData.category || 'business';
         if (wordFrequencyEl) wordFrequencyEl.textContent = wordData.frequency || 'medium';
-        if (wordMeaningEl) wordMeaningEl.textContent = 'Click "Show Meaning" to reveal the definition';
+        if (wordMeaningEl) wordMeaningEl.textContent = t('vocab.clickToReveal');
         
         // Hide examples and answer buttons initially
         if (wordExamplesEl) wordExamplesEl.classList.add('hidden');
@@ -2937,20 +2937,20 @@ class App {
                 // Update the display
                 const countElement = document.getElementById('totalVocabularyCount');
                 if (countElement) {
-                    countElement.textContent = `Total vocabulary: ${newCount} words`;
+                    countElement.textContent = t('vocab.totalVocabulary', { count: newCount });
                     countElement.className = 'text-sm text-green-400';
                 }
-                
+
                 // Show success message
-                this.showNotification(`Vocabulary reloaded! Now using ${newCount} words from CSV file.`, 'success');
-                
+                this.showNotification(t('vocab.reloadSuccess', { count: newCount }), 'success');
+
             } catch (error) {
                 console.error('❌ Error reloading vocabulary:', error);
-                this.showNotification('Failed to reload vocabulary. Check console for details.', 'error');
+                this.showNotification(t('vocab.reloadFailed'), 'error');
             }
         } else {
             console.error('❌ TOEIC Vocabulary system not available or forceReloadVocabulary method missing');
-            this.showNotification('Vocabulary system not available', 'error');
+            this.showNotification(t('vocab.systemUnavailable'), 'error');
         }
     }
     
@@ -3140,7 +3140,7 @@ class App {
                             <p class="text-white/60">${modeInfo.description}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm text-white/80">Progress</div>
+                            <div class="text-sm text-white/80">${t('quiz.progress')}</div>
                             <div class="text-lg font-bold text-blue-400">${currentIndex + 1}/${totalWords}</div>
                         </div>
                     </div>
@@ -3165,32 +3165,32 @@ class App {
                         <div id="flashcardContent" class="hidden">
                             <div class="space-y-4">
                                 <div class="text-xl text-white/90">
-                                    <strong>Definition:</strong> ${currentWord.definition}
+                                    <strong>${t('flashcards.definition')}:</strong> ${currentWord.definition}
                                 </div>
                                 <div class="text-lg text-white/80">
-                                    <strong>Example:</strong> ${currentWord.example}
+                                    <strong>${t('flashcards.example')}:</strong> ${currentWord.example}
                                 </div>
                                 ${currentWord.synonyms ? `
                                 <div class="text-lg text-white/80">
-                                    <strong>Synonyms:</strong> ${currentWord.synonyms}
+                                    <strong>${t('flashcards.synonyms')}:</strong> ${currentWord.synonyms}
                                 </div>
                                 ` : ''}
                             </div>
                         </div>
-                        
+
                         <button id="showAnswerBtn" onclick="window.app.showFlashcardAnswer()" class="btn btn-primary mt-6">
                             <i data-lucide="eye" class="w-5 h-5 mr-2"></i>
-                            Show Answer
+                            ${t('quiz.showAnswer')}
                         </button>
-                        
+
                         <div id="answerButtons" class="hidden mt-6 space-x-4">
                             <button onclick="window.app.answerFlashcard('correct')" class="btn btn-success">
                                 <i data-lucide="check" class="w-5 h-5 mr-2"></i>
-                                I Know This
+                                ${t('vocab.iKnowIt')}
                             </button>
                             <button onclick="window.app.answerFlashcard('incorrect')" class="btn btn-danger">
                                 <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                                I Don't Know
+                                ${t('vocab.iDontKnow')}
                             </button>
                         </div>
                     </div>
@@ -3201,23 +3201,23 @@ class App {
                     <div class="grid grid-cols-3 gap-6 text-center">
                         <div>
                             <div class="text-2xl font-bold text-green-400">${sessionStats.correctAnswers}</div>
-                            <div class="text-white/80">Correct</div>
+                            <div class="text-white/80">${t('common.correct')}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-red-400">${sessionStats.incorrectAnswers}</div>
-                            <div class="text-white/80">Incorrect</div>
+                            <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-blue-400">${Math.round((sessionStats.correctAnswers / (sessionStats.correctAnswers + sessionStats.incorrectAnswers)) * 100) || 0}%</div>
-                            <div class="text-white/80">Accuracy</div>
+                            <div class="text-white/80">${t('quiz.accuracy')}</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center mt-6">
                     <button onclick="window.app.endFlashcardSession()" class="btn btn-secondary">
                         <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
-                        End Session
+                        ${t('common.endSession')}
                     </button>
                 </div>
             </div>
@@ -3232,28 +3232,28 @@ class App {
     getModeInfo(mode) {
         const modeInfo = {
             'spaced_repetition': {
-                title: 'Spaced Repetition',
-                description: 'AI-powered review based on your learning progress'
+                title: t('flashcards.mode.spacedRepetition.title'),
+                description: t('flashcards.mode.spacedRepetition.desc')
             },
             'new_words': {
-                title: 'New Words',
-                description: 'Learning fresh vocabulary'
+                title: t('flashcards.mode.newWords.title'),
+                description: t('flashcards.mode.newWords.desc')
             },
             'difficulty_review': {
-                title: 'Difficulty Review',
-                description: 'Focusing on challenging words'
+                title: t('flashcards.mode.difficultyReview.title'),
+                description: t('flashcards.mode.difficultyReview.desc')
             },
             'category_review': {
-                title: 'Category Review',
-                description: 'Studying by business topic'
+                title: t('flashcards.mode.categoryReview.title'),
+                description: t('flashcards.mode.categoryReview.desc')
             },
             'quick_review': {
-                title: 'Quick Review',
-                description: 'Fast 5-minute session'
+                title: t('flashcards.mode.quickReview.title'),
+                description: t('flashcards.mode.quickReview.desc')
             },
             'exam_prep': {
-                title: 'Exam Preparation',
-                description: 'High-frequency TOEIC words'
+                title: t('flashcards.mode.examPrep.title'),
+                description: t('flashcards.mode.examPrep.desc')
             }
         };
         return modeInfo[mode] || modeInfo['spaced_repetition'];
@@ -3329,46 +3329,46 @@ class App {
             <div class="glass-effect rounded-xl p-8 max-w-2xl mx-4 text-center">
                 <div class="mb-6">
                     <div class="text-6xl mb-4">🎉</div>
-                    <h3 class="text-2xl font-bold text-blue-400 mb-2">Great Progress!</h3>
-                    <p class="text-white/90 text-lg">You've completed ${completedWords} words!</p>
+                    <h3 class="text-2xl font-bold text-blue-400 mb-2">${t('flashcards.greatProgress')}</h3>
+                    <p class="text-white/90 text-lg">${t('flashcards.completedWords', { count: completedWords })}</p>
                 </div>
-                
+
                 <div class="mb-6">
                     <div class="bg-blue-500/10 rounded-lg p-6">
-                        <h4 class="text-blue-400 font-semibold mb-3">What's Next?</h4>
+                        <h4 class="text-blue-400 font-semibold mb-3">${t('flashcards.whatsNext')}</h4>
                         <p class="text-white/80 mb-4">
-                            You're doing great! The next 20 words will be new vocabulary to continue your learning journey.
+                            ${t('flashcards.nextWordsDesc')}
                         </p>
                         <div class="flex justify-center items-center gap-4 text-sm text-white/60">
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span>Keep Learning</span>
+                                <span>${t('flashcards.keepLearning')}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                <span>New Words</span>
+                                <span>${t('flashcards.newWords')}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
-                                <span>Build Vocabulary</span>
+                                <span>${t('flashcards.buildVocabulary')}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center gap-4">
                     <button onclick="window.app.continueFlashcardSession()" class="btn btn-primary">
                         <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
-                        Continue Learning
+                        ${t('flashcards.continueLearning')}
                     </button>
                     <button onclick="window.app.endFlashcardSession()" class="btn btn-secondary">
                         <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
-                        End Session
+                        ${t('common.endSession')}
                     </button>
                 </div>
-                
+
                 <div class="text-white/60 text-sm mt-4">
-                    Auto-continuing in 5 seconds...
+                    ${t('common.autoContinuing', { seconds: 5 })}
                 </div>
             </div>
         `;
@@ -3441,35 +3441,35 @@ class App {
             <div class="max-w-4xl mx-auto">
                 <div class="glass-effect rounded-xl p-8 mb-6">
                     <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-white mb-4">Flashcard Session Complete!</h3>
+                        <h3 class="text-2xl font-bold text-white mb-4">${t('flashcards.sessionComplete')}</h3>
                         <div class="text-4xl font-bold text-blue-400 mb-2">${accuracy}%</div>
-                        <p class="text-white/80">Overall Accuracy</p>
+                        <p class="text-white/80">${t('common.overallAccuracy')}</p>
                     </div>
-                    
+
                     <div class="grid grid-cols-3 gap-6 mb-6">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-green-400">${results.correctAnswers}</div>
-                            <div class="text-white/80">Correct</div>
+                            <div class="text-white/80">${t('common.correct')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-red-400">${results.incorrectAnswers}</div>
-                            <div class="text-white/80">Incorrect</div>
+                            <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-blue-400">${results.totalWords}</div>
-                            <div class="text-white/80">Total Words</div>
+                            <div class="text-white/80">${t('flashcards.totalWords')}</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center gap-4">
                     <button onclick="window.app.startFlashcardReview('spaced_repetition')" class="btn btn-primary">
                         <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                        Review Again
+                        ${t('flashcards.reviewAgain')}
                     </button>
                     <button onclick="window.app.showTOEICModuleScreen('flashcards')" class="btn btn-secondary">
                         <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        Back to Flashcards
+                        ${t('flashcards.backToFlashcards')}
                     </button>
                 </div>
             </div>
@@ -3538,9 +3538,9 @@ class App {
                 <!-- Progress Header -->
                 <div class="glass-effect rounded-xl p-6 mb-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-white">Grammar Practice</h3>
+                        <h3 class="text-xl font-bold text-white">${t('grammar.practice')}</h3>
                         <div class="text-right">
-                            <div class="text-sm text-white/80">Progress</div>
+                            <div class="text-sm text-white/80">${t('quiz.progress')}</div>
                             <div class="text-lg font-bold text-blue-400">${question.progress.current}/${question.progress.total}</div>
                         </div>
                     </div>
@@ -3563,7 +3563,7 @@ class App {
                             </span>
                         </div>
                         
-                        <h4 class="text-lg font-semibold text-white mb-4">Question ${question.progress.current}</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${question.progress.current}</h4>
                         <p class="text-white/90 text-lg mb-6">${question.question}</p>
                         
                         <div class="space-y-3">
@@ -3579,20 +3579,20 @@ class App {
                     <div class="flex justify-between">
                         <button onclick="window.app.previousGrammarQuestion()" class="btn btn-secondary" ${question.progress.current <= 1 ? 'disabled' : ''}>
                             <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
-                            Previous
+                            ${t('quiz.previousQuestion')}
                         </button>
-                        
+
                         <button onclick="window.app.submitGrammarAnswer()" class="btn btn-primary">
                             <i data-lucide="check" class="w-5 h-5 mr-2"></i>
-                            Submit Answer
+                            ${t('reading.submitAnswer')}
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center mt-6">
                     <button onclick="window.app.completeGrammarSession()" class="btn btn-danger">
                         <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
-                        Complete Session
+                        ${t('grammar.completeSession')}
                     </button>
                 </div>
             </div>
@@ -3611,7 +3611,7 @@ class App {
         const selectedAnswer = document.querySelector('input[name="grammarAnswer"]:checked');
         if (!selectedAnswer) {
             // Show alert if no answer selected
-            alert('Please select an answer before submitting.');
+            alert(t('grammar.selectAnswer'));
             return;
         }
         
@@ -3720,11 +3720,11 @@ class App {
                 <div class="glass-effect rounded-xl p-6 mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <div>
-                            <h3 class="text-xl font-bold text-white">Grammar Practice</h3>
-                            <p class="text-white/60">Question ${currentQuestion.progress.current} of ${currentQuestion.progress.total}</p>
+                            <h3 class="text-xl font-bold text-white">${t('grammar.practice')}</h3>
+                            <p class="text-white/60">${t('quiz.questionOf', { current: currentQuestion.progress.current, total: currentQuestion.progress.total })}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm text-white/80">Progress</div>
+                            <div class="text-sm text-white/80">${t('quiz.progress')}</div>
                             <div class="text-lg font-bold text-blue-400">${currentQuestion.progress.current}/${currentQuestion.progress.total}</div>
                         </div>
                     </div>
@@ -3747,15 +3747,15 @@ class App {
                             </span>
                         </div>
                         
-                        <h4 class="text-lg font-semibold text-white mb-4">Question ${currentQuestion.progress.current}</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${currentQuestion.progress.current}</h4>
                         <p class="text-white/90 text-lg mb-6">${currentQuestion.question}</p>
-                        
+
                         <!-- Feedback Result -->
                         <div class="mb-6 p-4 rounded-lg ${isCorrect ? 'bg-green-500/20 border-2 border-green-500' : 'bg-red-500/20 border-2 border-red-500'}">
                             <div class="flex items-center gap-3 mb-2">
-                                ${isCorrect ? 
-                                    '<div class="text-2xl">✅</div><h3 class="text-xl font-bold text-green-400">Correct!</h3>' :
-                                    '<div class="text-2xl">❌</div><h3 class="text-xl font-bold text-red-400">Incorrect</h3>'
+                                ${isCorrect ?
+                                    `<div class="text-2xl">✅</div><h3 class="text-xl font-bold text-green-400">${t('quiz.correct')}</h3>` :
+                                    `<div class="text-2xl">❌</div><h3 class="text-xl font-bold text-red-400">${t('quiz.incorrect')}</h3>`
                                 }
                             </div>
                         </div>
@@ -3787,56 +3787,56 @@ class App {
                         <!-- Explanation -->
                         ${currentQuestion.explanation ? `
                             <div class="bg-blue-500/10 rounded-lg p-4 mb-4">
-                                <h4 class="text-blue-400 font-semibold mb-2">Explanation:</h4>
+                                <h4 class="text-blue-400 font-semibold mb-2">${t('quiz.explanation')}:</h4>
                                 <p class="text-white/80">${currentQuestion.explanation}</p>
                             </div>
                         ` : ''}
-                        
+
                         <!-- Grammar Rule -->
                         ${currentQuestion.grammarRule ? `
                             <div class="bg-purple-500/10 rounded-lg p-4">
-                                <h4 class="text-purple-400 font-semibold mb-2">Grammar Rule: ${currentQuestion.grammarRule.title}</h4>
+                                <h4 class="text-purple-400 font-semibold mb-2">${t('grammar.rule')}: ${currentQuestion.grammarRule.title}</h4>
                                 <p class="text-white/80 text-sm">${currentQuestion.grammarRule.description}</p>
                             </div>
                         ` : ''}
                     </div>
-                    
+
                     <div class="flex justify-center">
                         <button onclick="window.app.continueToNextGrammarQuestion()" class="btn btn-primary">
                             <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
-                            Continue to Next Question
+                            ${t('grammar.continueNext')}
                         </button>
                     </div>
-                    
+
                     <div class="text-center mt-4">
                         <div class="text-white/60 text-sm">
-                            Auto-continuing in 10 seconds...
+                            ${t('common.autoContinuing', { seconds: 10 })}
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Session Stats -->
                 <div class="glass-effect rounded-xl p-6">
                     <div class="grid grid-cols-3 gap-6 text-center">
                         <div>
                             <div class="text-2xl font-bold text-green-400">${window.toeicGrammar.getSessionStats().correctAnswers}</div>
-                            <div class="text-white/80">Correct</div>
+                            <div class="text-white/80">${t('common.correct')}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-red-400">${window.toeicGrammar.getSessionStats().incorrectAnswers}</div>
-                            <div class="text-white/80">Incorrect</div>
+                            <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
                         <div>
                             <div class="text-2xl font-bold text-blue-400">${Math.round((window.toeicGrammar.getSessionStats().correctAnswers / (window.toeicGrammar.getSessionStats().correctAnswers + window.toeicGrammar.getSessionStats().incorrectAnswers)) * 100) || 0}%</div>
-                            <div class="text-white/80">Accuracy</div>
+                            <div class="text-white/80">${t('quiz.accuracy')}</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center mt-6">
                     <button onclick="window.app.completeGrammarSession()" class="btn btn-danger">
                         <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
-                        Complete Session
+                        ${t('grammar.completeSession')}
                     </button>
                 </div>
             </div>
@@ -3864,9 +3864,9 @@ class App {
         feedbackOverlay.innerHTML = `
             <div class="glass-effect rounded-xl p-8 max-w-2xl mx-4 text-center">
                 <div class="mb-6">
-                    ${isCorrect ? 
-                        '<div class="text-6xl mb-4">✅</div><h3 class="text-2xl font-bold text-green-400 mb-2">Correct!</h3>' :
-                        '<div class="text-6xl mb-4">❌</div><h3 class="text-2xl font-bold text-red-400 mb-2">Incorrect</h3>'
+                    ${isCorrect ?
+                        `<div class="text-6xl mb-4">✅</div><h3 class="text-2xl font-bold text-green-400 mb-2">${t('quiz.correct')}</h3>` :
+                        `<div class="text-6xl mb-4">❌</div><h3 class="text-2xl font-bold text-red-400 mb-2">${t('quiz.incorrect')}</h3>`
                     }
                 </div>
                 
@@ -3898,28 +3898,28 @@ class App {
                     
                     ${currentQuestion.explanation ? `
                         <div class="bg-blue-500/10 rounded-lg p-4 mb-4">
-                            <h4 class="text-blue-400 font-semibold mb-2">Explanation:</h4>
+                            <h4 class="text-blue-400 font-semibold mb-2">${t('quiz.explanation')}:</h4>
                             <p class="text-white/80">${currentQuestion.explanation}</p>
                         </div>
                     ` : ''}
-                    
+
                     ${currentQuestion.grammarRule ? `
                         <div class="bg-purple-500/10 rounded-lg p-4">
-                            <h4 class="text-purple-400 font-semibold mb-2">Grammar Rule: ${currentQuestion.grammarRule.title}</h4>
+                            <h4 class="text-purple-400 font-semibold mb-2">${t('grammar.rule')}: ${currentQuestion.grammarRule.title}</h4>
                             <p class="text-white/80 text-sm">${currentQuestion.grammarRule.description}</p>
                         </div>
                     ` : ''}
                 </div>
-                
+
                 <div class="flex justify-center gap-4">
                     <button onclick="window.app.continueToNextGrammarQuestion()" class="btn btn-primary">
                         <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
-                        Continue
+                        ${t('quiz.continue')}
                     </button>
                 </div>
-                
+
                 <div class="text-white/60 text-sm mt-4">
-                    Auto-continuing in 3 seconds...
+                    ${t('common.autoContinuing', { seconds: 3 })}
                 </div>
             </div>
         `;
@@ -3989,35 +3989,35 @@ class App {
             <div class="max-w-4xl mx-auto">
                 <div class="glass-effect rounded-xl p-8 mb-6">
                     <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-white mb-4">Grammar Practice Complete!</h3>
+                        <h3 class="text-2xl font-bold text-white mb-4">${t('grammar.practiceComplete')}</h3>
                         <div class="text-4xl font-bold text-blue-400 mb-2">${results.accuracy}%</div>
-                        <p class="text-white/80">Overall Accuracy</p>
+                        <p class="text-white/80">${t('common.overallAccuracy')}</p>
                     </div>
-                    
+
                     <div class="grid grid-cols-3 gap-6 mb-6">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-green-400">${results.correctAnswers}</div>
-                            <div class="text-white/80">Correct</div>
+                            <div class="text-white/80">${t('common.correct')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-red-400">${results.incorrectAnswers}</div>
-                            <div class="text-white/80">Incorrect</div>
+                            <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-blue-400">${results.totalQuestions}</div>
-                            <div class="text-white/80">Total</div>
+                            <div class="text-white/80">${t('common.total')}</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center gap-4">
                     <button onclick="window.app.startGrammarPractice('all')" class="btn btn-primary">
                         <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                        Practice Again
+                        ${t('common.practiceAgain')}
                     </button>
                     <button onclick="window.app.showTOEICModuleScreen('grammar')" class="btn btn-secondary">
                         <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        Back to Grammar
+                        ${t('grammar.backToGrammar')}
                     </button>
                 </div>
             </div>
@@ -4038,8 +4038,8 @@ class App {
         content.innerHTML = `
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-white mb-4">Grammar Rules Reference</h2>
-                    <p class="text-white/80 text-lg">Essential grammar patterns for TOEIC success</p>
+                    <h2 class="text-3xl font-bold text-white mb-4" data-i18n="grammar.rulesReference">${t('grammar.rulesReference')}</h2>
+                    <p class="text-white/80 text-lg" data-i18n="grammar.practiceSubtitle">${t('grammar.practiceSubtitle')}</p>
                 </div>
                 
                 <div class="space-y-6">
@@ -4061,7 +4061,7 @@ class App {
                 <div class="flex justify-center mt-8">
                     <button onclick="window.app.showTOEICModuleScreen('grammar')" class="btn btn-primary">
                         <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
-                        Back to Grammar Practice
+                        <span data-i18n="grammar.backToPractice">${t('grammar.backToPractice')}</span>
                     </button>
                 </div>
             </div>
@@ -4121,11 +4121,9 @@ class App {
             default:
                 content.innerHTML = `
                     <div class="text-center">
-                        <h3 class="text-xl font-bold text-white mb-4">Module Not Available</h3>
-                        <p class="text-white/80 mb-6">This module is under development.</p>
-                        <button onclick="window.app.endCurrentSession()" class="btn btn-primary">
-                            Back to Main Menu
-                        </button>
+                        <h3 class="text-xl font-bold text-white mb-4" data-i18n="common.moduleNotAvailable">${t('common.moduleNotAvailable')}</h3>
+                        <p class="text-white/80 mb-6" data-i18n="common.underDevelopment">${t('common.underDevelopment')}</p>
+                        <button onclick="window.app.endCurrentSession()" class="btn btn-primary" data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</button>
                     </div>
                 `;
         }
@@ -4136,16 +4134,16 @@ class App {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
             <div class="text-center">
-                <h3 class="text-xl font-bold text-white mb-4">TOEIC Vocabulary Practice</h3>
-                <p class="text-white/80 mb-6">Mode: ${options.mode || 'Practice'}</p>
+                <h3 class="text-xl font-bold text-white mb-4" data-i18n="vocab.practiceTitle">${t('vocab.practiceTitle')}</h3>
+                <p class="text-white/80 mb-6">${t('common.mode')}: ${options.mode || 'Practice'}</p>
                 <div class="flex justify-center gap-4">
                     <button onclick="window.startVocabularySession()" class="btn btn-primary">
                         <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
-                        Start Vocabulary Session
+                        <span data-i18n="vocab.startSession">${t('vocab.startSession')}</span>
                     </button>
                     <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                         <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        Back to Main Menu
+                        <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
                     </button>
                 </div>
             </div>
@@ -4167,32 +4165,32 @@ class App {
                 <div class="glass-effect rounded-2xl p-8 mb-8">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h2 class="text-3xl font-bold text-white mb-2">📖 TOEIC Reading Comprehension</h2>
-                            <p class="text-white/80 text-lg">Master reading skills with authentic TOEIC-style passages and questions</p>
+                            <h2 class="text-3xl font-bold text-white mb-2">📖 <span data-i18n="reading.comprehensionTitle">${t('reading.comprehensionTitle')}</span></h2>
+                            <p class="text-white/80 text-lg" data-i18n="reading.comprehensionSubtitle">${t('reading.comprehensionSubtitle')}</p>
                         </div>
                         <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                             <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                            Back to Main Menu
+                            <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
                         </button>
                     </div>
-                    
+
                     <!-- Progress Overview -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="bg-blue-500/20 border border-blue-400/30 rounded-xl p-4 text-center">
                             <div class="text-2xl font-bold text-blue-300">${totalPassages}</div>
-                            <div class="text-white/80 text-sm">Reading Passages</div>
+                            <div class="text-white/80 text-sm" data-i18n="reading.passagesCount">${t('reading.passagesCount')}</div>
                         </div>
                         <div class="bg-green-500/20 border border-green-400/30 rounded-xl p-4 text-center">
                             <div class="text-2xl font-bold text-green-300">${totalQuestions}</div>
-                            <div class="text-white/80 text-sm">Practice Questions</div>
+                            <div class="text-white/80 text-sm" data-i18n="reading.practiceQuestions">${t('reading.practiceQuestions')}</div>
                         </div>
                         <div class="bg-purple-500/20 border border-purple-400/30 rounded-xl p-4 text-center">
                             <div class="text-2xl font-bold text-purple-300">${readingStats ? readingStats.accuracy.toFixed(1) : '0'}%</div>
-                            <div class="text-white/80 text-sm">Average Accuracy</div>
+                            <div class="text-white/80 text-sm" data-i18n="reading.averageAccuracy">${t('reading.averageAccuracy')}</div>
                         </div>
                         <div class="bg-orange-500/20 border border-orange-400/30 rounded-xl p-4 text-center">
                             <div class="text-2xl font-bold text-orange-300">${readingStats ? readingStats.totalAnswered : '0'}</div>
-                            <div class="text-white/80 text-sm">Questions Answered</div>
+                            <div class="text-white/80 text-sm" data-i18n="reading.questionsAnswered">${t('reading.questionsAnswered')}</div>
                         </div>
                     </div>
                 </div>
@@ -4205,17 +4203,17 @@ class App {
                             <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i data-lucide="zap" class="w-8 h-8 text-blue-400"></i>
                             </div>
-                            <h3 class="text-2xl font-bold text-white mb-2">Quick Practice</h3>
-                            <p class="text-white/80">Start with 5-10 questions for a quick reading practice session</p>
+                            <h3 class="text-2xl font-bold text-white mb-2" data-i18n="reading.quickPractice">${t('reading.quickPractice')}</h3>
+                            <p class="text-white/80" data-i18n="reading.quickPracticeDesc">${t('reading.quickPracticeDesc')}</p>
                         </div>
                         <div class="space-y-4">
                             <button onclick="window.app.startReadingSession({ count: 5 })" class="btn btn-primary w-full">
                                 <i data-lucide="play" class="w-5 h-5 mr-2"></i>
-                                Practice 5 Questions
+                                <span data-i18n="reading.practice5">${t('reading.practice5')}</span>
                             </button>
                             <button onclick="window.app.startReadingSession({ count: 10 })" class="btn btn-secondary w-full">
                                 <i data-lucide="clock" class="w-5 h-5 mr-2"></i>
-                                Practice 10 Questions
+                                <span data-i18n="reading.practice10">${t('reading.practice10')}</span>
                             </button>
                         </div>
                     </div>
@@ -4226,17 +4224,17 @@ class App {
                             <div class="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i data-lucide="book-open" class="w-8 h-8 text-green-400"></i>
                             </div>
-                            <h3 class="text-2xl font-bold text-white mb-2">Full Practice</h3>
-                            <p class="text-white/80">Complete reading practice with 20-25 questions like the real TOEIC test</p>
+                            <h3 class="text-2xl font-bold text-white mb-2" data-i18n="reading.fullPractice">${t('reading.fullPractice')}</h3>
+                            <p class="text-white/80" data-i18n="reading.fullPracticeDesc">${t('reading.fullPracticeDesc')}</p>
                         </div>
                         <div class="space-y-4">
                             <button onclick="window.app.startReadingSession({ count: 20 })" class="btn btn-primary w-full">
                                 <i data-lucide="target" class="w-5 h-5 mr-2"></i>
-                                Practice 20 Questions
+                                <span data-i18n="reading.practice20">${t('reading.practice20')}</span>
                             </button>
                             <button onclick="window.app.startReadingSession({ count: 25 })" class="btn btn-secondary w-full">
                                 <i data-lucide="award" class="w-5 h-5 mr-2"></i>
-                                Practice 25 Questions
+                                <span data-i18n="reading.practice25">${t('reading.practice25')}</span>
                             </button>
                         </div>
                     </div>
@@ -4244,39 +4242,33 @@ class App {
                 
                 <!-- Reading Skills Focus -->
                 <div class="glass-effect rounded-2xl p-8 mb-8">
-                    <h3 class="text-2xl font-bold text-white mb-6 text-center">🎯 Focus on Specific Skills</h3>
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center">🎯 <span data-i18n="reading.focusSkills">${t('reading.focusSkills')}</span></h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white/5 rounded-xl p-6 text-center">
                             <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                                 <i data-lucide="file-text" class="w-6 h-6 text-yellow-400"></i>
                             </div>
-                            <h4 class="text-lg font-semibold text-white mb-2">Incomplete Sentences</h4>
-                            <p class="text-white/70 text-sm mb-4">Practice grammar and vocabulary in context</p>
-                            <button onclick="window.app.startReadingSession({ type: 'incomplete_sentences' })" class="btn btn-outline w-full">
-                                Start Practice
-                            </button>
+                            <h4 class="text-lg font-semibold text-white mb-2" data-i18n="reading.incompleteSentences">${t('reading.incompleteSentences')}</h4>
+                            <p class="text-white/70 text-sm mb-4" data-i18n="reading.incompleteSentencesDesc">${t('reading.incompleteSentencesDesc')}</p>
+                            <button onclick="window.app.startReadingSession({ type: 'incomplete_sentences' })" class="btn btn-outline w-full" data-i18n="quiz.startPractice">${t('quiz.startPractice')}</button>
                         </div>
-                        
+
                         <div class="bg-white/5 rounded-xl p-6 text-center">
                             <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                                 <i data-lucide="align-left" class="w-6 h-6 text-blue-400"></i>
                             </div>
-                            <h4 class="text-lg font-semibold text-white mb-2">Text Completion</h4>
-                            <p class="text-white/70 text-sm mb-4">Fill in the blanks in reading passages</p>
-                            <button onclick="window.app.startReadingSession({ type: 'text_completion' })" class="btn btn-outline w-full">
-                                Start Practice
-                            </button>
+                            <h4 class="text-lg font-semibold text-white mb-2" data-i18n="reading.textCompletion">${t('reading.textCompletion')}</h4>
+                            <p class="text-white/70 text-sm mb-4" data-i18n="reading.textCompletionDesc">${t('reading.textCompletionDesc')}</p>
+                            <button onclick="window.app.startReadingSession({ type: 'text_completion' })" class="btn btn-outline w-full" data-i18n="quiz.startPractice">${t('quiz.startPractice')}</button>
                         </div>
-                        
+
                         <div class="bg-white/5 rounded-xl p-6 text-center">
                             <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                                 <i data-lucide="book" class="w-6 h-6 text-purple-400"></i>
                             </div>
-                            <h4 class="text-lg font-semibold text-white mb-2">Reading Comprehension</h4>
-                            <p class="text-white/70 text-sm mb-4">Answer questions about reading passages</p>
-                            <button onclick="window.app.startReadingSession({ type: 'reading_comprehension' })" class="btn btn-outline w-full">
-                                Start Practice
-                            </button>
+                            <h4 class="text-lg font-semibold text-white mb-2" data-i18n="reading.comprehension">${t('reading.comprehension')}</h4>
+                            <p class="text-white/70 text-sm mb-4" data-i18n="reading.comprehensionDesc">${t('reading.comprehensionDesc')}</p>
+                            <button onclick="window.app.startReadingSession({ type: 'reading_comprehension' })" class="btn btn-outline w-full" data-i18n="quiz.startPractice">${t('quiz.startPractice')}</button>
                         </div>
                     </div>
                 </div>
@@ -4284,7 +4276,7 @@ class App {
                 <!-- Recent Performance -->
                 ${readingStats && readingStats.recentSessions ? `
                 <div class="glass-effect rounded-2xl p-8">
-                    <h3 class="text-2xl font-bold text-white mb-6">📊 Recent Performance</h3>
+                    <h3 class="text-2xl font-bold text-white mb-6">📊 <span data-i18n="reading.recentPerformance">${t('reading.recentPerformance')}</span></h3>
                     <div class="space-y-4">
                         ${readingStats.recentSessions.slice(0, 3).map(session => `
                             <div class="bg-white/5 rounded-xl p-4 flex items-center justify-between">
@@ -4295,13 +4287,13 @@ class App {
                                         </span>
                                     </div>
                                     <div>
-                                        <div class="text-white font-semibold">${session.questionCount} Questions</div>
+                                        <div class="text-white font-semibold">${t('reading.nQuestions', { count: session.questionCount })}</div>
                                         <div class="text-white/60 text-sm">${new Date(session.date).toLocaleDateString()}</div>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-white/80 text-sm">${session.correctAnswers}/${session.questionCount} correct</div>
-                                    <div class="text-white/60 text-xs">${Math.round(session.timeSpent / 60)} min</div>
+                                    <div class="text-white/80 text-sm">${t('reading.correctRatio', { correct: session.correctAnswers, total: session.questionCount })}</div>
+                                    <div class="text-white/60 text-xs">${t('common.minutes', { count: Math.round(session.timeSpent / 60) })}</div>
                                 </div>
                             </div>
                         `).join('')}
@@ -4351,17 +4343,17 @@ class App {
                 <div class="glass-effect rounded-2xl p-6 mb-8">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-white mb-2">📖 TOEIC Reading Practice</h2>
-                            <p class="text-white/80">Question ${currentIndex + 1} of ${totalQuestions}</p>
+                            <h2 class="text-2xl font-bold text-white mb-2">📖 ${t('reading.practiceTitle')}</h2>
+                            <p class="text-white/80">${t('quiz.questionOf', { current: currentIndex + 1, total: totalQuestions })}</p>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="text-right">
-                                <div class="text-white/80 text-sm">Time</div>
+                                <div class="text-white/80 text-sm">${t('common.time')}</div>
                                 <div class="text-white font-bold" id="readingTimer">00:00</div>
                             </div>
                             <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                                 <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                                Exit
+                                ${t('common.exit')}
                             </button>
                         </div>
                     </div>
@@ -4376,15 +4368,15 @@ class App {
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="bg-green-500/20 rounded-lg p-3">
                             <div class="text-lg font-bold text-green-300" id="readingCorrectCount">0</div>
-                            <div class="text-white/80 text-sm">Correct</div>
+                            <div class="text-white/80 text-sm">${t('common.correct')}</div>
                         </div>
                         <div class="bg-red-500/20 rounded-lg p-3">
                             <div class="text-lg font-bold text-red-300" id="readingIncorrectCount">0</div>
-                            <div class="text-white/80 text-sm">Incorrect</div>
+                            <div class="text-white/80 text-sm">${t('common.incorrect')}</div>
                         </div>
                         <div class="bg-blue-500/20 rounded-lg p-3">
                             <div class="text-lg font-bold text-blue-300" id="readingAccuracy">0%</div>
-                            <div class="text-white/80 text-sm">Accuracy</div>
+                            <div class="text-white/80 text-sm">${t('quiz.accuracy')}</div>
                         </div>
                     </div>
                 </div>
@@ -4394,38 +4386,38 @@ class App {
                     ${currentQuestion ? this.generateReadingQuestionHTML(currentQuestion, currentIndex) : `
                         <div class="text-center">
                             <div class="text-6xl mb-4">📚</div>
-                            <h3 class="text-2xl font-bold text-white mb-4">Loading Question...</h3>
-                            <p class="text-white/80">Please wait while we prepare your reading question.</p>
+                            <h3 class="text-2xl font-bold text-white mb-4">${t('reading.loadingQuestion')}</h3>
+                            <p class="text-white/80">${t('reading.loadingQuestionDesc')}</p>
                         </div>
                     `}
                 </div>
                 
                 <!-- Navigation -->
                 <div class="flex justify-between items-center mb-4">
-                    <button onclick="window.app.previousReadingQuestion()" 
+                    <button onclick="window.app.previousReadingQuestion()"
                             class="btn btn-secondary ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
                             ${currentIndex === 0 ? 'disabled' : ''}>
                         <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
-                        Previous
+                        ${t('quiz.previousQuestion')}
                     </button>
-                    
+
                     <div class="text-center">
-                        <div class="text-white/80 text-sm">Question ${currentIndex + 1} of ${totalQuestions}</div>
+                        <div class="text-white/80 text-sm">${t('quiz.questionOf', { current: currentIndex + 1, total: totalQuestions })}</div>
                     </div>
-                    
-                    <button onclick="window.app.nextReadingQuestion()" 
+
+                    <button onclick="window.app.nextReadingQuestion()"
                             class="btn btn-primary" id="nextBtnNav" disabled>
-                        Next
+                        ${t('common.next')}
                         <i data-lucide="chevron-right" class="w-5 h-5 ml-2"></i>
                     </button>
                 </div>
-                
+
                 <!-- Next Button - Fixed Position -->
                 <div class="fixed bottom-6 right-6 z-50">
-                    <button onclick="window.app.nextReadingQuestion()" 
-                            class="btn btn-primary shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 text-lg font-semibold" 
+                    <button onclick="window.app.nextReadingQuestion()"
+                            class="btn btn-primary shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 text-lg font-semibold"
                             id="nextBtn" disabled>
-                        <span class="hidden sm:inline">Next Question</span>
+                        <span class="hidden sm:inline">${t('quiz.nextQuestion')}</span>
                         <i data-lucide="chevron-right" class="w-5 h-5 sm:ml-2"></i>
                     </button>
                 </div>
@@ -4460,38 +4452,38 @@ class App {
                             <span class="text-blue-300 font-bold">${index + 1}</span>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-white">${typeInfo ? typeInfo.name : 'Reading Question'}</h3>
+                            <h3 class="text-lg font-semibold text-white">${typeInfo ? typeInfo.name : t('reading.questionDefault')}</h3>
                             <p class="text-white/60 text-sm">${typeInfo ? typeInfo.description : ''}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-white/80 text-sm">Time Limit</div>
+                        <div class="text-white/80 text-sm">${t('reading.timeLimit')}</div>
                         <div class="text-white font-bold" id="questionTimer">${typeInfo ? typeInfo.timeLimit : 60}s</div>
                     </div>
                 </div>
-                
+
                 <!-- Reading Passage -->
                 ${passage ? `
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">📖 Reading Passage</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">📖 ${t('reading.readingPassage')}</h4>
                     <div class="text-white/90 leading-relaxed whitespace-pre-line max-h-96 overflow-y-auto">${passage.content}</div>
                 </div>
                 ` : question.passage ? `
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">📖 Reading Passage</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">📖 ${t('reading.readingPassage')}</h4>
                     <div class="text-white/90 leading-relaxed whitespace-pre-line max-h-96 overflow-y-auto">${question.passage}</div>
                 </div>
                 ` : ''}
-                
+
                 <!-- Question Text -->
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">❓ Question</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">❓ ${t('status.question')}</h4>
                     <p class="text-white/90 text-lg leading-relaxed">${question.question}</p>
                 </div>
-                
+
                 <!-- Answer Options -->
                 <div class="space-y-3">
-                    <h4 class="text-lg font-semibold text-white mb-4">📝 Choose your answer:</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">📝 ${t('reading.chooseAnswer')}</h4>
                     ${question.options ? question.options.map((option, optionIndex) => `
                         <label class="flex items-center p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer hover:bg-white/10 transition-colors answer-option" 
                                data-option="${optionIndex}">
@@ -4509,7 +4501,7 @@ class App {
                 <div class="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
                     <div class="flex items-center gap-2 text-blue-300">
                         <i data-lucide="info" class="w-5 h-5"></i>
-                        <span class="text-sm font-medium">Tip: Read the passage carefully and choose the best answer based on the information provided.</span>
+                        <span class="text-sm font-medium">${t('reading.tip')}</span>
                     </div>
                 </div>
             </div>
@@ -4776,17 +4768,17 @@ class App {
         let feedbackMessage, feedbackIcon, feedbackTitle;
         
         if (isTimeout) {
-            feedbackMessage = '⏰ Time\'s up! The correct answer has been highlighted.';
+            feedbackMessage = `⏰ ${t('feedback.timeUpMsg')}`;
             feedbackIcon = '⏰';
-            feedbackTitle = 'Time\'s Up!';
+            feedbackTitle = t('feedback.timeUp');
         } else if (isCorrect) {
-            feedbackMessage = '✅ Correct! Well done!';
+            feedbackMessage = `✅ ${t('feedback.correctMsg')}`;
             feedbackIcon = '✅';
-            feedbackTitle = 'Correct!';
+            feedbackTitle = t('quiz.correct');
         } else {
-            feedbackMessage = '❌ Incorrect. The correct answer has been highlighted.';
+            feedbackMessage = `❌ ${t('feedback.incorrectMsg')}`;
             feedbackIcon = '❌';
-            feedbackTitle = 'Incorrect';
+            feedbackTitle = t('quiz.incorrect');
         }
         
         // Create feedback element
@@ -5135,29 +5127,29 @@ class App {
                     <!-- Results Summary -->
                     <div class="glass-effect rounded-2xl p-8 text-center mb-8">
                         <div class="text-6xl mb-6">🎉</div>
-                        <h2 class="text-3xl font-bold text-white mb-4">Reading Practice Complete!</h2>
-                        <p class="text-white/80 text-lg mb-8">Great job on completing your TOEIC reading practice session.</p>
-                        
+                        <h2 class="text-3xl font-bold text-white mb-4">${t('reading.practiceComplete')}</h2>
+                        <p class="text-white/80 text-lg mb-8">${t('reading.practiceCompleteDesc')}</p>
+
                         <!-- Results Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div class="bg-green-500/20 border border-green-400/30 rounded-xl p-6">
                                 <div class="text-3xl font-bold text-green-300">${stats.correctAnswers}</div>
-                                <div class="text-white/80">Correct Answers</div>
+                                <div class="text-white/80">${t('quiz.correctAnswers')}</div>
                             </div>
                             <div class="bg-red-500/20 border border-red-400/30 rounded-xl p-6">
                                 <div class="text-3xl font-bold text-red-300">${stats.incorrectAnswers}</div>
-                                <div class="text-white/80">Incorrect Answers</div>
+                                <div class="text-white/80">${t('common.incorrectAnswers')}</div>
                             </div>
                             <div class="bg-blue-500/20 border border-blue-400/30 rounded-xl p-6">
                                 <div class="text-3xl font-bold text-blue-300">${accuracy}%</div>
-                                <div class="text-white/80">Accuracy</div>
+                                <div class="text-white/80">${t('quiz.accuracy')}</div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Detailed Answer Review -->
                     <div class="glass-effect rounded-2xl p-8 mb-8">
-                        <h3 class="text-2xl font-bold text-white mb-6 text-center">📚 Answer Review - Learn from Your Mistakes</h3>
+                        <h3 class="text-2xl font-bold text-white mb-6 text-center">📚 ${t('reading.answerReview')}</h3>
                         <div class="space-y-6">
                             ${sessionResults.map((result, index) => `
                                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
@@ -5167,30 +5159,30 @@ class App {
                                                 <span class="text-sm font-bold ${result.isCorrect ? 'text-green-400' : 'text-red-400'}">${index + 1}</span>
                                             </div>
                                             <div>
-                                                <h4 class="text-lg font-semibold text-white">Question ${index + 1}</h4>
+                                                <h4 class="text-lg font-semibold text-white">${t('status.question')} ${index + 1}</h4>
                                                 <p class="text-white/60 text-sm">${result.questionType}</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-2xl">${result.isCorrect ? '✅' : '❌'}</div>
-                                            <div class="text-white/60 text-sm">${result.isCorrect ? 'Correct' : 'Incorrect'}</div>
+                                            <div class="text-white/60 text-sm">${result.isCorrect ? t('common.correct') : t('common.incorrect')}</div>
                                         </div>
                                     </div>
-                                    
+
                                     ${result.passage ? `
                                     <div class="bg-white/5 rounded-xl p-4 mb-4">
-                                        <h5 class="text-sm font-semibold text-white mb-2">📖 Passage:</h5>
+                                        <h5 class="text-sm font-semibold text-white mb-2">📖 ${t('reading.passage')}:</h5>
                                         <div class="text-white/80 text-sm leading-relaxed max-h-32 overflow-y-auto">${result.passage}</div>
                                     </div>
                                     ` : ''}
-                                    
+
                                     <div class="bg-white/5 rounded-xl p-4 mb-4">
-                                        <h5 class="text-sm font-semibold text-white mb-2">❓ Question:</h5>
+                                        <h5 class="text-sm font-semibold text-white mb-2">❓ ${t('status.question')}:</h5>
                                         <p class="text-white/80 text-sm">${result.question}</p>
                                     </div>
-                                    
+
                                     <div class="space-y-2">
-                                        <h5 class="text-sm font-semibold text-white mb-2">📝 Answer Options:</h5>
+                                        <h5 class="text-sm font-semibold text-white mb-2">📝 ${t('reading.answerOptions')}</h5>
                                         ${result.options.map((option, optionIndex) => `
                                             <div class="flex items-center p-3 rounded-lg ${optionIndex === result.selectedAnswer ? 
                                                 (result.isCorrect ? 'bg-green-500/20 border border-green-400/30' : 'bg-red-500/20 border border-red-400/30') :
@@ -5206,15 +5198,15 @@ class App {
                                                     }"></div>
                                                 </div>
                                                 <span class="text-white/90 text-sm flex-1">${option}</span>
-                                                ${optionIndex === result.correctAnswer ? '<span class="text-green-400 text-xs font-semibold">✓ Correct</span>' : ''}
-                                                ${optionIndex === result.selectedAnswer && !result.isCorrect ? '<span class="text-red-400 text-xs font-semibold">✗ Your Answer</span>' : ''}
+                                                ${optionIndex === result.correctAnswer ? `<span class="text-green-400 text-xs font-semibold">${t('quiz.correctMark')}</span>` : ''}
+                                                ${optionIndex === result.selectedAnswer && !result.isCorrect ? `<span class="text-red-400 text-xs font-semibold">${t('quiz.yourAnswerMark')}</span>` : ''}
                                             </div>
                                         `).join('')}
                                     </div>
                                     
                                     ${result.explanation ? `
                                     <div class="bg-blue-500/10 rounded-xl p-4 mt-4">
-                                        <h5 class="text-sm font-semibold text-blue-300 mb-2">💡 Explanation:</h5>
+                                        <h5 class="text-sm font-semibold text-blue-300 mb-2">💡 ${t('quiz.explanation')}:</h5>
                                         <p class="text-white/80 text-sm">${result.explanation}</p>
                                     </div>
                                     ` : ''}
@@ -5227,11 +5219,11 @@ class App {
                     <div class="flex gap-4 justify-center">
                         <button onclick="window.app.showReadingModule()" class="btn btn-primary">
                             <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                            Practice Again
+                            ${t('common.practiceAgain')}
                         </button>
                         <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                             <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                            Back to Main Menu
+                            ${t('common.backToMainMenu')}
                         </button>
                     </div>
                 </div>
@@ -5293,64 +5285,64 @@ class App {
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-bold text-white mb-4">TOEIC Test Simulator</h3>
-                    <p class="text-white/80 mb-6">Take full-length practice tests to simulate the real TOEIC exam</p>
+                    <h3 class="text-2xl font-bold text-white mb-4" data-i18n="test.simulatorTitle">${t('test.simulatorTitle')}</h3>
+                    <p class="text-white/80 mb-6" data-i18n="module.test.desc">${t('module.test.desc')}</p>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass-effect rounded-xl p-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">📋</div>
-                            <h4 class="text-xl font-bold text-white mb-2">Full TOEIC Test</h4>
-                            <p class="text-white/80 mb-4">Complete 200-question test with listening and reading sections</p>
+                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.fullTest">${t('test.fullTest')}</h4>
+                            <p class="text-white/80 mb-4" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</p>
                             <button onclick="window.startFullTest()" class="btn btn-primary w-full">
                                 <i data-lucide="play" class="w-5 h-5 mr-2"></i>
-                                Start Full Test
+                                <span data-i18n="test.startFull">${t('test.startFull')}</span>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="glass-effect rounded-xl p-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">🎧</div>
-                            <h4 class="text-xl font-bold text-white mb-2">Listening Test</h4>
-                            <p class="text-white/80 mb-4">Practice listening comprehension with 100 questions</p>
+                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.listeningTest">${t('test.listeningTest')}</h4>
+                            <p class="text-white/80 mb-4" data-i18n="test.listeningTestDesc">${t('test.listeningTestDesc')}</p>
                             <button onclick="window.startListeningTest()" class="btn btn-primary w-full">
                                 <i data-lucide="headphones" class="w-5 h-5 mr-2"></i>
-                                Start Listening Test
+                                <span data-i18n="test.startListening">${t('test.startListening')}</span>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="glass-effect rounded-xl p-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">📖</div>
-                            <h4 class="text-xl font-bold text-white mb-2">Reading Test</h4>
-                            <p class="text-white/80 mb-4">Practice reading comprehension with 100 questions</p>
+                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.readingTest">${t('test.readingTest')}</h4>
+                            <p class="text-white/80 mb-4" data-i18n="test.readingTestDesc">${t('test.readingTestDesc')}</p>
                             <button onclick="window.startReadingTest()" class="btn btn-primary w-full">
                                 <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
-                                Start Reading Test
+                                <span data-i18n="test.startReading">${t('test.startReading')}</span>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="glass-effect rounded-xl p-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">📊</div>
-                            <h4 class="text-xl font-bold text-white mb-2">Test Results</h4>
-                            <p class="text-white/80 mb-4">View your previous test scores and progress</p>
+                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.results">${t('test.results')}</h4>
+                            <p class="text-white/80 mb-4" data-i18n="test.resultsDesc">${t('test.resultsDesc')}</p>
                             <button onclick="window.app.showTestResults()" class="btn btn-secondary w-full">
                                 <i data-lucide="bar-chart" class="w-5 h-5 mr-2"></i>
-                                View Results
+                                <span data-i18n="test.viewResults">${t('test.viewResults')}</span>
                             </button>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="text-center mt-8">
                     <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                         <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        Back to Main Menu
+                        <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
                     </button>
                 </div>
             </div>
@@ -5367,81 +5359,75 @@ class App {
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-bold text-white mb-4">TOEIC Test Simulator</h3>
-                    <p class="text-white/80 mb-6">Choose your test type and start practicing</p>
+                    <h3 class="text-2xl font-bold text-white mb-4" data-i18n="test.simulatorTitle">${t('test.simulatorTitle')}</h3>
+                    <p class="text-white/80 mb-6" data-i18n="test.chooseType">${t('test.chooseType')}</p>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <!-- Full Test -->
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="w-16 h-16 mx-auto mb-4 bg-blue-500/20 rounded-full flex items-center justify-center">
                             <i data-lucide="clipboard-list" class="w-8 h-8 text-blue-400"></i>
                         </div>
-                        <h4 class="text-lg font-semibold text-white mb-2">Full TOEIC Test</h4>
-                        <p class="text-white/70 text-sm mb-4">Complete 200-question test (Listening + Reading)</p>
+                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.fullTest">${t('test.fullTest')}</h4>
+                        <p class="text-white/70 text-sm mb-4" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</p>
                         <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ Duration: 2 hours 30 minutes</div>
-                            <div>📊 Questions: 200</div>
-                            <div>🎯 Score: 10-990</div>
+                            <div>⏱️ <span data-i18n="test.durationFull">${t('test.durationFull')}</span></div>
+                            <div>📊 ${t('test.questions')}: 200</div>
+                            <div>🎯 ${t('test.score')}: 10-990</div>
                         </div>
-                        <button onclick="window.app.startFullTOEICTest()" class="btn btn-primary w-full">
-                            Start Full Test
-                        </button>
+                        <button onclick="window.app.startFullTOEICTest()" class="btn btn-primary w-full" data-i18n="test.startFull">${t('test.startFull')}</button>
                     </div>
-                    
+
                     <!-- Listening Test -->
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-full flex items-center justify-center">
                             <i data-lucide="headphones" class="w-8 h-8 text-green-400"></i>
                         </div>
-                        <h4 class="text-lg font-semibold text-white mb-2">Listening Test</h4>
-                        <p class="text-white/70 text-sm mb-4">100 listening questions (Parts 1-4)</p>
+                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.listeningTest">${t('test.listeningTest')}</h4>
+                        <p class="text-white/70 text-sm mb-4" data-i18n="test.listeningParts">${t('test.listeningParts')}</p>
                         <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ Duration: 45 minutes</div>
-                            <div>📊 Questions: 100</div>
-                            <div>🎯 Score: 5-495</div>
+                            <div>⏱️ <span data-i18n="test.durationListening">${t('test.durationListening')}</span></div>
+                            <div>📊 ${t('test.questions')}: 100</div>
+                            <div>🎯 ${t('test.score')}: 5-495</div>
                         </div>
-                        <button onclick="window.app.startListeningTOEICTest()" class="btn btn-secondary w-full">
-                            Start Listening Test
-                        </button>
+                        <button onclick="window.app.startListeningTOEICTest()" class="btn btn-secondary w-full" data-i18n="test.startListening">${t('test.startListening')}</button>
                     </div>
-                    
+
                     <!-- Reading Test -->
                     <div class="glass-effect rounded-xl p-6 text-center">
                         <div class="w-16 h-16 mx-auto mb-4 bg-purple-500/20 rounded-full flex items-center justify-center">
                             <i data-lucide="file-text" class="w-8 h-8 text-purple-400"></i>
                         </div>
-                        <h4 class="text-lg font-semibold text-white mb-2">Reading Test</h4>
-                        <p class="text-white/70 text-sm mb-4">100 reading questions (Parts 5-7)</p>
+                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.readingTest">${t('test.readingTest')}</h4>
+                        <p class="text-white/70 text-sm mb-4" data-i18n="test.readingParts">${t('test.readingParts')}</p>
                         <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ Duration: 75 minutes</div>
-                            <div>📊 Questions: 100</div>
-                            <div>🎯 Score: 5-495</div>
+                            <div>⏱️ <span data-i18n="test.durationReading">${t('test.durationReading')}</span></div>
+                            <div>📊 ${t('test.questions')}: 100</div>
+                            <div>🎯 ${t('test.score')}: 5-495</div>
                         </div>
-                        <button onclick="window.app.startReadingTOEICTest()" class="btn btn-secondary w-full">
-                            Start Reading Test
-                        </button>
+                        <button onclick="window.app.startReadingTOEICTest()" class="btn btn-secondary w-full" data-i18n="test.startReading">${t('test.startReading')}</button>
                     </div>
                 </div>
-                
+
                 <!-- Test History -->
                 <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h4 class="text-lg font-semibold text-white mb-4">📊 Test History</h4>
+                    <h4 class="text-lg font-semibold text-white mb-4">📊 <span data-i18n="module.history.title">${t('module.history.title')}</span></h4>
                     <div id="testHistory" class="space-y-3">
                         <div class="text-center text-white/60 py-4">
-                            No test history available
+                            ${t('test.noHistory')}
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center gap-4">
                     <button onclick="window.app.showTestSettings()" class="btn btn-secondary">
                         <i data-lucide="settings" class="w-5 h-5 mr-2"></i>
-                        Test Settings
+                        <span data-i18n="test.settings">${t('test.settings')}</span>
                     </button>
                     <button onclick="window.app.endCurrentSession()" class="btn btn-primary">
                         <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        Back to Main Menu
+                        <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
                     </button>
                 </div>
             </div>
@@ -5515,23 +5501,23 @@ class App {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold text-white">${testInfo.title}</h3>
                         <div class="text-right">
-                            <div class="text-sm text-white/80">Time Remaining</div>
+                            <div class="text-sm text-white/80">${t('test.timeRemaining')}</div>
                             <div id="testTimer" class="text-lg font-bold text-blue-400">${testInfo.duration}</div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-green-400">${testSession.correctAnswers || 0}</div>
-                            <div class="text-sm text-white/80">Correct</div>
+                            <div class="text-sm text-white/80">${t('common.correct')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-red-400">${testSession.incorrectAnswers || 0}</div>
-                            <div class="text-sm text-white/80">Incorrect</div>
+                            <div class="text-sm text-white/80">${t('common.incorrect')}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-blue-400">${(testSession.currentQuestion || 0) + 1}/${testInfo.totalQuestions}</div>
-                            <div class="text-sm text-white/80">Progress</div>
+                            <div class="text-sm text-white/80">${t('quiz.progress')}</div>
                         </div>
                     </div>
 
@@ -5542,7 +5528,7 @@ class App {
 
                 <div class="glass-effect rounded-xl p-6">
                     <div id="testQuestion" class="mb-6">
-                        <h4 class="text-lg font-semibold text-white mb-4">Question ${(testSession.currentQuestion || 0) + 1}</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${(testSession.currentQuestion || 0) + 1}</h4>
                         <div class="text-white/90 mb-6">
                             ${this.generateTestQuestion(testSession, testType)}
                         </div>
@@ -5555,20 +5541,20 @@ class App {
                     <div class="flex justify-between">
                         <button id="prevBtn" onclick="window.app.previousTestQuestion()" class="btn btn-secondary" ${(testSession.currentQuestion || 0) < 1 ? 'disabled' : ''}>
                             <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
-                            Previous
+                            ${t('quiz.previousQuestion')}
                         </button>
-                        
+
                         <button id="nextBtn" onclick="window.app.nextTestQuestion()" class="btn btn-primary">
-                            Next
+                            ${t('common.next')}
                             <i data-lucide="chevron-right" class="w-5 h-5 ml-2"></i>
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-center mt-6">
                     <button onclick="window.app.submitTest()" class="btn btn-danger">
                         <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
-                        Submit Test
+                        ${t('test.submitTest')}
                     </button>
                 </div>
             </div>
@@ -5581,17 +5567,17 @@ class App {
     getTestInfo(testType) {
         const testInfo = {
             full: {
-                title: 'Full TOEIC Test',
+                title: t('test.fullTest'),
                 duration: '2:30:00',
                 totalQuestions: 200
             },
             listening: {
-                title: 'TOEIC Listening Test',
+                title: t('test.listeningTitle'),
                 duration: '0:45:00',
                 totalQuestions: 100
             },
             reading: {
-                title: 'TOEIC Reading Test',
+                title: t('test.readingTitle'),
                 duration: '1:15:00',
                 totalQuestions: 100
             }
@@ -5602,39 +5588,39 @@ class App {
     
     generateTestQuestion(testSession, testType) {
         if (!window.toeicTestSimulator) {
-            return '<p class="text-red-400">Test simulator not available</p>';
+            return `<p class="text-red-400">${t('test.simulatorUnavailable')}</p>`;
         }
-        
+
         const question = window.toeicTestSimulator.getCurrentQuestion();
         if (!question) {
-            return '<p class="text-yellow-400">No question available</p>';
+            return `<p class="text-yellow-400">${t('test.noQuestion')}</p>`;
         }
-        
+
         // Generate question based on type
         if (question.type === 'photograph') {
             return `
                 <div class="text-center mb-6">
-                    <p class="text-lg mb-4">Look at the photograph.</p>
+                    <p class="text-lg mb-4">${t('test.lookAtPhoto')}</p>
                     <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">[Photograph would be displayed here]</p>
+                        <p class="text-white/60">${t('test.photoPlaceholder')}</p>
                     </div>
                 </div>
             `;
         } else if (question.type === 'question_response') {
             return `
                 <div class="text-center mb-6">
-                    <p class="text-lg mb-4">Listen to the question.</p>
+                    <p class="text-lg mb-4">${t('test.listenQuestion')}</p>
                     <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">[Audio would be played here]</p>
+                        <p class="text-white/60">${t('test.audioPlaceholder')}</p>
                     </div>
                 </div>
             `;
         } else if (question.type === 'conversation') {
             return `
                 <div class="mb-6">
-                    <p class="text-lg mb-4">Listen to the conversation.</p>
+                    <p class="text-lg mb-4">${t('test.listenConversation')}</p>
                     <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">[Conversation audio would be played here]</p>
+                        <p class="text-white/60">${t('test.conversationPlaceholder')}</p>
                     </div>
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
@@ -5642,9 +5628,9 @@ class App {
         } else if (question.type === 'talk') {
             return `
                 <div class="mb-6">
-                    <p class="text-lg mb-4">Listen to the talk.</p>
+                    <p class="text-lg mb-4">${t('test.listenTalk')}</p>
                     <div class="bg-gray-800 rounded-lg p-8 mb-4">
-                        <p class="text-white/60">[Talk audio would be played here]</p>
+                        <p class="text-white/60">${t('test.talkPlaceholder')}</p>
                     </div>
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
@@ -5675,17 +5661,17 @@ class App {
             `;
         }
         
-        return '<p class="text-red-400">Unknown question type</p>';
+        return `<p class="text-red-400">${t('test.unknownType')}</p>`;
     }
-    
+
     generateTestOptions(testSession, testType) {
         if (!window.toeicTestSimulator) {
-            return '<p class="text-red-400">Test simulator not available</p>';
+            return `<p class="text-red-400">${t('test.simulatorUnavailable')}</p>`;
         }
-        
+
         const question = window.toeicTestSimulator.getCurrentQuestion();
         if (!question || !question.options) {
-            return '<p class="text-yellow-400">No options available</p>';
+            return `<p class="text-yellow-400">${t('test.noOptions')}</p>`;
         }
         
         // Generate answer options (A, B, C, D)
@@ -5878,39 +5864,39 @@ class App {
         content.innerHTML = `
             <div class="max-w-2xl mx-auto text-center">
                 <div class="glass-effect rounded-xl p-8 mb-6">
-                    <h3 class="text-2xl font-bold text-white mb-6">🎉 Test Complete!</h3>
-                    ${level ? `<p class="text-white/80 mb-6">Estimated level: <span class="font-bold text-white">${level.level}</span> — ${level.description}</p>` : ''}
+                    <h3 class="text-2xl font-bold text-white mb-6">🎉 ${t('test.complete')}</h3>
+                    ${level ? `<p class="text-white/80 mb-6">${t('test.estimatedLevel')}: <span class="font-bold text-white">${level.level}</span> — ${level.description}</p>` : ''}
 
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-green-400">${correctAnswers}</div>
-                            <div class="text-white/80">Correct Answers</div>
+                            <div class="text-white/80">${t('quiz.correctAnswers')}</div>
                         </div>
                         <div class="bg-red-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-red-400">${incorrectAnswers}</div>
-                            <div class="text-white/80">Incorrect Answers</div>
+                            <div class="text-white/80">${t('common.incorrectAnswers')}</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-blue-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-blue-400">${toeicScore}</div>
-                            <div class="text-white/80">TOEIC Score</div>
+                            <div class="text-white/80">${t('test.toeicScore')}</div>
                         </div>
                         <div class="bg-purple-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-purple-400">${accuracy}%</div>
-                            <div class="text-white/80">Accuracy</div>
+                            <div class="text-white/80">${t('quiz.accuracy')}</div>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-center gap-4">
                         <button onclick="window.app.showTestModule()" class="btn btn-primary">
                             <i data-lucide="clipboard-list" class="w-5 h-5 mr-2"></i>
-                            Take Another Test
+                            ${t('test.takeAnother')}
                         </button>
                         <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
                             <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                            Main Menu
+                            ${t('common.mainMenu')}
                         </button>
                     </div>
                 </div>
@@ -5928,7 +5914,7 @@ class App {
         if (testHistory.length === 0) {
             historyContainer.innerHTML = `
                 <div class="text-center text-white/60 py-4">
-                    No test history available
+                    ${t('test.noHistory')}
                 </div>
             `;
             return;
@@ -5955,48 +5941,48 @@ class App {
         content.innerHTML = `
             <div class="max-w-2xl mx-auto">
                 <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold text-white mb-6">⚙️ Test Settings</h3>
-                    
+                    <h3 class="text-xl font-bold text-white mb-6">⚙️ ${t('test.settings')}</h3>
+
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-white/80 mb-2">Test Duration</label>
+                            <label class="block text-white/80 mb-2">${t('test.durationSetting')}</label>
                             <select class="w-full p-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white">
-                                <option value="standard">Standard (Official TOEIC timing)</option>
-                                <option value="extended">Extended (+25% time)</option>
-                                <option value="practice">Practice (No time limit)</option>
+                                <option value="standard">${t('test.optStandard')}</option>
+                                <option value="extended">${t('test.optExtended')}</option>
+                                <option value="practice">${t('test.optPractice')}</option>
                             </select>
                         </div>
-                        
+
                         <div>
-                            <label class="block text-white/80 mb-2">Question Order</label>
+                            <label class="block text-white/80 mb-2">${t('test.questionOrder')}</label>
                             <select class="w-full p-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white">
-                                <option value="sequential">Sequential (1-200)</option>
-                                <option value="random">Random</option>
-                                <option value="difficulty">By Difficulty</option>
+                                <option value="sequential">${t('test.optSequential')}</option>
+                                <option value="random">${t('test.optRandom')}</option>
+                                <option value="difficulty">${t('test.optByDifficulty')}</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label class="flex items-center">
                                 <input type="checkbox" class="mr-3" checked>
-                                <span class="text-white/80">Show explanations after each question</span>
+                                <span class="text-white/80">${t('test.showExplanations')}</span>
                             </label>
                         </div>
-                        
+
                         <div>
                             <label class="flex items-center">
                                 <input type="checkbox" class="mr-3">
-                                <span class="text-white/80">Allow going back to previous questions</span>
+                                <span class="text-white/80">${t('test.allowBack')}</span>
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-center gap-4 mt-8">
                         <button onclick="window.app.showTestModule()" class="btn btn-primary">
-                            Save Settings
+                            ${t('test.saveSettings')}
                         </button>
                         <button onclick="window.app.showTestModule()" class="btn btn-secondary">
-                            Cancel
+                            ${t('common.cancel')}
                         </button>
                     </div>
                 </div>
@@ -6050,14 +6036,12 @@ class App {
             // Fallback if dashboard is not available
             content.innerHTML = `
                 <div class="text-center">
-                    <h3 class="text-xl font-bold text-white mb-4">TOEIC Progress Analytics</h3>
-                    <p class="text-white/80 mb-6">Mode: ${options.mode || 'Analytics'}</p>
+                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="progress.title">${t('progress.title')}</h3>
+                    <p class="text-white/80 mb-6">${t('common.mode')}: ${options.mode || 'Analytics'}</p>
                     <div class="bg-yellow-500/20 rounded-lg p-4 mb-6">
-                        <p class="text-yellow-400">⚠️ Analytics dashboard is loading...</p>
+                        <p class="text-yellow-400">⚠️ ${t('progress.loading')}</p>
                     </div>
-                    <button onclick="window.app.endCurrentSession()" class="btn btn-primary">
-                        Back to Main Menu
-                    </button>
+                    <button onclick="window.app.endCurrentSession()" class="btn btn-primary" data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</button>
                 </div>
             `;
         }
@@ -6067,14 +6051,12 @@ class App {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
             <div class="text-center">
-                <h3 class="text-xl font-bold text-white mb-4">TOEIC Settings</h3>
-                <p class="text-white/80 mb-6">Mode: ${options.mode || 'General'}</p>
+                <h3 class="text-xl font-bold text-white mb-4" data-i18n="settings.toeicTitle">${t('settings.toeicTitle')}</h3>
+                <p class="text-white/80 mb-6">${t('common.mode')}: ${options.mode || 'General'}</p>
                 <div class="bg-gray-500/20 rounded-lg p-4 mb-6">
-                    <p class="text-gray-400">⚙️ Settings panel is under development</p>
+                    <p class="text-gray-400">⚙️ ${t('settings.underDevelopment')}</p>
                 </div>
-                <button onclick="window.app.endCurrentSession()" class="btn btn-primary">
-                    Back to Main Menu
-                </button>
+                <button onclick="window.app.endCurrentSession()" class="btn btn-primary" data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</button>
             </div>
         `;
     }

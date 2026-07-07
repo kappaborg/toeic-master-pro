@@ -298,6 +298,20 @@ class BaseGame {
         };
         
         // Enhanced event handling with better performance
+        // Document-level handlers are tracked per storageKey (class-level, since
+        // buttons are recreated on every question and game instances are singletons)
+        // so the previous handlers are removed instead of stacking up
+        if (!BaseGame._dragDocumentHandlers) {
+            BaseGame._dragDocumentHandlers = {};
+        }
+        const previousHandlers = BaseGame._dragDocumentHandlers[storageKey];
+        if (previousHandlers) {
+            document.removeEventListener('mousemove', previousHandlers.drag);
+            document.removeEventListener('mouseup', previousHandlers.dragEnd);
+            document.removeEventListener('mouseleave', previousHandlers.dragEnd);
+        }
+        BaseGame._dragDocumentHandlers[storageKey] = { drag, dragEnd };
+
         button.addEventListener('mousedown', dragStart, { passive: false });
         document.addEventListener('mousemove', drag, { passive: false });
         document.addEventListener('mouseup', dragEnd, { passive: false });
@@ -425,7 +439,14 @@ class MultipleChoiceGame extends BaseGame {
         this.wordHistory = [];
         this.maxHistorySize = 100;
     }
-    
+
+    reset() {
+        // Clear per-session tracking so replays get the full question pool
+        this.usedWords.clear();
+        this.wordHistory = [];
+        this.currentWord = null;
+    }
+
     async initialize(options = {}) {
         await super.initialize(options);
         console.log('🎯 Multiple Choice Game initialized');
@@ -1875,7 +1896,14 @@ class ConversationGame extends BaseGame {
         ];
         this.currentConversation = null;
     }
-    
+
+    reset() {
+        // Clear per-session tracking so replays get the full conversation pool
+        this.usedConversations.clear();
+        this.conversationHistory = [];
+        this.currentConversation = null;
+    }
+
     async generateQuestion(questionNumber) {
         // Get available conversations (not used recently)
         const availableConversations = this.conversations.filter((conv, index) => 
@@ -2066,7 +2094,14 @@ class ModalVerbsGame extends BaseGame {
         ];
         this.currentQuestion = null;
     }
-    
+
+    reset() {
+        // Clear per-session tracking so replays get the full question pool
+        this.usedQuestions.clear();
+        this.questionHistory = [];
+        this.currentQuestion = null;
+    }
+
     async generateQuestion(questionNumber) {
         // Get available questions (not used recently)
         const availableQuestions = this.modalQuestions.filter((question, index) => 
@@ -3001,18 +3036,19 @@ class ConversationBuilderGame extends BaseGame {
                 situation: "At a Restaurant",
                 steps: [
                     { speaker: "Waiter", text: "Good evening! Welcome to our restaurant. How many people are you?" },
-                    { speaker: "You", choices: ["Table for two, please.", "I have a reservation.", "Just one person."] },
+                    // best: index of the contextually most appropriate reply, used for grading
+                    { speaker: "You", choices: ["Table for two, please.", "I have a reservation.", "Just one person."], best: 0 },
                     { speaker: "Waiter", text: "Right this way. Here's your table and the menu." },
-                    { speaker: "You", choices: ["Thank you.", "Could we have a different table?", "This looks great."] }
+                    { speaker: "You", choices: ["Thank you.", "Could we have a different table?", "This looks great."], best: 0 }
                 ]
             },
             {
                 situation: "At the Store",
                 steps: [
                     { speaker: "Cashier", text: "Hi! Did you find everything you needed today?" },
-                    { speaker: "You", choices: ["Yes, thank you.", "Actually, I'm looking for something.", "I need help finding an item."] },
+                    { speaker: "You", choices: ["Yes, thank you.", "Actually, I'm looking for something.", "I need help finding an item."], best: 0 },
                     { speaker: "Cashier", text: "Great! Your total comes to $25.50." },
-                    { speaker: "You", choices: ["I'll pay with cash.", "Card, please.", "Do you accept mobile payments?"] }
+                    { speaker: "You", choices: ["I'll pay with cash.", "Card, please.", "Do you accept mobile payments?"], best: 0 }
                 ]
             }
         ];
@@ -3031,13 +3067,17 @@ class ConversationBuilderGame extends BaseGame {
         const step = this.currentConversation.steps[this.currentStep];
         
         if (step.speaker === "You" && step.choices) {
+            // Shuffle the choices so the best answer isn't always in the same
+            // slot, and grade against the contextually best reply for this step
+            const bestChoice = step.choices[step.best ?? 0];
+            const shuffledChoices = [...step.choices].sort(() => Math.random() - 0.5);
             return {
                 type: 'conversation_builder',
                 situation: this.currentConversation.situation,
                 previousText: this.currentStep > 0 ? this.currentConversation.steps[this.currentStep - 1].text : null,
                 question: "What would you say?",
-                choices: step.choices,
-                correctIndex: 0, // All choices are valid in conversation building
+                choices: shuffledChoices,
+                correctIndex: shuffledChoices.indexOf(bestChoice),
                 step: this.currentStep
             };
         } else {
@@ -3048,22 +3088,27 @@ class ConversationBuilderGame extends BaseGame {
     }
     
     async checkAnswer(answerIndex, responseTime) {
-        const step = this.currentConversation.steps[this.currentStep];
-        const selectedChoice = step.choices[answerIndex];
-        
+        // Grade against the shuffled choices presented for this question
+        const question = this.currentQuestionData;
+        const selectedChoice = question.choices[answerIndex];
+        const bestChoice = question.choices[question.correctIndex];
+        const isCorrect = answerIndex === question.correctIndex;
+
         this.userChoices.push(selectedChoice);
         this.currentStep++;
-        
+
         // Check if conversation is complete
         const isComplete = this.currentStep >= this.currentConversation.steps.length;
-        
+
         return {
-            isCorrect: true, // All choices are valid
-            correctAnswer: selectedChoice,
-            explanation: isComplete ? 
-                "Great conversation! You've completed this scenario." :
-                "Good choice! Let's continue the conversation.",
-            points: 10,
+            isCorrect: isCorrect,
+            correctAnswer: bestChoice,
+            explanation: isCorrect ?
+                (isComplete ?
+                    "Great conversation! You've completed this scenario." :
+                    "Good choice! Let's continue the conversation.") :
+                `A more natural response here is: "${bestChoice}"`,
+            points: isCorrect ? 10 : 0,
             word: 'conversation',
             feedbackDuration: 2000,
             isComplete: isComplete
@@ -3736,7 +3781,16 @@ class VocabularyLearningGame extends BaseGame {
         this.wordHistory = [];
         this.maxHistorySize = 100;
     }
-    
+
+    reset() {
+        // Clear per-session tracking so replays get the full word pool
+        this.usedWords.clear();
+        this.wordHistory = [];
+        this.studiedWords = [];
+        this.currentWord = null;
+        this.currentStep = 'learn';
+    }
+
     async initialize(options = {}) {
         await super.initialize(options);
         this.currentStep = 'learn';
@@ -4779,7 +4833,8 @@ class GameEngine {
         
         this.sessionData = [];
         this.isGameActive = false;
-        
+        this.timers = [];
+
         console.log('🎮 Initializing Game Engine...');
         this.initializeGames();
         console.log('✅ Game Engine initialized');
@@ -4816,6 +4871,11 @@ class GameEngine {
         
         this.currentGame = this.gameModes[gameMode];
         this.currentGameMode = gameMode;
+
+        // Game mode objects are singletons — reset per-session tracking state
+        // so replays see the full question pool again
+        if (typeof this.currentGame.reset === 'function') this.currentGame.reset();
+
         this.sessionData = [];
         this.isGameActive = true;
         this.questionStartTime = Date.now();
@@ -4966,16 +5026,17 @@ class GameEngine {
             
             // Audio feedback
             if (window.audioSystem && result.word) {
+                if (!this.timers) this.timers = [];
                 if (result.isCorrect) {
-                    // Speak correct word for reinforcement
-                    setTimeout(() => {
+                    // Speak correct word for reinforcement (tracked so cleanup can cancel it)
+                    this.timers.push(setTimeout(() => {
                         window.audioSystem.speakWord(result.word, true);
-                    }, 1000);
+                    }, 1000));
                 } else {
-                    // Speak correct answer for learning
-                    setTimeout(() => {
+                    // Speak correct answer for learning (tracked so cleanup can cancel it)
+                    this.timers.push(setTimeout(() => {
                         window.audioSystem.speakWord(result.correctAnswer || result.word, true);
-                    }, 1500);
+                    }, 1500));
                 }
             }
             
@@ -5078,7 +5139,10 @@ class GameEngine {
         console.log(result.isCorrect ? '✅ Correct!' : '❌ Incorrect!');
         
         if (window.uiManager) {
-            const message = result.explanation || (result.isCorrect ? 'Correct!' : 'Try again!');
+            const fallbackMessage = result.isCorrect
+                ? (window.t ? window.t('quiz.correct') : 'Correct!')
+                : (window.t ? window.t('quiz.incorrect') : 'Try again!');
+            const message = result.explanation || fallbackMessage;
             const type = result.isCorrect ? 'success' : 'error';
             window.uiManager.showToast(message, type, 3000);
         }
@@ -5097,7 +5161,13 @@ class GameEngine {
             if (this.currentGame.end) {
                 this.currentGame.end();
             }
-            
+
+            // Clear pending tracked timers (e.g. delayed audio) so nothing fires after the game ends
+            if (this.timers) {
+                this.timers.forEach(timer => clearTimeout(timer));
+                this.timers = [];
+            }
+
             // Reset state
             this.currentGame = null;
             this.isGameActive = false;

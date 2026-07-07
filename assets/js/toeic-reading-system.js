@@ -431,7 +431,7 @@ Website: www.premiumoffices.com`,
                     'Management Excellence 2024',
                     'Professional Excellence 2024'
                 ],
-                correctAnswer: 2,
+                correctAnswer: 1,
                 explanation: 'The program is called "Leadership Excellence 2024."',
                 difficulty: 'A2'
             },
@@ -954,13 +954,17 @@ Management`,
         return this.currentSession.length > 0;
     }
     
-    // Get next question
+    // Get next question and advance the session pointer.
+    // Non-destructive: uses the same shift-based cursor as
+    // peekNextQuestion()/moveToNextQuestion() so the two flows
+    // can never disagree about the current position.
     getNextQuestion() {
-        if (this.currentSession.length === 0) {
+        if (!this.currentSession || this.currentSession.length === 0) {
             return null;
         }
-        
-        const questionId = this.currentSession.shift();
+
+        const questionId = this.currentSession[0];
+        this.moveToNextQuestion();
         const question = this.questions.get(questionId);
         
         if (!question) return null;
@@ -1322,23 +1326,23 @@ Management`,
         return this.questions.get(questionId);
     }
     
-    answerQuestion(selectedAnswer) {
+    answerQuestion(selectedAnswer, responseTime = 0) {
         if (!this.currentSession || this.currentQuestionIndex >= this.currentSession.length) {
             return false;
         }
-        
+
         const questionId = this.currentSession[this.currentQuestionIndex];
         const question = this.questions.get(questionId);
-        
+
         if (!question) {
             return false;
         }
-        
+
         const isCorrect = selectedAnswer === question.correctAnswer;
 
         // Record answer in user progress with lastAnswer field
         // (recordAnswer owns the session stats increments)
-        this.recordAnswer(questionId, selectedAnswer, isCorrect ? 1 : 0);
+        this.recordAnswer(questionId, selectedAnswer, responseTime);
         
         // Store the last answer for review purposes
         const userProgress = this.userProgress.get(questionId) || {

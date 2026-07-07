@@ -19,10 +19,10 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
     
     <!-- Custom CSS with Tailwind-like utilities -->
-    <link rel="stylesheet" href="assets/css/tailwind-custom.css?v=20260703">
+    <link rel="stylesheet" href="assets/css/tailwind-custom.css?v=20260707">
     
     <!-- Professional UI Design System -->
-    <link rel="stylesheet" href="assets/css/professional-ui.css?v=20260703">
+    <link rel="stylesheet" href="assets/css/professional-ui.css?v=20260707">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -31,10 +31,10 @@
     <script src="assets/vendor/lucide.min.js?v=1.23.0"></script>
     
     <!-- Logging Configuration -->
-    <script src="assets/js/logging-config.js?v=20260703"></script>
+    <script src="assets/js/logging-config.js?v=20260707"></script>
     
     <!-- Logger System -->
-    <script src="assets/js/logger.js?v=20260703"></script>
+    <script src="assets/js/logger.js?v=20260707"></script>
     
     <!-- Custom Styles -->
     <style>
@@ -327,7 +327,7 @@
             <div class="max-w-4xl mx-auto flex items-center justify-between text-white">
                 <div class="flex items-center space-x-4">
                     <span class="bg-primary/30 px-3 py-1 rounded-full text-sm">
-                        Question <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+                        <span data-i18n="status.question">Question</span> <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
                     </span>
                     <div class="w-32 bg-white/20 rounded-full h-2">
                         <div id="progressBar" class="bg-accent h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -336,7 +336,7 @@
                 <div class="flex items-center space-x-4">
                     <span class="bg-success/30 px-3 py-1 rounded-full text-sm">
                         <i data-lucide="star" class="w-4 h-4 inline mr-1"></i>
-                        Score: <span id="currentScore">0</span>
+                        <span data-i18n="status.score">Score:</span> <span id="currentScore">0</span>
                     </span>
                     <span class="bg-info/30 px-3 py-1 rounded-full text-sm">
                         <i data-lucide="target" class="w-4 h-4 inline mr-1"></i>
@@ -358,11 +358,11 @@
                     <div class="mb-8">
                         <i data-lucide="graduation-cap" class="w-24 h-24 mx-auto text-white mb-6 animate-bounce-soft" aria-hidden="true"></i>
                         <h1 class="heading-1 mb-6">
-                            Master the
+                            <span data-i18n="welcome.title">Master the</span>
                             <br>
-                            <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text">TOEIC Test</span>
+                            <span class="text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text" data-i18n="welcome.subtitle">TOEIC Test</span>
                         </h1>
-                        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+                        <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-i18n="welcome.description">
                             Complete TOEIC test preparation platform with vocabulary, reading, listening practice, and full test simulations. Achieve your target score with 3000+ business English words and comprehensive study materials.
                         </p>
                     </div>
@@ -377,7 +377,7 @@
 
                 <!-- TOEIC Study Modules Grid -->
                 <section class="max-w-7xl mx-auto">
-                    <h2 class="heading-3 text-center mb-12">
+                    <h2 class="heading-3 text-center mb-12" data-i18n="modules.heading">
                         TOEIC Study Modules
                     </h2>
                     <div class="grid grid-cols-4 gap-6 animate-slide-up">
@@ -387,11 +387,11 @@
                             <div class="game-card-icon">
                                 <i data-lucide="book-open" class="w-8 h-8 text-blue-400" aria-hidden="true"></i>
                             </div>
-                            <h3 class="heading-6 mb-3">TOEIC Vocabulary</h3>
-                            <p class="text-small text-white/80 mb-4">Master 3000+ business English words with spaced repetition</p>
+                            <h3 class="heading-6 mb-3" data-i18n="module.vocabulary.title">TOEIC Vocabulary</h3>
+                            <p class="text-small text-white/80 mb-4" data-i18n="module.vocabulary.desc">Master 3000+ business English words with spaced repetition</p>
                             <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full text-tiny">3000+ Words</span>
-                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny">Spaced Repetition</span>
+                                <span class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.vocabulary.badge1">3000+ Words</span>
+                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.vocabulary.badge2">Spaced Repetition</span>
                             </div>
                         </div>
 
@@ -400,11 +400,11 @@
                             <div class="game-card-icon">
                                 <i data-lucide="file-text" class="w-8 h-8 text-green-400" aria-hidden="true"></i>
                             </div>
-                            <h3 class="heading-6 mb-3">TOEIC Reading</h3>
-                            <p class="text-small text-white/80 mb-4">Practice reading comprehension with business texts and passages</p>
+                            <h3 class="heading-6 mb-3" data-i18n="module.reading.title">TOEIC Reading</h3>
+                            <p class="text-small text-white/80 mb-4" data-i18n="module.reading.desc">Practice reading comprehension with business texts and passages</p>
                             <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny">Business Texts</span>
-                                <span class="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-tiny">Comprehension</span>
+                                <span class="bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.reading.badge1">Business Texts</span>
+                                <span class="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.reading.badge2">Comprehension</span>
                             </div>
                         </div>
 
@@ -413,11 +413,11 @@
                             <div class="game-card-icon">
                                 <i data-lucide="headphones" class="w-8 h-8 text-purple-400" aria-hidden="true"></i>
                             </div>
-                            <h3 class="heading-6 mb-3">TOEIC Listening</h3>
-                            <p class="text-small text-white/80 mb-4">Practice listening skills with business conversations and talks</p>
+                            <h3 class="heading-6 mb-3" data-i18n="module.listening.title">TOEIC Listening</h3>
+                            <p class="text-small text-white/80 mb-4" data-i18n="module.listening.desc">Practice listening skills with business conversations and talks</p>
                             <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-tiny">Audio Practice</span>
-                                <span class="bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full text-tiny">Business English</span>
+                                <span class="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.listening.badge1">Audio Practice</span>
+                                <span class="bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.listening.badge2">Business English</span>
                             </div>
                         </div>
 
@@ -426,11 +426,11 @@
                             <div class="game-card-icon">
                                 <i data-lucide="clipboard-check" class="w-8 h-8 text-yellow-400" aria-hidden="true"></i>
                             </div>
-                            <h3 class="heading-6 mb-3">TOEIC Test Simulation</h3>
-                            <p class="text-small text-white/80 mb-4">Take full-length TOEIC practice tests with real timing</p>
+                            <h3 class="heading-6 mb-3" data-i18n="module.test.title">TOEIC Test Simulation</h3>
+                            <p class="text-small text-white/80 mb-4" data-i18n="module.test.desc">Take full-length TOEIC practice tests with real timing</p>
                             <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded-full text-tiny">Full Test</span>
-                                <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded-full text-tiny">Real Timing</span>
+                                <span class="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.test.badge1">Full Test</span>
+                                <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded-full text-tiny" data-i18n="module.test.badge2">Real Timing</span>
                             </div>
                         </div>
 
@@ -442,11 +442,11 @@
                                 <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/30 transition-colors">
                                     <i data-lucide="lightbulb" class="w-8 h-8 text-purple-400"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-3">Study Strategies</h3>
-                                <p class="text-white/70 text-sm mb-4">Learn effective TOEIC test-taking strategies and tips</p>
+                                <h3 class="text-xl font-semibold text-white mb-3" data-i18n="module.strategies.title">Study Strategies</h3>
+                                <p class="text-white/70 text-sm mb-4" data-i18n="module.strategies.desc">Learn effective TOEIC test-taking strategies and tips</p>
                                 <div class="flex flex-wrap gap-2 justify-center">
-                                    <span class="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs">Tips</span>
-                                    <span class="bg-success/20 text-success px-2 py-1 rounded-full text-xs">Strategies</span>
+                                    <span class="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full text-xs" data-i18n="module.strategies.badge1">Tips</span>
+                                    <span class="bg-success/20 text-success px-2 py-1 rounded-full text-xs" data-i18n="module.strategies.badge2">Strategies</span>
                                 </div>
                             </div>
                         </div>
@@ -457,11 +457,11 @@
                                 <div class="w-16 h-16 bg-teal-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-teal-500/30 transition-colors">
                                     <i data-lucide="credit-card" class="w-8 h-8 text-teal-400"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-3">Flashcard System</h3>
-                                <p class="text-white/70 text-sm mb-4">Review TOEIC vocabulary with intelligent flashcards</p>
+                                <h3 class="text-xl font-semibold text-white mb-3" data-i18n="module.flashcards.title">Flashcard System</h3>
+                                <p class="text-white/70 text-sm mb-4" data-i18n="module.flashcards.desc">Review TOEIC vocabulary with intelligent flashcards</p>
                                 <div class="flex flex-wrap gap-2 justify-center">
-                                    <span class="bg-teal-500/20 text-teal-400 px-2 py-1 rounded-full text-xs">Smart Review</span>
-                                    <span class="bg-info/20 text-info px-2 py-1 rounded-full text-xs">Adaptive</span>
+                                    <span class="bg-teal-500/20 text-teal-400 px-2 py-1 rounded-full text-xs" data-i18n="module.flashcards.badge1">Smart Review</span>
+                                    <span class="bg-info/20 text-info px-2 py-1 rounded-full text-xs" data-i18n="module.flashcards.badge2">Adaptive</span>
                                 </div>
                             </div>
                         </div>
@@ -472,11 +472,11 @@
                                 <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-500/30 transition-colors">
                                     <i data-lucide="book-text" class="w-8 h-8 text-orange-400"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-3">Grammar Practice</h3>
-                                <p class="text-white/70 text-sm mb-4">Master TOEIC grammar patterns and structures</p>
+                                <h3 class="text-xl font-semibold text-white mb-3" data-i18n="module.grammar.title">Grammar Practice</h3>
+                                <p class="text-white/70 text-sm mb-4" data-i18n="module.grammar.desc">Master TOEIC grammar patterns and structures</p>
                                 <div class="flex flex-wrap gap-2 justify-center">
-                                    <span class="bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full text-xs">Grammar</span>
-                                    <span class="bg-warning/20 text-warning px-2 py-1 rounded-full text-xs">Patterns</span>
+                                    <span class="bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full text-xs" data-i18n="module.grammar.badge1">Grammar</span>
+                                    <span class="bg-warning/20 text-warning px-2 py-1 rounded-full text-xs" data-i18n="module.grammar.badge2">Patterns</span>
                                 </div>
                             </div>
                         </div>
@@ -485,17 +485,32 @@
 
 
 
+                        <!-- Daily Conversation Practice -->
+                        <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="startDailyConversation()" role="button" tabindex="0" aria-label="Start Daily Conversation Practice">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-pink-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-pink-500/30 transition-colors">
+                                    <i data-lucide="messages-square" class="w-8 h-8 text-pink-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white mb-3" data-i18n="module.dailyConversation.title">Daily Conversation</h3>
+                                <p class="text-white/70 text-sm mb-4" data-i18n="module.dailyConversation.desc">Practice everyday English conversations with real-life dialogues</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <span class="bg-pink-500/20 text-pink-400 px-2 py-1 rounded-full text-xs" data-i18n="module.dailyConversation.badge1">Real Dialogues</span>
+                                    <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs" data-i18n="module.dailyConversation.badge2">Speaking Practice</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- TOEIC Test History -->
                         <div class="game-card glass-effect rounded-2xl p-6 card-hover cursor-pointer group" onclick="showTOEICTestHistory()">
                             <div class="text-center">
                                 <div class="w-16 h-16 bg-violet-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-violet-500/30 transition-colors">
                                     <i data-lucide="history" class="w-8 h-8 text-violet-400"></i>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-3">Test History</h3>
-                                <p class="text-white/70 text-sm mb-4">View your TOEIC practice test results and progress</p>
+                                <h3 class="text-xl font-semibold text-white mb-3" data-i18n="module.history.title">Test History</h3>
+                                <p class="text-white/70 text-sm mb-4" data-i18n="module.history.desc">View your TOEIC practice test results and progress</p>
                                 <div class="flex flex-wrap gap-2 justify-center">
-                                    <span class="bg-violet-500/20 text-violet-400 px-2 py-1 rounded-full text-xs">History</span>
-                                    <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs">Results</span>
+                                    <span class="bg-violet-500/20 text-violet-400 px-2 py-1 rounded-full text-xs" data-i18n="module.history.badge1">History</span>
+                                    <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs" data-i18n="module.history.badge2">Results</span>
                                 </div>
                             </div>
                         </div>
@@ -592,60 +607,61 @@
     <!-- OPTIMIZED LOADING SEQUENCE - NO DUPLICATES -->
     
     <!-- 1. Critical Foundation (Immediate Load) -->
-    <script src="assets/js/error-boundary.js?v=20260703"></script>
-    <script src="assets/js/feature-manager.js?v=20260703"></script>
-    <script src="assets/js/carousel-system.js?v=20260703"></script>
-    <script src="assets/js/language-manager.js?v=20260703"></script>
-    <script src="assets/js/mobile-optimization.js?v=20260703"></script>
-    <script src="assets/js/performance-optimizer.js?v=20260703"></script>
+    <script src="assets/js/error-boundary.js?v=20260707"></script>
+    <script src="assets/js/feature-manager.js?v=20260707"></script>
+    <script src="assets/js/carousel-system.js?v=20260707"></script>
+    <script src="assets/js/language-manager.js?v=20260707"></script>
+    <script src="assets/js/mobile-optimization.js?v=20260707"></script>
+    <script src="assets/js/performance-optimizer.js?v=20260707"></script>
     
     <!-- 2. Core Systems (High Priority) -->
-    <script src="assets/js/unified-data-layer.js?v=20260703"></script>
-    <script src="assets/js/real-time-monitor.js?v=20260703"></script>
-    <script src="assets/js/initialization-manager.js?v=20260703"></script>
-    <script src="assets/js/time-tracking-system.js?v=20260703"></script>
+    <script src="assets/js/unified-data-layer.js?v=20260707"></script>
+    <script src="assets/js/real-time-monitor.js?v=20260707"></script>
+    <script src="assets/js/initialization-manager.js?v=20260707"></script>
+    <script src="assets/js/time-tracking-system.js?v=20260707"></script>
     
     <!-- 3. UI Systems -->
-    <script src="assets/js/answer-feedback.js?v=20260703"></script>
+    <script src="assets/js/answer-feedback.js?v=20260707"></script>
     
     <!-- 4. Application Logic (Deferred for Performance) -->
-    <script src="assets/js/data-manager.js?v=20260703" defer></script>
-    <script src="assets/js/game-engine.js?v=20260703" defer></script>
-    <script src="assets/js/audio-system.js?v=20260703" defer></script>
+    <script src="assets/js/data-manager.js?v=20260707" defer></script>
+    <script src="assets/js/game-engine.js?v=20260707" defer></script>
+    <script src="assets/js/audio-system.js?v=20260707" defer></script>
     
     <!-- 5. Advanced Features (Deferred) -->
-    <script src="assets/js/spaced-repetition.js?v=20260703" defer></script>
-    <script src="assets/js/adaptive-learning.js?v=20260703" defer></script>
+    <script src="assets/js/spaced-repetition.js?v=20260707" defer></script>
+    <script src="assets/js/adaptive-learning.js?v=20260707" defer></script>
 
-    <script src="assets/js/enhanced-progress.js?v=20260703" defer></script>
+    <script src="assets/js/enhanced-progress.js?v=20260707" defer></script>
 
     
     <!-- 6. UI & Configuration (Deferred) -->
-    <script src="assets/js/ui-manager.js?v=20260703" defer></script>
-    <script src="assets/js/settings-panel.js?v=20260703" defer></script>
-    <script src="assets/js/pwa.js?v=20260703" defer></script>
+    <script src="assets/js/ui-manager.js?v=20260707" defer></script>
+    <script src="assets/js/settings-panel.js?v=20260707" defer></script>
+    <script src="assets/js/pwa.js?v=20260707" defer></script>
     
     <!-- 7. TOEIC Systems -->
-    <script src="assets/js/toeic-vocabulary-system.js?v=20260703" defer></script>
-    <script src="assets/js/toeic-reading-system.js?v=20260703" defer></script>
+    <script src="assets/js/toeic-vocabulary-system.js?v=20260707" defer></script>
+    <script src="assets/js/toeic-reading-system.js?v=20260707" defer></script>
 
-    <script src="assets/js/toeic-test-simulator.js?v=20260703" defer></script>
-    <script src="assets/js/toeic-grammar-system.js?v=20260703" defer></script>
+    <script src="assets/js/toeic-test-simulator.js?v=20260707" defer></script>
+    <script src="assets/js/toeic-grammar-system.js?v=20260707" defer></script>
+    <script src="assets/js/daily-conversation-system.js?v=20260707" defer></script>
     <!-- TOEIC Study Strategies removed - not used in current implementation -->
     <!-- TOEIC Progress Analytics removed - not used in current implementation -->
     
     <!-- 8. Advanced Analytics System -->
-    <script src="assets/js/advanced-analytics-system.js?v=20260703"></script>
-    <script src="assets/js/analytics-dashboard.js?v=20260703"></script>
+    <script src="assets/js/advanced-analytics-system.js?v=20260707"></script>
+    <script src="assets/js/analytics-dashboard.js?v=20260707"></script>
     
     <!-- 9. Login System (Before App) -->
-    <script src="assets/js/login-system.js?v=20260703"></script>
+    <script src="assets/js/login-system.js?v=20260707"></script>
     
     <!-- 10. Admin Dashboard (Before App) -->
-    <script src="assets/js/admin-dashboard.js?v=20260703"></script>
+    <script src="assets/js/admin-dashboard.js?v=20260707"></script>
     
     <!-- 11. Main Application (Last) -->
-    <script src="assets/js/app.js?v=20260703"></script>
+    <script src="assets/js/app.js?v=20260707"></script>
     
     <script>
         // Initialize Lucide icons

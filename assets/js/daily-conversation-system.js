@@ -606,13 +606,10 @@ class DailyConversationSystem {
         else if (this.view === 'complete') body = this.renderComplete();
 
         container.innerHTML = `
-            <div id="dailyConversationRoot" class="max-w-4xl mx-auto px-4">
-                <div class="flex items-center justify-between mb-8">
-                    <button onclick="window.dailyConversation.goHome()"
-                            class="glass-effect px-4 py-2 rounded-full text-white hover:bg-white/20 transition-colors">
-                        ← <span data-i18n="quiz.backToMenu">${this.t('quiz.backToMenu')}</span>
-                    </button>
-                </div>
+            <div id="dailyConversationRoot" class="module-shell">
+                <button onclick="window.dailyConversation.goHome()" class="module-back-btn">
+                    ← <span data-i18n="quiz.backToMenu">${this.t('quiz.backToMenu')}</span>
+                </button>
                 ${body}
             </div>
         `;
@@ -649,6 +646,7 @@ class DailyConversationSystem {
 
         return `
             <div class="text-center mb-10">
+                <span class="toeic-part-badge">LISTENING · PARTS 2–3</span>
                 <div class="text-6xl mb-4">💬</div>
                 <h1 class="heading-2 mb-3" data-i18n="conversation.title">${this.t('conversation.title')}</h1>
                 <p class="text-white/80" data-i18n="conversation.subtitle">${this.t('conversation.subtitle')}</p>

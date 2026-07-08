@@ -2217,3 +2217,467 @@ html.reduce-motion *::after {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.75rem;
 }
+
+/* ==================================================================
+   Module UI Design System (2026)
+   Shared components for every teaching module screen so they all
+   feel like one product: header, stat tiles, action list, quiz
+   surfaces, flashcards.
+   ================================================================== */
+
+.module-shell {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.module-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.module-header-icon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(236, 72, 153, 0.25));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    margin-bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.module-header-title {
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.module-header-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.95rem;
+    margin-top: 6px;
+    max-width: 460px;
+}
+
+/* Stat tiles row */
+.module-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+@media (max-width: 640px) {
+    .module-stats { grid-template-columns: 1fr; }
+}
+
+.module-stat {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    padding: 16px 18px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.module-stat-value {
+    display: block;
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.module-stat-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+/* Action list (module main menu buttons) */
+.module-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.module-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    text-align: left;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.module-action-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+.module-action-btn.primary {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.85), rgba(236, 72, 153, 0.85));
+    border-color: transparent;
+}
+
+.module-action-btn.primary:hover {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 1), rgba(236, 72, 153, 1));
+}
+
+.module-action-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.module-action-text { flex: 1; min-width: 0; }
+
+.module-action-title {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.module-action-desc {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.825rem;
+    margin-top: 1px;
+}
+
+.module-action-chevron {
+    color: rgba(255, 255, 255, 0.45);
+    flex-shrink: 0;
+}
+
+/* Quiz surfaces */
+.quiz-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.quiz-progress-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+    margin: 10px 0 4px;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    transition: width 0.35s ease;
+}
+
+.quiz-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-size: 0.95rem;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.quiz-option-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.quiz-option-btn:disabled { cursor: default; }
+
+.quiz-option-letter {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.quiz-option-btn.is-correct {
+    background: rgba(34, 197, 94, 0.22);
+    border-color: rgba(34, 197, 94, 0.65);
+}
+
+.quiz-option-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: rgba(239, 68, 68, 0.65);
+}
+
+.quiz-feedback {
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 14px;
+}
+
+.quiz-feedback.correct {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.quiz-feedback.incorrect {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+/* Flashcard */
+.flashcard-surface {
+    position: relative;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 36px 28px;
+    border-radius: 24px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    margin-bottom: 20px;
+}
+
+.flashcard-level {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+}
+
+.flashcard-word {
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+}
+
+.flashcard-category {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.9rem;
+    text-transform: capitalize;
+}
+
+.flashcard-definition {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1.15rem;
+    margin-top: 18px;
+    max-width: 520px;
+}
+
+.flashcard-example {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    max-width: 520px;
+}
+
+.flashcard-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.flashcard-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.flashcard-btn:hover { transform: translateY(-2px); opacity: 0.92; }
+
+.flashcard-btn.know {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.8));
+    border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.flashcard-btn.dont-know {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(249, 115, 22, 0.8));
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.flashcard-reveal-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.flashcard-reveal-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Strategy / content cards */
+.content-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 16px;
+    text-align: left;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.content-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.content-card-badge {
+    background: rgba(139, 92, 246, 0.3);
+    color: #d8b4fe;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.content-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.content-card li {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.925rem;
+    padding-left: 22px;
+    position: relative;
+}
+
+.content-card li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #c084fc;
+}
+
+.module-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+    margin-bottom: 24px;
+}
+
+.module-back-btn:hover { background: rgba(255, 255, 255, 0.18); }
+
+/* ------------------------------------------------------------------
+   Design voice refinements
+   Signature: the TOEIC exam map. Each module wears the official part
+   number(s) it trains as an eyebrow label, and every score-like
+   numeral is set in Orbitron — the same face as the exam-room clock.
+   ------------------------------------------------------------------ */
+
+.module-header-title {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.toeic-part-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-left: 3px solid #ec4899;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Exam-instrument numerals: scores, streaks, counters, timers */
+.module-stat-value,
+.dashboard-stat-value {
+    font-family: 'Orbitron', 'Inter', monospace;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+}
+
+/* One orchestrated reveal when a module opens (stagger via nth-child).
+   html.reduce-motion already zeroes all animation durations. */
+@keyframes moduleRise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.module-shell > * {
+    animation: moduleRise 0.45s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+.module-shell > *:nth-child(2) { animation-delay: 0.06s; }
+.module-shell > *:nth-child(3) { animation-delay: 0.12s; }
+.module-shell > *:nth-child(4) { animation-delay: 0.18s; }
+.module-shell > *:nth-child(5) { animation-delay: 0.24s; }

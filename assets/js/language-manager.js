@@ -106,6 +106,11 @@ class LanguageManager {
                 'dashboard.bestScore': 'Best',
                 'dashboard.conversationsDone': 'Conversations',
                 'listening.startPractice': 'Start Listening Practice',
+                'listening.practiceDesc': 'Answer TOEIC-style listening questions with full transcripts',
+                'flashcards.settingsDesc': 'Adjust your flashcard review preferences',
+                'grammar.practiceAllDesc': 'Work through questions from every grammar category',
+                'grammar.mixedPracticeDesc': 'A shuffled mix of questions across categories',
+                'grammar.viewRulesDesc': 'Browse the grammar rules reference',
 
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': 'Check Answer',
@@ -549,6 +554,11 @@ class LanguageManager {
                 'dashboard.bestScore': '最佳',
                 'dashboard.conversationsDone': '会话场景',
                 'listening.startPractice': '开始听力练习',
+                'listening.practiceDesc': '通过带完整文本的托业听力题进行练习',
+                'flashcards.settingsDesc': '调整闪卡复习偏好设置',
+                'grammar.practiceAllDesc': '练习所有语法类别的题目',
+                'grammar.mixedPracticeDesc': '跨类别随机混合练习题目',
+                'grammar.viewRulesDesc': '浏览语法规则参考',
 
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': '检查答案',

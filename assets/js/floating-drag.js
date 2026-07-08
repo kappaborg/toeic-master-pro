@@ -94,13 +94,21 @@
             const rect = button.getBoundingClientRect();
             startLeft = rect.left;
             startTop = rect.top;
-            try {
-                button.setPointerCapture(pointerId);
-            } catch (err) { /* capture can fail if the pointer is gone */ }
+            // Deliberately NOT capturing here: capturing on pointerdown
+            // retargets the subsequent click to this container, which
+            // silently breaks buttons nested INSIDE the draggable element
+            // (the floating home button's inner <button> stopped firing).
+            // Capture starts only once a real drag begins, in pointermove.
         });
 
         button.addEventListener('pointermove', (e) => {
             if (pointerId === null || e.pointerId !== pointerId) return;
+            // Pointer was released outside the button before the threshold
+            // was crossed (no capture yet, so we never saw the pointerup)
+            if (e.buttons === 0) {
+                pointerId = null;
+                return;
+            }
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
             if (!dragging) {
@@ -108,6 +116,11 @@
                 dragging = true;
                 button.classList.add('dragging');
                 button.style.cursor = 'grabbing';
+                try {
+                    // From here on, pointerup is guaranteed to reach us —
+                    // a drag can never be left dangling mid-flight
+                    button.setPointerCapture(pointerId);
+                } catch (err) { /* pointer may already be gone */ }
             }
             e.preventDefault();
             applyPosition(startLeft + dx, startTop + dy);

@@ -1343,29 +1343,44 @@ class App {
         if (!content) return;
         
         content.innerHTML = `
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="vocab.practiceTitle">${t('vocab.practiceTitle')}</h2>
-                <p class="text-white/80 mb-6" data-i18n="module.vocabulary.desc">${t('module.vocabulary.desc')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-blue-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="vocab.wordsStudied">${t('vocab.wordsStudied')}</h3>
-                        <p class="text-3xl font-bold text-blue-300" id="wordsStudied">0</p>
+                <div class="module-header">
+                    <span class="toeic-part-badge">PARTS 1–7 · VOCABULARY</span>
+                    <div class="module-header-icon" aria-hidden="true">📚</div>
+                    <h2 class="module-header-title" data-i18n="module.vocabulary.title">${t('module.vocabulary.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.vocabulary.desc">${t('module.vocabulary.desc')}</p>
+                </div>
+
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="wordsStudied">0</span>
+                        <span class="module-stat-label" data-i18n="vocab.wordsStudied">${t('vocab.wordsStudied')}</span>
                     </div>
-                    <div class="bg-green-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
-                        <p class="text-3xl font-bold text-green-300" id="vocabularyAccuracy">0%</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="vocabularyAccuracy">0%</span>
+                        <span class="module-stat-label" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
                     </div>
-                    <div class="bg-purple-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="vocab.masteryLevel">${t('vocab.masteryLevel')}</h3>
-                        <p class="text-3xl font-bold text-purple-300" id="masteryLevel">A1</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="masteryLevel">A1</span>
+                        <span class="module-stat-label" data-i18n="vocab.masteryLevel">${t('vocab.masteryLevel')}</span>
                     </div>
                 </div>
 
-                <button onclick="window.startVocabularySession()" class="btn btn-primary btn-lg">
-                    <i data-lucide="play" class="w-6 h-6 mr-2"></i>
-                    <span data-i18n="vocab.startSession">${t('vocab.startSession')}</span>
-                </button>
+                <div class="module-actions">
+                    <button onclick="window.startVocabularySession()" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">▶</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="vocab.startSession">${t('vocab.startSession')}</div>
+                            <div class="module-action-desc" data-i18n="vocab.learningSubtitle">${t('vocab.learningSubtitle')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                </div>
             </div>
         `;
         
@@ -1378,33 +1393,50 @@ class App {
         if (!content) return;
         
         content.innerHTML = `
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="reading.practiceTitle">${t('reading.practiceTitle')}</h2>
-                <p class="text-white/80 mb-6" data-i18n="module.reading.desc">${t('module.reading.desc')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-green-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="reading.passagesRead">${t('reading.passagesRead')}</h3>
-                        <p class="text-3xl font-bold text-green-300" id="passagesRead">0</p>
+                <div class="module-header">
+                    <span class="toeic-part-badge">READING · PART 7</span>
+                    <div class="module-header-icon" aria-hidden="true">📖</div>
+                    <h2 class="module-header-title" data-i18n="module.reading.title">${t('module.reading.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.reading.desc">${t('module.reading.desc')}</p>
+                </div>
+
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="passagesRead">0</span>
+                        <span class="module-stat-label" data-i18n="reading.passagesRead">${t('reading.passagesRead')}</span>
                     </div>
-                    <div class="bg-blue-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
-                        <p class="text-3xl font-bold text-blue-300" id="readingAccuracy">0%</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="readingAccuracy">0%</span>
+                        <span class="module-stat-label" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
                     </div>
-                    <div class="bg-orange-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="reading.speed">${t('reading.speed')}</h3>
-                        <p class="text-3xl font-bold text-orange-300" id="readingSpeed">0 WPM</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="readingSpeed">0 WPM</span>
+                        <span class="module-stat-label" data-i18n="reading.speed">${t('reading.speed')}</span>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onclick="window.startReadingSession()" class="btn btn-primary btn-lg">
-                        <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="reading.startSession">${t('reading.startSession')}</span>
+                <div class="module-actions">
+                    <button onclick="window.startReadingSession()" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">📖</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="reading.startSession">${t('reading.startSession')}</div>
+                            <div class="module-action-desc" data-i18n="reading.comprehensionDesc">${t('reading.comprehensionDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
-                    <button onclick="window.app.showReadingPractice()" class="btn btn-secondary btn-lg">
-                        <i data-lucide="file-text" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="reading.practiceMode">${t('reading.practiceMode')}</span>
+                    <button onclick="window.app.showReadingPractice()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">📝</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="reading.practiceMode">${t('reading.practiceMode')}</div>
+                            <div class="module-action-desc" data-i18n="reading.quickPracticeDesc">${t('reading.quickPracticeDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
                 </div>
             </div>
@@ -1463,28 +1495,34 @@ class App {
         }
         
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-white">${t('reading.comprehension')}</h3>
-                    <div class="flex items-center gap-4">
-                        <span class="text-white/80">${t('quiz.questionOf', { current: (session.currentQuestionIndex || 0) + 1, total: session.length })}</span>
-                        <button onclick="window.app.endCurrentSession()" class="btn btn-glass btn-sm">
-                            ${t('common.endSession')}
-                        </button>
+            <div class="module-shell">
+                <div class="quiz-card">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-white">${t('reading.comprehension')}</h3>
+                        <div class="flex items-center gap-4">
+                            <span class="text-white/80">${t('quiz.questionOf', { current: (session.currentQuestionIndex || 0) + 1, total: session.length })}</span>
+                            <button onclick="window.app.endCurrentSession()" class="module-back-btn" style="margin-bottom: 0;">
+                                <span aria-hidden="true">⏹</span>
+                                ${t('common.endSession')}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="quiz-progress-track">
+                        <div class="quiz-progress-fill" style="width: ${(((session.currentQuestionIndex || 0) + 1) / session.length) * 100}%"></div>
                     </div>
                 </div>
 
-                <div class="glass-effect rounded-xl p-6 mb-6">
+                <div class="quiz-card">
                     <h4 class="text-lg font-semibold text-white mb-4">${t('reading.passage')}</h4>
                     <div class="text-white/90 leading-relaxed" id="passageContent">
                         ${passage.content}
                     </div>
                 </div>
-                
-                <div class="glass-effect rounded-xl p-6">
+
+                <div class="quiz-card glass-effect">
                     <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')}</h4>
                     <p class="text-white/90 mb-4">${question.question}</p>
-                    
+
                     <div class="space-y-3" id="questionOptions">
                         ${question.options.map((option, index) => `
                             <label class="flex items-center p-3 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors">
@@ -1493,7 +1531,7 @@ class App {
                             </label>
                         `).join('')}
                     </div>
-                    
+
                     <div class="flex justify-between items-center mt-6">
                         <button onclick="window.app.submitReadingAnswer()" class="btn btn-primary" id="submitBtn" disabled>
                             ${t('reading.submitAnswer')}
@@ -1814,29 +1852,44 @@ class App {
         if (!content) return;
         
         content.innerHTML = `
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="listening.practiceTitle">${t('listening.practiceTitle')}</h2>
-                <p class="text-white/80 mb-6" data-i18n="module.listening.desc">${t('module.listening.desc')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-purple-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="listening.exercisesCompleted">${t('listening.exercisesCompleted')}</h3>
-                        <p class="text-3xl font-bold text-purple-300" id="exercisesCompleted">0</p>
+                <div class="module-header">
+                    <span class="toeic-part-badge">LISTENING · PARTS 1–4</span>
+                    <div class="module-header-icon" aria-hidden="true">🎧</div>
+                    <h2 class="module-header-title" data-i18n="module.listening.title">${t('module.listening.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.listening.desc">${t('module.listening.desc')}</p>
+                </div>
+
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="exercisesCompleted">0</span>
+                        <span class="module-stat-label" data-i18n="listening.exercisesCompleted">${t('listening.exercisesCompleted')}</span>
                     </div>
-                    <div class="bg-cyan-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
-                        <p class="text-3xl font-bold text-cyan-300" id="listeningAccuracy">0%</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="listeningAccuracy">0%</span>
+                        <span class="module-stat-label" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
                     </div>
-                    <div class="bg-pink-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="listening.responseTime">${t('listening.responseTime')}</h3>
-                        <p class="text-3xl font-bold text-pink-300" id="responseTime">0s</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="responseTime">0s</span>
+                        <span class="module-stat-label" data-i18n="listening.responseTime">${t('listening.responseTime')}</span>
                     </div>
                 </div>
-                
-                <button onclick="window.app.startListeningPractice()" class="btn btn-primary btn-lg">
-                    <i data-lucide="headphones" class="w-6 h-6 mr-2"></i>
-                    <span data-i18n="listening.startPractice">${t('listening.startPractice')}</span>
-                </button>
+
+                <div class="module-actions">
+                    <button onclick="window.app.startListeningPractice()" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">🎧</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="listening.startPractice">${t('listening.startPractice')}</div>
+                            <div class="module-action-desc" data-i18n="listening.practiceDesc">${t('listening.practiceDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                </div>
             </div>
         `;
 
@@ -1860,37 +1913,58 @@ class App {
         if (!content) return;
         
         content.innerHTML = `
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-white mb-4" data-i18n="module.test.title">${t('module.test.title')}</h2>
-                <p class="text-white/80 mb-6" data-i18n="module.test.desc">${t('module.test.desc')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-yellow-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.testsCompleted">${t('test.testsCompleted')}</h3>
-                        <p class="text-3xl font-bold text-yellow-300" id="testsCompleted">0</p>
+                <div class="module-header">
+                    <span class="toeic-part-badge">FULL TEST · PARTS 1–7</span>
+                    <div class="module-header-icon" aria-hidden="true">📋</div>
+                    <h2 class="module-header-title" data-i18n="module.test.title">${t('module.test.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.test.desc">${t('module.test.desc')}</p>
+                </div>
+
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="testsCompleted">0</span>
+                        <span class="module-stat-label" data-i18n="test.testsCompleted">${t('test.testsCompleted')}</span>
                     </div>
-                    <div class="bg-red-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.bestScore">${t('test.bestScore')}</h3>
-                        <p class="text-3xl font-bold text-red-300" id="bestScore">0</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="bestScore">0</span>
+                        <span class="module-stat-label" data-i18n="test.bestScore">${t('test.bestScore')}</span>
                     </div>
-                    <div class="bg-indigo-500/20 rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-white mb-2" data-i18n="test.averageScore">${t('test.averageScore')}</h3>
-                        <p class="text-3xl font-bold text-indigo-300" id="averageScore">0</p>
+                    <div class="module-stat">
+                        <span class="module-stat-value" id="averageScore">0</span>
+                        <span class="module-stat-label" data-i18n="test.averageScore">${t('test.averageScore')}</span>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <button onclick="window.app.startFullTest()" class="btn btn-primary btn-lg w-full">
-                        <i data-lucide="clipboard-check" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="test.startFullTimed">${t('test.startFullTimed')}</span>
+                <div class="module-actions">
+                    <button onclick="window.app.startFullTest()" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">📋</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.startFullTimed">${t('test.startFullTimed')}</div>
+                            <div class="module-action-desc" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
-                    <button onclick="window.app.startListeningTest()" class="btn btn-secondary btn-lg w-full">
-                        <i data-lucide="headphones" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="test.listeningOnly">${t('test.listeningOnly')}</span>
+                    <button onclick="window.app.startListeningTest()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">🎧</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.listeningOnly">${t('test.listeningOnly')}</div>
+                            <div class="module-action-desc" data-i18n="test.listeningTestDesc">${t('test.listeningTestDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
-                    <button onclick="window.app.startReadingTest()" class="btn btn-secondary btn-lg w-full">
-                        <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="test.readingOnly">${t('test.readingOnly')}</span>
+                    <button onclick="window.app.startReadingTest()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">📖</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.readingOnly">${t('test.readingOnly')}</div>
+                            <div class="module-action-desc" data-i18n="test.readingTestDesc">${t('test.readingTestDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
                 </div>
             </div>
@@ -1906,83 +1980,65 @@ class App {
         const progressSummary = window.toeicVocabulary ? window.toeicVocabulary.getProgressSummary() : null;
         
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <!-- Header -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-2" data-i18n="flashcards.title">${t('flashcards.title')}</h2>
-                    <p class="text-white/60" data-i18n="flashcards.subtitle">${t('flashcards.subtitle')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
+
+                <div class="module-header">
+                    <span class="toeic-part-badge">PARTS 1–7 · VOCABULARY</span>
+                    <div class="module-header-icon" aria-hidden="true">🃏</div>
+                    <h2 class="module-header-title" data-i18n="module.flashcards.title">${t('module.flashcards.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.flashcards.desc">${t('module.flashcards.desc')}</p>
                 </div>
 
-                <!-- Progress Summary -->
                 ${progressSummary ? `
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="common.yourProgress">${t('common.yourProgress')}</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-400">${progressSummary.totalWords}</div>
-                            <div class="text-white/80 text-sm" data-i18n="flashcards.totalWords">${t('flashcards.totalWords')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-400">${progressSummary.masteredWords}</div>
-                            <div class="text-white/80 text-sm" data-i18n="flashcards.mastered">${t('flashcards.mastered')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-yellow-400">${progressSummary.learningWords}</div>
-                            <div class="text-white/80 text-sm" data-i18n="flashcards.learning">${t('flashcards.learning')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-400">${Math.round(progressSummary.masteryPercentage)}%</div>
-                            <div class="text-white/80 text-sm" data-i18n="flashcards.mastery">${t('flashcards.mastery')}</div>
-                        </div>
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value">${progressSummary.totalWords}</span>
+                        <span class="module-stat-label" data-i18n="flashcards.totalWords">${t('flashcards.totalWords')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${progressSummary.masteredWords}</span>
+                        <span class="module-stat-label" data-i18n="flashcards.mastered">${t('flashcards.mastered')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${progressSummary.learningWords}</span>
+                        <span class="module-stat-label" data-i18n="flashcards.learning">${t('flashcards.learning')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${Math.round(progressSummary.masteryPercentage)}%</span>
+                        <span class="module-stat-label" data-i18n="flashcards.mastery">${t('flashcards.mastery')}</span>
                     </div>
                 </div>
                 ` : ''}
 
-                <!-- Main Flashcard App -->
-                <div class="glass-effect rounded-xl p-8 mb-6 text-center">
-                    <div class="mb-6">
-                        <div class="text-6xl mb-4">🃏</div>
-                        <h3 class="text-2xl font-bold text-white mb-2" data-i18n="flashcards.smartLearning">${t('flashcards.smartLearning')}</h3>
-                        <p class="text-white/80 text-lg mb-4" data-i18n="flashcards.smartLearningDesc">${t('flashcards.smartLearningDesc')}</p>
-                    </div>
-
-                    <div class="bg-white/5 rounded-lg p-6 mb-6">
-                        <h4 class="text-lg font-semibold text-white mb-3" data-i18n="flashcards.howItWorks">${t('flashcards.howItWorks')}</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-white/80">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                                <span data-i18n="flashcards.step1">${t('flashcards.step1')}</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                                <span data-i18n="flashcards.step2">${t('flashcards.step2')}</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                                <span data-i18n="flashcards.step3">${t('flashcards.step3')}</span>
-                            </div>
+                <div class="module-actions">
+                    <button onclick="window.app.startFlashcardReview('spaced_repetition')" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">▶</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="flashcards.startLearning">${t('flashcards.startLearning')}</div>
+                            <div class="module-action-desc">${t('flashcards.step1')} · ${t('flashcards.step2')}</div>
                         </div>
-                    </div>
-
-                    <button onclick="window.app.startFlashcardReview('spaced_repetition')" class="btn btn-primary text-lg px-8 py-4">
-                        <i data-lucide="play" class="w-6 h-6 mr-3"></i>
-                        <span data-i18n="flashcards.startLearning">${t('flashcards.startLearning')}</span>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="flashcards.quickActions">${t('flashcards.quickActions')}</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <button onclick="window.app.showVocabularyProgress()" class="btn btn-secondary">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5 mr-2"></i>
-                            <span data-i18n="flashcards.viewProgress">${t('flashcards.viewProgress')}</span>
-                        </button>
-                        <button onclick="window.app.showFlashcardSettings()" class="btn btn-secondary">
-                            <i data-lucide="settings" class="w-5 h-5 mr-2"></i>
-                            <span data-i18n="settings.title">${t('settings.title')}</span>
-                        </button>
-                    </div>
+                    <button onclick="window.app.showVocabularyProgress()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">📊</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="flashcards.viewProgress">${t('flashcards.viewProgress')}</div>
+                            <div class="module-action-desc" data-i18n="flashcards.step3">${t('flashcards.step3')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                    <button onclick="window.app.showFlashcardSettings()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">⚙️</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="settings.title">${t('settings.title')}</div>
+                            <div class="module-action-desc" data-i18n="flashcards.settingsDesc">${t('flashcards.settingsDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
                 </div>
             </div>
         `;
@@ -2001,85 +2057,88 @@ class App {
         const progressSummary = window.toeicGrammar ? window.toeicGrammar.getUserProgressSummary() : null;
         
         content.innerHTML = `
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-white mb-4" data-i18n="grammar.practiceTitle">${t('grammar.practiceTitle')}</h2>
-                    <p class="text-white/80 text-lg" data-i18n="grammar.practiceSubtitle">${t('grammar.practiceSubtitle')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="goHome()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
+                </button>
+
+                <div class="module-header">
+                    <span class="toeic-part-badge">READING · PARTS 5–6</span>
+                    <div class="module-header-icon" aria-hidden="true">📝</div>
+                    <h2 class="module-header-title" data-i18n="module.grammar.title">${t('module.grammar.title')}</h2>
+                    <p class="module-header-subtitle" data-i18n="module.grammar.desc">${t('module.grammar.desc')}</p>
                 </div>
 
-                <!-- Progress Overview -->
                 ${progressSummary ? `
-                <div class="glass-effect rounded-xl p-6 mb-8">
-                    <h3 class="text-xl font-bold text-white mb-4" data-i18n="common.yourProgress">${t('common.yourProgress')}</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-blue-400">${progressSummary.masteredCategories}</div>
-                            <div class="text-white/80" data-i18n="grammar.masteredCategories">${t('grammar.masteredCategories')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-green-400">${progressSummary.totalCategories}</div>
-                            <div class="text-white/80" data-i18n="grammar.totalCategories">${t('grammar.totalCategories')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-purple-400">${Math.round((progressSummary.masteredCategories / progressSummary.totalCategories) * 100)}%</div>
-                            <div class="text-white/80" data-i18n="grammar.completion">${t('grammar.completion')}</div>
-                        </div>
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value">${progressSummary.masteredCategories}</span>
+                        <span class="module-stat-label" data-i18n="grammar.masteredCategories">${t('grammar.masteredCategories')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${progressSummary.totalCategories}</span>
+                        <span class="module-stat-label" data-i18n="grammar.totalCategories">${t('grammar.totalCategories')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${Math.round((progressSummary.masteredCategories / progressSummary.totalCategories) * 100)}%</span>
+                        <span class="module-stat-label" data-i18n="grammar.completion">${t('grammar.completion')}</span>
                     </div>
                 </div>
                 ` : ''}
-                
-                <!-- Grammar Categories -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+                <div class="module-actions">
+                    <button onclick="window.app.startGrammarPractice('all')" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">📝</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="grammar.practiceAll">${t('grammar.practiceAll')}</div>
+                            <div class="module-action-desc" data-i18n="grammar.practiceAllDesc">${t('grammar.practiceAllDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                    <button onclick="window.app.startGrammarPractice('mixed')" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">🔀</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="grammar.mixedPractice">${t('grammar.mixedPractice')}</div>
+                            <div class="module-action-desc" data-i18n="grammar.mixedPracticeDesc">${t('grammar.mixedPracticeDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                    <button onclick="window.app.showGrammarRules()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">📖</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="grammar.viewRules">${t('grammar.viewRules')}</div>
+                            <div class="module-action-desc" data-i18n="grammar.viewRulesDesc">${t('grammar.viewRulesDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                </div>
+
+                <div class="module-actions">
                     ${Object.entries(categories).map(([key, category]) => {
                         const progress = progressSummary ? progressSummary.categoryDetails[key] : null;
                         const isMastered = progress ? progress.isMastered : false;
                         const accuracy = progress ? progress.accuracy : 0;
-                        
+
                         return `
-                            <div class="glass-effect rounded-xl p-6 cursor-pointer hover:scale-105 transition-transform" 
-                                 onclick="window.app.startGrammarCategory('${key}')">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-12 h-12 rounded-lg bg-${category.color}-500/20 flex items-center justify-center">
-                                            <i data-lucide="${category.icon}" class="w-6 h-6 text-${category.color}-400"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-white">${category.name}</h3>
-                                            <p class="text-sm text-white/60">${category.difficulty}</p>
-                                        </div>
+                            <button onclick="window.app.startGrammarCategory('${key}')" class="module-action-btn">
+                                <span class="module-action-icon">
+                                    <i data-lucide="${category.icon}" class="w-6 h-6 text-${category.color}-400"></i>
+                                </span>
+                                <div class="module-action-text">
+                                    <div class="module-action-title">${category.name} ${isMastered ? '✅' : ''}</div>
+                                    <div class="module-action-desc">${category.difficulty} · ${category.description}</div>
+                                    ${progress ? `
+                                    <div class="quiz-progress-track">
+                                        <div class="quiz-progress-fill" style="width: ${accuracy}%"></div>
                                     </div>
-                                    ${isMastered ? '<i data-lucide="check-circle" class="w-6 h-6 text-green-400"></i>' : ''}
+                                    <div class="module-action-desc"><span data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>: ${accuracy}%</div>
+                                    ` : ''}
                                 </div>
-                                <p class="text-white/80 text-sm mb-4">${category.description}</p>
-                                ${progress ? `
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-white/60" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
-                                    <span class="text-sm font-semibold text-${accuracy >= 80 ? 'green' : accuracy >= 60 ? 'yellow' : 'red'}-400">${accuracy}%</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
-                                    <div class="bg-${category.color}-500 h-2 rounded-full transition-all duration-300" 
-                                         style="width: ${accuracy}%"></div>
-                                </div>
-                                ` : ''}
-                            </div>
+                                <span class="module-action-chevron" aria-hidden="true">›</span>
+                            </button>
                         `;
                     }).join('')}
-                </div>
-                
-                <!-- Quick Actions -->
-                <div class="flex flex-wrap gap-4 justify-center">
-                    <button onclick="window.app.startGrammarPractice('all')" class="btn btn-primary btn-lg">
-                        <i data-lucide="book-text" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="grammar.practiceAll">${t('grammar.practiceAll')}</span>
-                    </button>
-                    <button onclick="window.app.startGrammarPractice('mixed')" class="btn btn-secondary btn-lg">
-                        <i data-lucide="shuffle" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="grammar.mixedPractice">${t('grammar.mixedPractice')}</span>
-                    </button>
-                    <button onclick="window.app.showGrammarRules()" class="btn btn-outline btn-lg">
-                        <i data-lucide="book-open" class="w-6 h-6 mr-2"></i>
-                        <span data-i18n="grammar.viewRules">${t('grammar.viewRules')}</span>
-                    </button>
                 </div>
             </div>
         `;
@@ -2859,92 +2918,82 @@ class App {
         const currentIndex = totalWords - session.length; // Calculate current position
         
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
+            <div class="module-shell">
                 <!-- Progress Header -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="quiz-card">
+                    <div class="flex justify-between items-center">
                         <div>
                             <h3 class="text-xl font-bold text-white">${modeInfo.title}</h3>
                             <p class="text-white/60">${modeInfo.description}</p>
                         </div>
                         <div class="text-right">
                             <div class="text-sm text-white/80">${t('quiz.progress')}</div>
-                            <div class="text-lg font-bold text-blue-400">${currentIndex + 1}/${totalWords}</div>
+                            <div class="text-lg font-bold text-white">${currentIndex + 1}/${totalWords}</div>
                         </div>
                     </div>
-                    
-                    <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" 
-                             style="width: ${((currentIndex + 1) / totalWords) * 100}%"></div>
+
+                    <div class="quiz-progress-track">
+                        <div class="quiz-progress-fill" style="width: ${((currentIndex + 1) / totalWords) * 100}%"></div>
                     </div>
                 </div>
-                
+
                 <!-- Flashcard -->
-                <div class="glass-effect rounded-xl p-8 mb-6">
-                    <div id="flashcard" class="min-h-64 flex flex-col justify-center items-center text-center">
-                        <div class="mb-6">
-                            <span class="px-3 py-1 bg-${currentWord.difficulty.toLowerCase() === 'b2' ? 'yellow' : currentWord.difficulty.toLowerCase() === 'b1' ? 'blue' : 'green'}-500/20 text-${currentWord.difficulty.toLowerCase() === 'b2' ? 'yellow' : currentWord.difficulty.toLowerCase() === 'b1' ? 'blue' : 'green'}-400 rounded-full text-sm font-semibold mb-4 inline-block">
-                                ${currentWord.difficulty}
-                            </span>
-                            <h2 class="text-3xl font-bold text-white mb-4">${currentWord.word}</h2>
-                            <p class="text-white/60 text-lg">${currentWord.category}</p>
-                        </div>
-                        
-                        <div id="flashcardContent" class="hidden">
-                            <div class="space-y-4">
-                                <div class="text-xl text-white/90">
-                                    <strong>${t('flashcards.definition')}:</strong> ${currentWord.definition}
-                                </div>
-                                <div class="text-lg text-white/80">
-                                    <strong>${t('flashcards.example')}:</strong> ${currentWord.example}
-                                </div>
-                                ${currentWord.synonyms ? `
-                                <div class="text-lg text-white/80">
-                                    <strong>${t('flashcards.synonyms')}:</strong> ${currentWord.synonyms}
-                                </div>
-                                ` : ''}
-                            </div>
-                        </div>
+                <div id="flashcard" class="flashcard-surface">
+                    <span class="flashcard-level">
+                        <span class="px-3 py-1 bg-${currentWord.difficulty.toLowerCase() === 'b2' ? 'yellow' : currentWord.difficulty.toLowerCase() === 'b1' ? 'blue' : 'green'}-500/20 text-${currentWord.difficulty.toLowerCase() === 'b2' ? 'yellow' : currentWord.difficulty.toLowerCase() === 'b1' ? 'blue' : 'green'}-400 rounded-full text-sm font-semibold inline-block">
+                            ${currentWord.difficulty}
+                        </span>
+                    </span>
+                    <h2 class="flashcard-word">${currentWord.word}</h2>
+                    <p class="flashcard-category">${currentWord.category}</p>
 
-                        <button id="showAnswerBtn" onclick="window.app.showFlashcardAnswer()" class="btn btn-primary mt-6">
-                            <i data-lucide="eye" class="w-5 h-5 mr-2"></i>
-                            ${t('quiz.showAnswer')}
-                        </button>
-
-                        <div id="answerButtons" class="hidden mt-6 space-x-4">
-                            <button onclick="window.app.answerFlashcard('correct')" class="btn btn-success">
-                                <i data-lucide="check" class="w-5 h-5 mr-2"></i>
-                                ${t('vocab.iKnowIt')}
-                            </button>
-                            <button onclick="window.app.answerFlashcard('incorrect')" class="btn btn-danger">
-                                <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                                ${t('vocab.iDontKnow')}
-                            </button>
+                    <div id="flashcardContent" class="hidden">
+                        <div class="flashcard-definition">
+                            <strong>${t('flashcards.definition')}:</strong> ${currentWord.definition}
                         </div>
+                        <div class="flashcard-example">
+                            <strong>${t('flashcards.example')}:</strong> ${currentWord.example}
+                        </div>
+                        ${currentWord.synonyms ? `
+                        <div class="flashcard-example">
+                            <strong>${t('flashcards.synonyms')}:</strong> ${currentWord.synonyms}
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
-                
+
+                <button id="showAnswerBtn" onclick="window.app.showFlashcardAnswer()" class="flashcard-reveal-btn">
+                    👁 ${t('quiz.showAnswer')}
+                </button>
+
+                <div id="answerButtons" class="flashcard-actions hidden">
+                    <button onclick="window.app.answerFlashcard('correct')" class="flashcard-btn know">
+                        ✓ ${t('vocab.iKnowIt')}
+                    </button>
+                    <button onclick="window.app.answerFlashcard('incorrect')" class="flashcard-btn dont-know">
+                        ✗ ${t('vocab.iDontKnow')}
+                    </button>
+                </div>
+
                 <!-- Session Stats -->
-                <div class="glass-effect rounded-xl p-6">
-                    <div class="grid grid-cols-3 gap-6 text-center">
-                        <div>
-                            <div class="text-2xl font-bold text-green-400">${sessionStats.correctAnswers}</div>
-                            <div class="text-white/80">${t('common.correct')}</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-red-400">${sessionStats.incorrectAnswers}</div>
-                            <div class="text-white/80">${t('common.incorrect')}</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-blue-400">${Math.round((sessionStats.correctAnswers / (sessionStats.correctAnswers + sessionStats.incorrectAnswers)) * 100) || 0}%</div>
-                            <div class="text-white/80">${t('quiz.accuracy')}</div>
-                        </div>
+                <div class="module-stats" style="margin-top: 20px;">
+                    <div class="module-stat">
+                        <span class="module-stat-value">${sessionStats.correctAnswers}</span>
+                        <span class="module-stat-label">${t('common.correct')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${sessionStats.incorrectAnswers}</span>
+                        <span class="module-stat-label">${t('common.incorrect')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${Math.round((sessionStats.correctAnswers / (sessionStats.correctAnswers + sessionStats.incorrectAnswers)) * 100) || 0}%</span>
+                        <span class="module-stat-label">${t('quiz.accuracy')}</span>
                     </div>
                 </div>
 
-                <div class="flex justify-center mt-6">
-                    <button onclick="window.app.endFlashcardSession()" class="btn btn-secondary">
-                        <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
+                <div class="flex justify-center">
+                    <button onclick="window.app.endFlashcardSession()" class="module-back-btn">
+                        <span aria-hidden="true">⏹</span>
                         ${t('common.endSession')}
                     </button>
                 </div>
@@ -3262,25 +3311,24 @@ class App {
         }
         
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
+            <div class="module-shell">
                 <!-- Progress Header -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="quiz-card">
+                    <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-white">${t('grammar.practice')}</h3>
                         <div class="text-right">
                             <div class="text-sm text-white/80">${t('quiz.progress')}</div>
-                            <div class="text-lg font-bold text-blue-400">${question.progress.current}/${question.progress.total}</div>
+                            <div class="text-lg font-bold text-white">${question.progress.current}/${question.progress.total}</div>
                         </div>
                     </div>
-                    
-                    <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" 
-                             style="width: ${(question.progress.current / question.progress.total) * 100}%"></div>
+
+                    <div class="quiz-progress-track">
+                        <div class="quiz-progress-fill" style="width: ${(question.progress.current / question.progress.total) * 100}%"></div>
                     </div>
                 </div>
-                
+
                 <!-- Question -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
+                <div class="quiz-card">
                     <div class="mb-6">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-semibold">
@@ -3290,20 +3338,21 @@ class App {
                                 ${question.difficulty}
                             </span>
                         </div>
-                        
+
                         <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${question.progress.current}</h4>
                         <p class="text-white/90 text-lg mb-6">${question.question}</p>
-                        
-                        <div class="space-y-3">
+
+                        <div>
                             ${question.options.map((option, index) => `
-                                <label class="flex items-center p-4 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors">
-                                    <input type="radio" name="grammarAnswer" value="${index}" class="mr-4">
-                                    <span class="text-white/90">${String.fromCharCode(65 + index)}. ${option}</span>
+                                <label class="quiz-option-btn cursor-pointer">
+                                    <input type="radio" name="grammarAnswer" value="${index}" class="mr-1">
+                                    <span class="quiz-option-letter">${String.fromCharCode(65 + index)}</span>
+                                    <span class="text-white/90">${option}</span>
                                 </label>
                             `).join('')}
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-between">
                         <button onclick="window.app.previousGrammarQuestion()" class="btn btn-secondary" ${question.progress.current <= 1 ? 'disabled' : ''}>
                             <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
@@ -3318,8 +3367,8 @@ class App {
                 </div>
 
                 <div class="flex justify-center mt-6">
-                    <button onclick="window.app.completeGrammarSession()" class="btn btn-danger">
-                        <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
+                    <button onclick="window.app.completeGrammarSession()" class="module-back-btn">
+                        <span aria-hidden="true">⏹</span>
                         ${t('grammar.completeSession')}
                     </button>
                 </div>
@@ -3443,28 +3492,27 @@ class App {
         
         // Update the interface to show feedback
         const feedbackHTML = `
-            <div class="max-w-4xl mx-auto">
+            <div class="module-shell">
                 <!-- Progress Header -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="quiz-card">
+                    <div class="flex justify-between items-center">
                         <div>
                             <h3 class="text-xl font-bold text-white">${t('grammar.practice')}</h3>
                             <p class="text-white/60">${t('quiz.questionOf', { current: currentQuestion.progress.current, total: currentQuestion.progress.total })}</p>
                         </div>
                         <div class="text-right">
                             <div class="text-sm text-white/80">${t('quiz.progress')}</div>
-                            <div class="text-lg font-bold text-blue-400">${currentQuestion.progress.current}/${currentQuestion.progress.total}</div>
+                            <div class="text-lg font-bold text-white">${currentQuestion.progress.current}/${currentQuestion.progress.total}</div>
                         </div>
                     </div>
-                    
-                    <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" 
-                             style="width: ${(currentQuestion.progress.current / currentQuestion.progress.total) * 100}%"></div>
+
+                    <div class="quiz-progress-track">
+                        <div class="quiz-progress-fill" style="width: ${(currentQuestion.progress.current / currentQuestion.progress.total) * 100}%"></div>
                     </div>
                 </div>
-                
+
                 <!-- Question with Feedback -->
-                <div class="glass-effect rounded-xl p-8 mb-6">
+                <div class="quiz-card">
                     <div class="mb-6">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-semibold">
@@ -3474,59 +3522,56 @@ class App {
                                 ${currentQuestion.difficulty}
                             </span>
                         </div>
-                        
+
                         <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${currentQuestion.progress.current}</h4>
                         <p class="text-white/90 text-lg mb-6">${currentQuestion.question}</p>
 
-                        <!-- Feedback Result -->
-                        <div class="mb-6 p-4 rounded-lg ${isCorrect ? 'bg-green-500/20 border-2 border-green-500' : 'bg-red-500/20 border-2 border-red-500'}">
+                        <!-- Answer Options with Feedback -->
+                        <div class="mb-2">
+                            ${currentQuestion.options.map((option, index) => {
+                                let optionClass = 'quiz-option-btn';
+                                let icon = '';
+
+                                if (index === selectedIndex) {
+                                    optionClass += isCorrect ? ' is-correct' : ' is-wrong';
+                                    icon = isCorrect ? '✅' : '❌';
+                                } else if (index === currentQuestion.correctAnswer) {
+                                    optionClass += ' is-correct';
+                                    icon = '✅';
+                                }
+
+                                return `
+                                    <div class="${optionClass}">
+                                        <span class="quiz-option-letter">${String.fromCharCode(65 + index)}</span>
+                                        <span class="text-white/90">${option} ${icon}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <!-- Feedback -->
+                        <div class="quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}">
                             <div class="flex items-center gap-3 mb-2">
                                 ${isCorrect ?
                                     `<div class="text-2xl">✅</div><h3 class="text-xl font-bold text-green-400">${t('quiz.correct')}</h3>` :
                                     `<div class="text-2xl">❌</div><h3 class="text-xl font-bold text-red-400">${t('quiz.incorrect')}</h3>`
                                 }
                             </div>
-                        </div>
-                        
-                        <!-- Answer Options with Feedback -->
-                        <div class="space-y-3 mb-6">
-                            ${currentQuestion.options.map((option, index) => {
-                                let optionClass = 'p-4 rounded-lg border-2';
-                                let icon = '';
-                                
-                                if (index === selectedIndex) {
-                                    optionClass += isCorrect ? ' bg-green-500/20 border-green-500' : ' bg-red-500/20 border-red-500';
-                                    icon = isCorrect ? '✅' : '❌';
-                                } else if (index === currentQuestion.correctAnswer) {
-                                    optionClass += ' bg-green-500/20 border-green-500';
-                                    icon = '✅';
-                                } else {
-                                    optionClass += ' bg-white/5 border-white/10';
-                                }
-                                
-                                return `
-                                    <div class="${optionClass}">
-                                        <span class="text-white/90">${String.fromCharCode(65 + index)}. ${option} ${icon}</span>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        
-                        <!-- Explanation -->
-                        ${currentQuestion.explanation ? `
-                            <div class="bg-blue-500/10 rounded-lg p-4 mb-4">
-                                <h4 class="text-blue-400 font-semibold mb-2">${t('quiz.explanation')}:</h4>
-                                <p class="text-white/80">${currentQuestion.explanation}</p>
-                            </div>
-                        ` : ''}
 
-                        <!-- Grammar Rule -->
-                        ${currentQuestion.grammarRule ? `
-                            <div class="bg-purple-500/10 rounded-lg p-4">
-                                <h4 class="text-purple-400 font-semibold mb-2">${t('grammar.rule')}: ${currentQuestion.grammarRule.title}</h4>
-                                <p class="text-white/80 text-sm">${currentQuestion.grammarRule.description}</p>
-                            </div>
-                        ` : ''}
+                            ${currentQuestion.explanation ? `
+                                <div class="mt-2">
+                                    <h4 class="text-blue-400 font-semibold mb-1">${t('quiz.explanation')}:</h4>
+                                    <p class="text-white/80">${currentQuestion.explanation}</p>
+                                </div>
+                            ` : ''}
+
+                            ${currentQuestion.grammarRule ? `
+                                <div class="mt-3">
+                                    <h4 class="text-purple-400 font-semibold mb-1">${t('grammar.rule')}: ${currentQuestion.grammarRule.title}</h4>
+                                    <p class="text-white/80 text-sm">${currentQuestion.grammarRule.description}</p>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
 
                     <div class="flex justify-center">
@@ -3544,26 +3589,24 @@ class App {
                 </div>
 
                 <!-- Session Stats -->
-                <div class="glass-effect rounded-xl p-6">
-                    <div class="grid grid-cols-3 gap-6 text-center">
-                        <div>
-                            <div class="text-2xl font-bold text-green-400">${window.toeicGrammar.getSessionStats().correctAnswers}</div>
-                            <div class="text-white/80">${t('common.correct')}</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-red-400">${window.toeicGrammar.getSessionStats().incorrectAnswers}</div>
-                            <div class="text-white/80">${t('common.incorrect')}</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-blue-400">${Math.round((window.toeicGrammar.getSessionStats().correctAnswers / (window.toeicGrammar.getSessionStats().correctAnswers + window.toeicGrammar.getSessionStats().incorrectAnswers)) * 100) || 0}%</div>
-                            <div class="text-white/80">${t('quiz.accuracy')}</div>
-                        </div>
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value">${window.toeicGrammar.getSessionStats().correctAnswers}</span>
+                        <span class="module-stat-label">${t('common.correct')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${window.toeicGrammar.getSessionStats().incorrectAnswers}</span>
+                        <span class="module-stat-label">${t('common.incorrect')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${Math.round((window.toeicGrammar.getSessionStats().correctAnswers / (window.toeicGrammar.getSessionStats().correctAnswers + window.toeicGrammar.getSessionStats().incorrectAnswers)) * 100) || 0}%</span>
+                        <span class="module-stat-label">${t('quiz.accuracy')}</span>
                     </div>
                 </div>
 
-                <div class="flex justify-center mt-6">
-                    <button onclick="window.app.completeGrammarSession()" class="btn btn-danger">
-                        <i data-lucide="flag" class="w-5 h-5 mr-2"></i>
+                <div class="flex justify-center">
+                    <button onclick="window.app.completeGrammarSession()" class="module-back-btn">
+                        <span aria-hidden="true">⏹</span>
                         ${t('grammar.completeSession')}
                     </button>
                 </div>
@@ -3714,38 +3757,45 @@ class App {
         if (!content) return;
         
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <div class="glass-effect rounded-xl p-8 mb-6">
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-white mb-4">${t('grammar.practiceComplete')}</h3>
-                        <div class="text-4xl font-bold text-blue-400 mb-2">${results.accuracy}%</div>
-                        <p class="text-white/80">${t('common.overallAccuracy')}</p>
-                    </div>
+            <div class="module-shell">
+                <div class="module-header">
+                    <span class="toeic-part-badge">READING · PARTS 5–6</span>
+                    <div class="module-header-icon" aria-hidden="true">📝</div>
+                    <h2 class="module-header-title">${t('grammar.practiceComplete')}</h2>
+                    <p class="module-header-subtitle">${t('common.overallAccuracy')}: ${results.accuracy}%</p>
+                </div>
 
-                    <div class="grid grid-cols-3 gap-6 mb-6">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-400">${results.correctAnswers}</div>
-                            <div class="text-white/80">${t('common.correct')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-red-400">${results.incorrectAnswers}</div>
-                            <div class="text-white/80">${t('common.incorrect')}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-400">${results.totalQuestions}</div>
-                            <div class="text-white/80">${t('common.total')}</div>
-                        </div>
+                <div class="module-stats">
+                    <div class="module-stat">
+                        <span class="module-stat-value">${results.correctAnswers}</span>
+                        <span class="module-stat-label">${t('common.correct')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${results.incorrectAnswers}</span>
+                        <span class="module-stat-label">${t('common.incorrect')}</span>
+                    </div>
+                    <div class="module-stat">
+                        <span class="module-stat-value">${results.totalQuestions}</span>
+                        <span class="module-stat-label">${t('common.total')}</span>
                     </div>
                 </div>
 
-                <div class="flex justify-center gap-4">
-                    <button onclick="window.app.startGrammarPractice('all')" class="btn btn-primary">
-                        <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                        ${t('common.practiceAgain')}
+                <div class="module-actions">
+                    <button onclick="window.app.startGrammarPractice('all')" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">🔄</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title">${t('common.practiceAgain')}</div>
+                            <div class="module-action-desc" data-i18n="grammar.practiceAllDesc">${t('grammar.practiceAllDesc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
-                    <button onclick="window.app.showTOEICModuleScreen('grammar')" class="btn btn-secondary">
-                        <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        ${t('grammar.backToGrammar')}
+                    <button onclick="window.app.showTOEICModuleScreen('grammar')" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">🏠</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title">${t('grammar.backToGrammar')}</div>
+                            <div class="module-action-desc" data-i18n="module.grammar.desc">${t('module.grammar.desc')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
                 </div>
             </div>
@@ -5085,61 +5135,51 @@ class App {
     showTestModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <div class="text-center mb-8">
-                    <h3 class="text-2xl font-bold text-white mb-4" data-i18n="test.simulatorTitle">${t('test.simulatorTitle')}</h3>
-                    <p class="text-white/80 mb-6" data-i18n="test.chooseType">${t('test.chooseType')}</p>
+            <div class="module-shell">
+                <button class="module-back-btn" onclick="window.app.endCurrentSession()">
+                    <span aria-hidden="true">←</span>
+                    <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
+                </button>
+
+                <div class="module-header">
+                    <span class="toeic-part-badge">FULL TEST · PARTS 1–7</span>
+                    <div class="module-header-icon" aria-hidden="true">📋</div>
+                    <h2 class="module-header-title" data-i18n="test.simulatorTitle">${t('test.simulatorTitle')}</h2>
+                    <p class="module-header-subtitle" data-i18n="test.chooseType">${t('test.chooseType')}</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <!-- Full Test -->
-                    <div class="glass-effect rounded-xl p-6 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-blue-500/20 rounded-full flex items-center justify-center">
-                            <i data-lucide="clipboard-list" class="w-8 h-8 text-blue-400"></i>
+                <div class="module-actions">
+                    <button onclick="window.app.startFullTOEICTest()" class="module-action-btn primary">
+                        <span class="module-action-icon" aria-hidden="true">📋</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.fullTest">${t('test.fullTest')}</div>
+                            <div class="module-action-desc" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</div>
+                            <div class="module-action-desc">⏱️ <span data-i18n="test.durationFull">${t('test.durationFull')}</span> · 📊 ${t('test.questions')}: 200 · 🎯 ${t('test.score')}: 10-990</div>
                         </div>
-                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.fullTest">${t('test.fullTest')}</h4>
-                        <p class="text-white/70 text-sm mb-4" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</p>
-                        <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ <span data-i18n="test.durationFull">${t('test.durationFull')}</span></div>
-                            <div>📊 ${t('test.questions')}: 200</div>
-                            <div>🎯 ${t('test.score')}: 10-990</div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                    <button onclick="window.app.startListeningTOEICTest()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">🎧</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.listeningTest">${t('test.listeningTest')}</div>
+                            <div class="module-action-desc" data-i18n="test.listeningParts">${t('test.listeningParts')}</div>
+                            <div class="module-action-desc">⏱️ <span data-i18n="test.durationListening">${t('test.durationListening')}</span> · 📊 ${t('test.questions')}: 100 · 🎯 ${t('test.score')}: 5-495</div>
                         </div>
-                        <button onclick="window.app.startFullTOEICTest()" class="btn btn-primary w-full" data-i18n="test.startFull">${t('test.startFull')}</button>
-                    </div>
-
-                    <!-- Listening Test -->
-                    <div class="glass-effect rounded-xl p-6 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-full flex items-center justify-center">
-                            <i data-lucide="headphones" class="w-8 h-8 text-green-400"></i>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
+                    <button onclick="window.app.startReadingTOEICTest()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">📖</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.readingTest">${t('test.readingTest')}</div>
+                            <div class="module-action-desc" data-i18n="test.readingParts">${t('test.readingParts')}</div>
+                            <div class="module-action-desc">⏱️ <span data-i18n="test.durationReading">${t('test.durationReading')}</span> · 📊 ${t('test.questions')}: 100 · 🎯 ${t('test.score')}: 5-495</div>
                         </div>
-                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.listeningTest">${t('test.listeningTest')}</h4>
-                        <p class="text-white/70 text-sm mb-4" data-i18n="test.listeningParts">${t('test.listeningParts')}</p>
-                        <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ <span data-i18n="test.durationListening">${t('test.durationListening')}</span></div>
-                            <div>📊 ${t('test.questions')}: 100</div>
-                            <div>🎯 ${t('test.score')}: 5-495</div>
-                        </div>
-                        <button onclick="window.app.startListeningTOEICTest()" class="btn btn-secondary w-full" data-i18n="test.startListening">${t('test.startListening')}</button>
-                    </div>
-
-                    <!-- Reading Test -->
-                    <div class="glass-effect rounded-xl p-6 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-purple-500/20 rounded-full flex items-center justify-center">
-                            <i data-lucide="file-text" class="w-8 h-8 text-purple-400"></i>
-                        </div>
-                        <h4 class="text-lg font-semibold text-white mb-2" data-i18n="test.readingTest">${t('test.readingTest')}</h4>
-                        <p class="text-white/70 text-sm mb-4" data-i18n="test.readingParts">${t('test.readingParts')}</p>
-                        <div class="text-xs text-white/60 mb-4">
-                            <div>⏱️ <span data-i18n="test.durationReading">${t('test.durationReading')}</span></div>
-                            <div>📊 ${t('test.questions')}: 100</div>
-                            <div>🎯 ${t('test.score')}: 5-495</div>
-                        </div>
-                        <button onclick="window.app.startReadingTOEICTest()" class="btn btn-secondary w-full" data-i18n="test.startReading">${t('test.startReading')}</button>
-                    </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
+                    </button>
                 </div>
 
                 <!-- Test History -->
-                <div class="glass-effect rounded-xl p-6 mb-6">
+                <div class="quiz-card">
                     <h4 class="text-lg font-semibold text-white mb-4">📊 <span data-i18n="module.history.title">${t('module.history.title')}</span></h4>
                     <div id="testHistory" class="space-y-3">
                         <div class="text-center text-white/60 py-4">
@@ -5148,14 +5188,13 @@ class App {
                     </div>
                 </div>
 
-                <div class="flex justify-center gap-4">
-                    <button onclick="window.app.showTestSettings()" class="btn btn-secondary">
-                        <i data-lucide="settings" class="w-5 h-5 mr-2"></i>
-                        <span data-i18n="test.settings">${t('test.settings')}</span>
-                    </button>
-                    <button onclick="window.app.endCurrentSession()" class="btn btn-primary">
-                        <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
+                <div class="module-actions">
+                    <button onclick="window.app.showTestSettings()" class="module-action-btn">
+                        <span class="module-action-icon" aria-hidden="true">⚙️</span>
+                        <div class="module-action-text">
+                            <div class="module-action-title" data-i18n="test.settings">${t('test.settings')}</div>
+                        </div>
+                        <span class="module-action-chevron" aria-hidden="true">›</span>
                     </button>
                 </div>
             </div>

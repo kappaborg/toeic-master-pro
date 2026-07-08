@@ -90,6 +90,23 @@ class LanguageManager {
                 'settings.resetDefaults': 'Reset to Defaults',
                 'settings.resetConfirm': 'Reset all settings to defaults?',
 
+                // Study Dashboard
+                'dashboard.continueLearning': 'Continue Learning',
+                'dashboard.continue': 'Continue',
+                'dashboard.startLearning': 'Start Learning',
+                'dashboard.newHere': 'Ready to start?',
+                'dashboard.pickUp': 'Pick up where you left off',
+                'dashboard.suggestion': 'Vocabulary is a great first step',
+                'dashboard.wordOfTheDay': 'Word of the Day',
+                'dashboard.practiceWord': 'Practice Vocabulary',
+                'dashboard.yourProgress': 'Your Progress',
+                'dashboard.streakDays': 'Day Streak',
+                'dashboard.wordsStudied': 'Words Studied',
+                'dashboard.testsTaken': 'Tests Taken',
+                'dashboard.bestScore': 'Best',
+                'dashboard.conversationsDone': 'Conversations',
+                'listening.startPractice': 'Start Listening Practice',
+
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': 'Check Answer',
                 'quiz.nextQuestion': 'Next Question',
@@ -515,6 +532,23 @@ class LanguageManager {
                 'settings.reducedMotion': '减少动画',
                 'settings.resetDefaults': '恢复默认设置',
                 'settings.resetConfirm': '确定要将所有设置恢复为默认值吗？',
+
+                // Study Dashboard
+                'dashboard.continueLearning': '继续学习',
+                'dashboard.continue': '继续',
+                'dashboard.startLearning': '开始学习',
+                'dashboard.newHere': '准备好开始了吗？',
+                'dashboard.pickUp': '从上次停下的地方继续',
+                'dashboard.suggestion': '从词汇开始是个好选择',
+                'dashboard.wordOfTheDay': '每日单词',
+                'dashboard.practiceWord': '练习词汇',
+                'dashboard.yourProgress': '我的进度',
+                'dashboard.streakDays': '连续天数',
+                'dashboard.wordsStudied': '已学单词',
+                'dashboard.testsTaken': '已完成测试',
+                'dashboard.bestScore': '最佳',
+                'dashboard.conversationsDone': '会话场景',
+                'listening.startPractice': '开始听力练习',
 
                 // Shared Quiz Chrome
                 'quiz.checkAnswer': '检查答案',

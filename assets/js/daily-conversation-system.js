@@ -560,6 +560,14 @@ class DailyConversationSystem {
         this.view = 'menu';
         this.currentScenario = null;
 
+        // Remember for the dashboard's "Continue Learning" card
+        try {
+            localStorage.setItem('toeicLastModule', JSON.stringify({
+                type: 'dailyConversation',
+                timestamp: Date.now()
+            }));
+        } catch (e) { /* non-fatal */ }
+
         // Hide the main menu and other module content, show our container
         const mainMenu = document.getElementById('mainMenu');
         if (mainMenu) mainMenu.classList.add('hidden');

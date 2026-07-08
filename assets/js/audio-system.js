@@ -17,8 +17,33 @@ class AudioSystem {
         this.audioCache = new Map();
         this.loadSettings();
         this.initializeVoices();
-        
+
         console.log('🔊 Audio System initialized');
+    }
+
+    /**
+     * Play a short UI feedback sound. The mp3 files ship with the app
+     * (assets/audio/correct.mp3, incorrect.mp3). Elements are cached and
+     * failures are silent — sound is a nice-to-have, never a blocker.
+     */
+    playSound(type) {
+        const files = {
+            correct: 'assets/audio/correct.mp3',
+            incorrect: 'assets/audio/incorrect.mp3'
+        };
+        const src = files[type];
+        if (!src) return;
+
+        try {
+            let audio = this.audioCache.get(src);
+            if (!audio) {
+                audio = new Audio(src);
+                this.audioCache.set(src, audio);
+            }
+            audio.volume = Math.min(1, this.settings.volume ?? 0.8);
+            audio.currentTime = 0;
+            audio.play().catch(() => { /* autoplay blocked — ignore */ });
+        } catch (e) { /* non-fatal */ }
     }
     
     async initializeVoices() {

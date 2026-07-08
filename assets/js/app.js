@@ -793,160 +793,15 @@ class App {
     }
     
     /**
-     * Initialize carousels for welcome screen
+     * Initialize the study dashboard in the hero area (replaces the
+     * old decorative hero carousel, which duplicated the module grid)
      */
     initializeCarousels() {
-        // Enhanced retry mechanism for carousel system
-        if (!window.carouselSystem) {
-            console.log('⏳ Waiting for carousel system...');
-            // Try multiple times with increasing delays
-            let retryCount = 0;
-            const maxRetries = 10;
-            
-            const retryCarousel = () => {
-                retryCount++;
-                if (window.carouselSystem) {
-                    console.log('✅ Carousel system found after', retryCount, 'retries');
-                    this.createMainHeroCarousel();
-                } else if (retryCount < maxRetries) {
-                    console.log(`⏳ Retry ${retryCount}/${maxRetries} for carousel system...`);
-                    setTimeout(retryCarousel, 200 * retryCount);
-                } else {
-                    console.error('❌ Carousel system failed to load after', maxRetries, 'retries');
-                    this.createFallbackHeroSection();
-                }
-            };
-            
-            retryCarousel();
-            return;
-        }
-        
-        this.createMainHeroCarousel();
-    }
-    
-    /**
-     * Create main hero carousel
-     */
-    createMainHeroCarousel() {
-        if (!window.carouselSystem) return;
-        
-        // Main Hero Carousel - Replaces the main card
-        // (t() at build time is enough here: the carousel is rebuilt on
-        // the 'languageChanged' event, see listener below)
-        const mainHeroItems = [
-            {
-                type: 'hero',
-                key: 'toeicVocabulary',
-                icon: '📚',
-                title: t('hero.vocabulary.title'),
-                description: t('hero.vocabulary.desc'),
-                highlight: t('hero.vocabulary.highlight'),
-                action: t('hero.vocabulary.action')
-            },
-            {
-                type: 'hero',
-                key: 'toeicReading',
-                icon: '📖',
-                title: t('hero.reading.title'),
-                description: t('hero.reading.desc'),
-                highlight: t('hero.reading.highlight'),
-                action: t('hero.reading.action')
-            },
-
-            {
-                type: 'hero',
-                key: 'toeicGrammar',
-                icon: '📝',
-                title: t('hero.grammar.title'),
-                description: t('hero.grammar.desc'),
-                highlight: t('hero.grammar.highlight'),
-                action: t('hero.grammar.action')
-            },
-            {
-                type: 'hero',
-                key: 'toeicTestSimulator',
-                icon: '📋',
-                title: t('hero.test.title'),
-                description: t('hero.test.desc'),
-                highlight: t('hero.test.highlight'),
-                action: t('hero.test.action')
-            },
-            {
-                type: 'hero',
-                key: 'toeicFlashcards',
-                icon: '🃏',
-                title: t('hero.flashcards.title'),
-                description: t('hero.flashcards.desc'),
-                highlight: t('hero.flashcards.highlight'),
-                action: t('hero.flashcards.action')
-            }
-        ];
-        
-        try {
-            if (window.carouselSystem && typeof window.carouselSystem.createCarousel === 'function') {
-                window.carouselSystem.createCarousel('mainHeroCarousel', mainHeroItems, {
-                    autoplay: true,
-                    autoplaySpeed: 5000,
-                    showDots: true,
-                    showArrows: true,
-                    infinite: true,
-                    touchSwipe: true
-                });
-                console.log('🎠 Main hero carousel initialized successfully');
-
-                // Listen for language changes to update carousel — register
-                // once, or every rebuild would stack another listener that
-                // itself triggers more rebuilds
-                if (!this.languageListenerBound) {
-                    this.languageListenerBound = true;
-                    window.addEventListener('languageChanged', () => {
-                        console.log('🌍 Language changed, updating carousel...');
-                        // Reinitialize carousel with new language
-                        setTimeout(() => {
-                            this.initializeCarousels();
-                        }, 100);
-                    });
-                }
-            } else {
-                console.warn('⚠️ Carousel system not available, using fallback');
-                this.createFallbackHeroSection();
-            }
-        } catch (error) {
-            console.error('❌ Failed to create carousel:', error);
-            this.createFallbackHeroSection();
-        }
-    }
-    
-    /**
-     * Create fallback hero section if carousel fails
-     */
-    createFallbackHeroSection() {
-        const carouselContainer = document.getElementById('mainHeroCarousel');
-        if (!carouselContainer) return;
-        
-        console.log('🔄 Creating fallback hero section...');
-        
-        carouselContainer.innerHTML = `
-            <div class="hero-fallback glass-effect rounded-2xl p-8 text-center">
-                <div class="text-6xl mb-4">🎓</div>
-                <h1 class="text-4xl font-bold text-white mb-4" data-i18n="hero.fallback.title">${t('hero.fallback.title')}</h1>
-                <p class="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-i18n="hero.fallback.desc">${t('hero.fallback.desc')}</p>
-                <div class="flex flex-wrap gap-4 justify-center">
-                    <button onclick="startGame('multipleChoice')" class="btn-primary glass-effect px-8 py-3 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300">
-                        <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>
-                        <span data-i18n="hero.fallback.startLearning">${t('hero.fallback.startLearning')}</span>
-                    </button>
-                    <button onclick="startGame('vocabularyLearning')" class="btn-secondary glass-effect px-8 py-3 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300">
-                        <i data-lucide="library" class="w-5 h-5 inline mr-2"></i>
-                        <span data-i18n="hero.fallback.vocabularyMode">${t('hero.fallback.vocabularyMode')}</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Reinitialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+        if (window.studyDashboard && typeof window.studyDashboard.init === 'function') {
+            window.studyDashboard.init();
+            console.log('📊 Study dashboard rendered');
+        } else {
+            console.warn('⚠️ Study dashboard not available');
         }
     }
     
@@ -1096,8 +951,17 @@ class App {
     // TOEIC Module Management
     startTOEICModule(moduleType, options = {}) {
         console.log(`🎯 Starting TOEIC module: ${moduleType}`);
-        
+
         return safeExecute(() => {
+            // Remember the last used module for the dashboard's
+            // "Continue Learning" card
+            try {
+                localStorage.setItem('toeicLastModule', JSON.stringify({
+                    type: moduleType,
+                    timestamp: Date.now()
+                }));
+            } catch (e) { /* storage full — continue card just won't update */ }
+
             // Track student activity
             this.trackStudentActivity(`${moduleType}_session_start`, {
                 moduleType: moduleType,
@@ -1140,9 +1004,17 @@ class App {
                     
                     
                 case 'test':
-                    if (window.toeicTestSimulator) {
-                        const test = window.toeicTestSimulator.startTest({ type: options.type || 'full' });
-                        this.showTOEICTestInterface(test);
+                    if (options.type) {
+                        // Explicit type requested — start that test directly
+                        if (window.toeicTestSimulator) {
+                            const test = window.toeicTestSimulator.startTest({ type: options.type });
+                            this.showTOEICTestInterface(test);
+                        }
+                    } else {
+                        // Show the test menu (Full / Listening / Reading +
+                        // history) instead of dropping the student straight
+                        // into a 2-hour full test
+                        this.showTOEICModuleScreen('test');
                     }
                     break;
                     
@@ -1701,8 +1573,9 @@ class App {
             console.log(`📝 Recorded answer: ${answerIndex} for question ${question.id}, correct: ${isCorrect}`);
         }
 
-        // Show enhanced feedback with color-coded buttons
-        this.showReadingAnswerFeedback(answerIndex, question.correctAnswer, isCorrect);
+        // Show enhanced feedback with color-coded buttons and the
+        // question's explanation so students learn why, not just what
+        this.showReadingAnswerFeedback(answerIndex, question.correctAnswer, isCorrect, question.explanation);
 
         // Disable submit button and show next question button
         const submitBtn = document.getElementById('submitBtn');
@@ -1716,7 +1589,7 @@ class App {
         this.updateReadingSessionStats();
     }
 
-    showReadingAnswerFeedback(selectedIndex, correctIndex, isCorrect) {
+    showReadingAnswerFeedback(selectedIndex, correctIndex, isCorrect, explanation = '') {
         // Debug logging
         console.log('🎯 Answer Feedback Debug:');
         console.log('🎯 Selected index:', selectedIndex);
@@ -1762,10 +1635,10 @@ class App {
         });
 
         // Show feedback message
-        this.showReadingFeedbackMessage(isCorrect, correctIndex);
+        this.showReadingFeedbackMessage(isCorrect, correctIndex, explanation);
     }
 
-    showReadingFeedbackMessage(isCorrect, correctIndex) {
+    showReadingFeedbackMessage(isCorrect, correctIndex, explanation = '') {
         const feedbackContainer = document.querySelector('.glass-effect .space-y-3');
         if (!feedbackContainer) return;
 
@@ -1791,6 +1664,7 @@ class App {
                 </span>
             </div>
             ${!isCorrect ? `<p class="mt-2 text-sm">${t('quiz.correctAnswerIs')} <strong>${correctAnswerLetter}</strong></p>` : ''}
+            ${explanation ? `<p class="mt-2 text-sm text-white/80"><strong>${t('quiz.explanation')}:</strong> ${explanation}</p>` : ''}
         `;
         
         feedbackContainer.appendChild(feedbackDiv);
@@ -1959,14 +1833,26 @@ class App {
                     </div>
                 </div>
                 
-                <button onclick="" class="btn btn-primary btn-lg">
+                <button onclick="window.app.startListeningPractice()" class="btn btn-primary btn-lg">
                     <i data-lucide="headphones" class="w-6 h-6 mr-2"></i>
-                    
+                    <span data-i18n="listening.startPractice">${t('listening.startPractice')}</span>
                 </button>
             </div>
         `;
-        
+
         this.updateListeningStats();
+    }
+
+    startListeningPractice() {
+        // Listening practice runs on the test simulator's listening
+        // section — every question carries a transcript, so it works as
+        // written listening practice even without audio files
+        if (!window.toeicTestSimulator) {
+            console.error('❌ Test simulator not available for listening practice');
+            return;
+        }
+        const test = window.toeicTestSimulator.startTest({ type: 'listening' });
+        this.showTOEICTestInterface(test);
     }
     
     initializeTestModule() {
@@ -2825,10 +2711,16 @@ class App {
             vocabScreen.remove();
         }
 
-        // Show main menu
+        // Show main menu AND the welcome screen inside it — the welcome
+        // screen is hidden separately by hideWelcomeScreen(), so restoring
+        // only the parent left students on a blank page after "Exit Session"
         const mainMenu = document.getElementById('mainMenu');
         if (mainMenu) {
             mainMenu.classList.remove('hidden');
+        }
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        if (welcomeScreen) {
+            welcomeScreen.classList.remove('hidden');
         }
 
         // Reset current module

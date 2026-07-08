@@ -175,11 +175,13 @@ class App {
         // Update page title with user name
         document.title = `TOEIC Master Pro - Welcome ${welcomeInfo.name}`;
         
-        // Add user info to navbar if it exists
-        const navbar = document.querySelector('nav');
+        // Add user info INSIDE the navbar flex row — appending to the
+        // <nav> itself created a second row that made the fixed navbar
+        // taller than the main content's top padding, hiding buttons
+        const navbar = document.querySelector('nav .navbar-content') || document.querySelector('nav');
         if (navbar) {
             const userInfo = document.createElement('div');
-            userInfo.className = 'flex items-center space-x-2 text-white/90';
+            userInfo.className = 'navbar-user-info flex items-center space-x-2 text-white/90';
             
             // Add admin dashboard button if user is admin
             const adminButton = welcomeInfo.isAdmin ? `
@@ -2347,164 +2349,37 @@ class App {
             existingControls.remove();
         }
         
-        // Remove existing individual buttons
+        // Remove legacy individual buttons (the dead progress button is
+        // intentionally not recreated — its dashboard was removed)
         const existingProgressBtn = document.getElementById('progressControlBtn');
         const existingHomeBtn = document.getElementById('homeControlBtn');
         if (existingProgressBtn) existingProgressBtn.remove();
         if (existingHomeBtn) existingHomeBtn.remove();
-        
-        // Create floating independent controls
-        const progressBtn = document.createElement('div');
-        progressBtn.id = 'progressControlBtn';
-        progressBtn.className = 'floating-control-btn progress-btn independent-draggable';
-        progressBtn.innerHTML = `
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
-        `;
-        progressBtn.title = 'Toggle Progress Panel (Drag to move)';
-        progressBtn.onclick = () => {
-            // Progress dashboard removed
-            console.log('Progress dashboard has been removed');
-        };
-        
-        const homeBtn = document.createElement('div');
-        homeBtn.id = 'homeControlBtn';
-        homeBtn.className = 'floating-control-btn home-btn independent-draggable';
-        homeBtn.title = 'Go to Home (Drag to move)';
-        homeBtn.innerHTML = `
-            <i data-lucide="home" class="w-5 h-5 text-white"></i>
-        `;
-        homeBtn.onclick = () => this.showWelcomeScreen();
-        
-        // Add directly to body
-        document.body.appendChild(progressBtn);
-        document.body.appendChild(homeBtn);
-        
-        // Make draggable
-        this.makeButtonDraggable(progressBtn, 'progressControlPosition');
-        this.makeButtonDraggable(homeBtn, 'homeControlPosition');
-        
-        // Reinitialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+
+        // The static #floatingHomeButton in index.html is the single
+        // home control — just make sure it is visible and draggable
+        const staticHomeBtn = document.getElementById('floatingHomeButton');
+        if (staticHomeBtn) {
+            staticHomeBtn.classList.remove('hidden');
+            if (window.makeFloatingDraggable) {
+                window.makeFloatingDraggable(staticHomeBtn, 'floatingHomeButtonPosition');
+            }
         }
-        
-        console.log('✅ Fallback global controls created');
+
+        console.log('✅ Global controls ready (single home button)');
     }
     
     makeButtonDraggable(button, storageKey) {
-        let isDragging = false;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
-        
-        // Load saved position
-        const savedPos = localStorage.getItem(storageKey);
-        if (savedPos) {
-            try {
-                const pos = JSON.parse(savedPos);
-                xOffset = pos.x;
-                yOffset = pos.y;
-                button.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-            } catch (error) {
-                console.error(`⚠️ Error loading saved position for ${storageKey}:`, error);
-                localStorage.removeItem(storageKey);
-            }
+        // Delegates to the shared pointer-capture utility in
+        // floating-drag.js (single implementation for all floating
+        // buttons; see that file for the click-vs-drag rules)
+        if (window.makeFloatingDraggable) {
+            window.makeFloatingDraggable(button, storageKey);
+        } else {
+            console.warn('makeFloatingDraggable utility not loaded; button will not be draggable');
         }
-        
-        const dragStart = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            isDragging = true;
-            
-            if (e.type === 'touchstart') {
-                initialX = e.touches[0].clientX - xOffset;
-                initialY = e.touches[0].clientY - yOffset;
-            } else {
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-            }
-            
-            button.classList.add('dragging');
-            button.style.cursor = 'grabbing';
-            button.style.zIndex = '1001';
-        };
-        
-        const drag = (e) => {
-            if (!isDragging) return;
-            
-            e.preventDefault();
-            e.stopPropagation();
-            
-            let newX, newY;
-            
-            if (e.type === 'touchmove') {
-                newX = e.touches[0].clientX - initialX;
-                newY = e.touches[0].clientY - initialY;
-            } else {
-                newX = e.clientX - initialX;
-                newY = e.clientY - initialY;
-            }
-            
-            // Enhanced boundaries
-            const buttonRect = button.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            
-            const padding = 50;
-            const minX = -buttonRect.left + padding;
-            const maxX = viewportWidth - buttonRect.right - padding;
-            const minY = -buttonRect.top + padding;
-            const maxY = viewportHeight - buttonRect.bottom - padding;
-            
-            newX = Math.max(minX, Math.min(maxX, newX));
-            newY = Math.max(minY, Math.min(maxY, newY));
-            
-            xOffset = newX;
-            yOffset = newY;
-            
-            button.style.transform = `translate(${newX}px, ${yOffset}px)`;
-        };
-        
-        const dragEnd = (e) => {
-            if (!isDragging) return;
-            
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            isDragging = false;
-            button.classList.remove('dragging');
-            button.style.cursor = 'grab';
-            button.style.zIndex = '1000';
-            
-            // Save position
-            const positionData = {
-                x: xOffset,
-                y: yOffset,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(storageKey, JSON.stringify(positionData));
-        };
-        
-        // Event listeners
-        button.addEventListener('mousedown', dragStart, { passive: false });
-        document.addEventListener('mousemove', drag, { passive: false });
-        document.addEventListener('mouseup', dragEnd, { passive: false });
-        document.addEventListener('mouseleave', dragEnd, { passive: false });
-        
-        button.addEventListener('touchstart', dragStart, { passive: false });
-        document.addEventListener('touchmove', drag, { passive: false });
-        document.addEventListener('touchend', dragEnd, { passive: false });
-        
-        button.style.cursor = 'grab';
-        button.style.userSelect = 'none';
-        button.setAttribute('draggable', 'false');
-        
-        console.log(`✅ Button ${storageKey} made draggable in fallback mode`);
     }
-    
+
     saveSessionData(sessionStats) {
         try {
             const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
@@ -2542,52 +2417,13 @@ class App {
     
     // Settings and Help
     showSettings() {
-        if (window.uiManager) {
-            const settingsContent = this.generateSettingsContent();
-            window.uiManager.showModal(settingsContent, {
-                title: t('settings.title'),
-                actions: `<button class="px-4 py-2 bg-accent rounded-lg text-white" onclick="this.closest('.modal-overlay').remove()">${t('common.close')}</button>`
-            });
+        // Single settings UI: the modern drawer owned by SettingsPanel.
+        // (The old read-only modal with unwired checkboxes is gone.)
+        if (window.settingsPanel) {
+            window.settingsPanel.openPanel();
         }
     }
-    
-    generateSettingsContent() {
-        return `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-white/80 mb-2">${t('settings.difficulty')}</label>
-                    <select class="w-full p-2 rounded bg-white/20 text-white">
-                        <option value="easy">${t('settings.easy')}</option>
-                        <option value="normal" selected>${t('settings.normal')}</option>
-                        <option value="hard">${t('settings.hard')}</option>
-                        <option value="expert">${t('settings.expert')}</option>
-                    </select>
-                </div>
 
-                <div>
-                    <label class="flex items-center text-white/80">
-                        <input type="checkbox" class="mr-2" checked>
-                        ${t('settings.soundEffects')}
-                    </label>
-                </div>
-
-                <div>
-                    <label class="flex items-center text-white/80">
-                        <input type="checkbox" class="mr-2" checked>
-                        ${t('settings.adaptiveDifficulty')}
-                    </label>
-                </div>
-
-                <div>
-                    <label class="flex items-center text-white/80">
-                        <input type="checkbox" class="mr-2" checked>
-                        ${t('settings.achievementNotifications')}
-                    </label>
-                </div>
-            </div>
-        `;
-    }
-    
     showHelp() {
         if (window.uiManager) {
             const helpContent = this.generateHelpContent();
@@ -6201,120 +6037,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeFloatingHomeButton() {
     const floatingBtn = document.getElementById('floatingHomeButton');
     if (!floatingBtn) return;
-    
-    let isDragging = false;
-    let startX, startY, startLeft, startTop;
-    
-    // Make button draggable
-    floatingBtn.addEventListener('mousedown', startDrag);
-    floatingBtn.addEventListener('touchstart', startDrag);
-    
-    function startDrag(e) {
-        const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
-        const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
-        
-        startX = clientX;
-        startY = clientY;
-        
-        const rect = floatingBtn.getBoundingClientRect();
-        startLeft = rect.left;
-        startTop = rect.top;
-        
-        // Don't prevent default immediately - wait to see if it's a drag or click
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('touchmove', drag);
-        document.addEventListener('mouseup', endDrag);
-        document.addEventListener('touchend', endDrag);
+
+    // Shared pointer-capture drag utility (floating-drag.js): drag to
+    // move, click to activate; the two can no longer interfere
+    if (window.makeFloatingDraggable) {
+        window.makeFloatingDraggable(floatingBtn, 'floatingHomeButtonPosition');
     }
-    
-    function drag(e) {
-        const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
-        const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
-        
-        const deltaX = clientX - startX;
-        const deltaY = clientY - startY;
-        
-        // Only start dragging if moved more than 5 pixels
-        if (!isDragging && (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)) {
-            isDragging = true;
-            floatingBtn.classList.add('dragging');
-            e.preventDefault();
-        }
-        
-        if (!isDragging) return;
-        
-        let newLeft = startLeft + deltaX;
-        let newTop = startTop + deltaY;
-        
-        // Constrain to viewport
-        const maxLeft = window.innerWidth - floatingBtn.offsetWidth;
-        const maxTop = window.innerHeight - floatingBtn.offsetHeight;
-        
-        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-        newTop = Math.max(0, Math.min(newTop, maxTop));
-        
-        floatingBtn.style.left = newLeft + 'px';
-        floatingBtn.style.top = newTop + 'px';
-        floatingBtn.style.right = 'auto';
-        floatingBtn.style.transform = 'none';
-        
-        e.preventDefault();
-    }
-    
-    function endDrag() {
-        // Always clean up event listeners
-        document.removeEventListener('mousemove', drag);
-        document.removeEventListener('touchmove', drag);
-        document.removeEventListener('mouseup', endDrag);
-        document.removeEventListener('touchend', endDrag);
-        
-        if (isDragging) {
-            // It was a drag - save position
-            isDragging = false;
-            floatingBtn.classList.remove('dragging');
-            
-            const rect = floatingBtn.getBoundingClientRect();
-            localStorage.setItem('floatingHomeButtonPosition', JSON.stringify({
-                left: rect.left,
-                top: rect.top
-            }));
-            
-            console.log('🖱️ Drag completed - position saved');
-        } else {
-            // It was just a click - let the onclick event fire
-            console.log('🖱️ Click detected - allowing onclick to fire');
-        }
-    }
-    
-    // Load saved position
-    const savedPosition = localStorage.getItem('floatingHomeButtonPosition');
-    if (savedPosition) {
-        try {
-            const position = JSON.parse(savedPosition);
-            floatingBtn.style.left = position.left + 'px';
-            floatingBtn.style.top = position.top + 'px';
-            floatingBtn.style.right = 'auto';
-            floatingBtn.style.transform = 'none';
-        } catch (e) {
-            window.logger?.warn('Failed to load floating button position:', e);
-        }
-    }
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        const rect = floatingBtn.getBoundingClientRect();
-        const maxLeft = window.innerWidth - floatingBtn.offsetWidth;
-        const maxTop = window.innerHeight - floatingBtn.offsetHeight;
-        
-        if (rect.left > maxLeft || rect.top > maxTop) {
-            // Reset to default position if out of bounds
-            floatingBtn.style.left = 'auto';
-            floatingBtn.style.top = '50%';
-            floatingBtn.style.right = '20px';
-            floatingBtn.style.transform = 'translateY(-50%)';
-            localStorage.removeItem('floatingHomeButtonPosition');
-        }
-    });
 }
 
 // Global function to go home

@@ -2681,3 +2681,123 @@ html.reduce-motion *::after {
 .module-shell > *:nth-child(3) { animation-delay: 0.12s; }
 .module-shell > *:nth-child(4) { animation-delay: 0.18s; }
 .module-shell > *:nth-child(5) { animation-delay: 0.24s; }
+
+/* ------------------------------------------------------------------
+   Vocabulary practice — compact efficient layout
+   ------------------------------------------------------------------ */
+
+.vocab-session-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.vocab-session-bar .quiz-progress-track {
+    flex: 1;
+    min-width: 120px;
+    margin: 0;
+}
+
+.vocab-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.vocab-counter strong {
+    font-family: 'Orbitron', 'Inter', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.vocab-counter.good strong { color: #86efac; }
+.vocab-counter.bad strong { color: #fca5a5; }
+
+.vocab-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vocab-card.revealed { cursor: default; }
+
+.vocab-card:not(.revealed):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+
+.vocab-chips {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.vocab-word-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.vocab-speak-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.vocab-speak-btn:hover { background: rgba(255, 255, 255, 0.28); }
+
+.vocab-tap-hint {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.8rem;
+    margin-top: 16px;
+}
+
+.key-hint {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom-width: 2px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.vocab-examples {
+    text-align: left;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 560px;
+}
+
+.vocab-examples-title {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+}
+
+.flashcard-actions .key-hint { margin-left: 8px; opacity: 0.8; }

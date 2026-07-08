@@ -1162,112 +1162,84 @@ class App {
     
     generateVocabularyLearningHTML(session) {
         return `
-            <div class="max-w-4xl mx-auto">
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 class="text-3xl font-bold text-white mb-2" data-i18n="vocab.learningTitle">${t('vocab.learningTitle')}</h1>
-                        <p class="text-white/80" data-i18n="vocab.learningSubtitle">${t('vocab.learningSubtitle')}</p>
-                        <div class="flex items-center gap-4 mt-2">
-                            <span class="text-sm text-white/60" id="totalVocabularyCount">${t('vocab.loadingVocabulary')}</span>
-                            <button onclick="window.app.forceReloadVocabulary()" class="text-xs bg-blue-500/20 hover:bg-blue-500/30 px-3 py-1 rounded-full text-blue-300 transition-colors">
-                                <i data-lucide="refresh-cw" class="w-3 h-3 mr-1"></i>
-                                <span data-i18n="vocab.reloadVocabulary">${t('vocab.reloadVocabulary')}</span>
-                            </button>
-                        </div>
-                    </div>
-                    <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
-                        <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                        <span data-i18n="common.exitSession">${t('common.exitSession')}</span>
+            <div class="module-shell">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="window.app.endCurrentSession()" class="module-back-btn" style="margin-bottom: 0;">
+                        ← <span data-i18n="common.exitSession">${t('common.exitSession')}</span>
                     </button>
+                    <span class="text-sm text-white/60" id="totalVocabularyCount">${t('vocab.loadingVocabulary')}</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-blue-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="vocab.wordsRemaining">${t('vocab.wordsRemaining')}</h3>
-                        <p class="text-2xl font-bold text-blue-300" id="wordsRemaining">${session.length}</p>
+                <!-- Compact session strip: progress + inline counters -->
+                <div class="vocab-session-bar">
+                    <span class="vocab-counter"><i data-lucide="layers" class="w-4 h-4"></i> <strong id="wordsRemaining">${session.length}</strong></span>
+                    <div class="quiz-progress-track"><div class="quiz-progress-fill" id="vocabProgressFill" style="width: 0%"></div></div>
+                    <span class="vocab-counter good">✓ <strong id="correctCount">0</strong></span>
+                    <span class="vocab-counter bad">✗ <strong id="incorrectCount">0</strong></span>
+                    <span class="vocab-counter"><strong id="sessionAccuracy">0%</strong></span>
+                </div>
+
+                <!-- The card IS the reveal target -->
+                <div id="vocabularyCard" class="flashcard-surface vocab-card" onclick="window.app.revealVocabularyCard()">
+                    <div class="vocab-chips">
+                        <span class="dashboard-chip" id="wordLevel">B1</span>
+                        <span class="dashboard-chip" id="wordCategory">business</span>
+                        <span class="dashboard-chip" id="wordFrequency">high</span>
                     </div>
-                    <div class="bg-green-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="common.correct">${t('common.correct')}</h3>
-                        <p class="text-2xl font-bold text-green-300" id="correctCount">0</p>
+                    <div class="vocab-word-row">
+                        <h2 class="flashcard-word" id="currentWord" style="margin-bottom: 0;">${t('quiz.loading')}</h2>
+                        <button class="vocab-speak-btn" aria-label="Pronounce"
+                                onclick="event.stopPropagation(); window.app.speakCurrentVocabularyWord();">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                        </button>
                     </div>
-                    <div class="bg-red-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="common.incorrect">${t('common.incorrect')}</h3>
-                        <p class="text-2xl font-bold text-red-300" id="incorrectCount">0</p>
+
+                    <p class="flashcard-definition" id="wordMeaning">${t('vocab.clickToReveal')}</p>
+
+                    <div id="wordExamples" class="hidden vocab-examples">
+                        <p class="vocab-examples-title" data-i18n="vocab.exampleSentences">${t('vocab.exampleSentences')}</p>
+                        <div class="space-y-3" id="examplesList"></div>
                     </div>
-                    <div class="bg-purple-500/20 rounded-xl p-4 text-center">
-                        <h3 class="text-sm font-semibold text-white mb-1" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</h3>
-                        <p class="text-2xl font-bold text-purple-300" id="sessionAccuracy">0%</p>
+
+                    <p class="vocab-tap-hint" id="showMeaningBtn">
+                        <span data-i18n="vocab.tapHint">${t('vocab.tapHint')}</span>
+                        <span class="key-hint">Space</span>
+                    </p>
+                </div>
+
+                <!-- Know / Don't know: one decision, two big targets, key hints -->
+                <div id="answerButtons" class="hidden">
+                    <div class="flashcard-actions">
+                        <button onclick="window.app.recordVocabularyAnswer(true)" class="flashcard-btn know">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                            <span data-i18n="vocab.iKnowIt">${t('vocab.iKnowIt')}</span>
+                            <span class="key-hint">→</span>
+                        </button>
+                        <button onclick="window.app.recordVocabularyAnswer(false)" class="flashcard-btn dont-know">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                            <span data-i18n="vocab.iDontKnow">${t('vocab.iDontKnow')}</span>
+                            <span class="key-hint">←</span>
+                        </button>
                     </div>
                 </div>
-                
-                <div id="vocabularyCard" class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/20">
-                    <div class="text-center">
-                        <div class="mb-6">
-                            <div class="flex items-center justify-center gap-3 mb-4">
-                                <div class="bg-blue-500/20 px-3 py-1 rounded-full">
-                                    <span class="text-blue-300 text-sm font-medium" id="wordLevel">B1</span>
-                                </div>
-                                <div class="bg-purple-500/20 px-3 py-1 rounded-full">
-                                    <span class="text-purple-300 text-sm font-medium" id="wordCategory">business</span>
-                                </div>
-                                <div class="bg-green-500/20 px-3 py-1 rounded-full">
-                                    <span class="text-green-300 text-sm font-medium" id="wordFrequency">high</span>
-                                </div>
-                            </div>
-                            <h2 class="text-5xl font-bold text-white mb-4 tracking-wide" id="currentWord">${t('quiz.loading')}</h2>
-                            <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
-                        </div>
-                        
-                        <div class="mb-8">
-                            <div class="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-                                <p class="text-white/80 text-lg mb-4" id="wordMeaning">${t('vocab.clickToReveal')}</p>
-                                <button onclick="window.app.showWordMeaning()" class="btn btn-primary btn-lg" id="showMeaningBtn">
-                                    <i data-lucide="eye" class="w-5 h-5 mr-2"></i>
-                                    <span data-i18n="vocab.showMeaning">${t('vocab.showMeaning')}</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div id="wordExamples" class="hidden mb-8">
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                                <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                                    <i data-lucide="book-open" class="w-5 h-5 mr-2 text-blue-400"></i>
-                                    <span data-i18n="vocab.exampleSentences">${t('vocab.exampleSentences')}</span>
-                                </h3>
-                                <div class="space-y-4" id="examplesList"></div>
-                            </div>
-                        </div>
-                        
-                        <div id="answerButtons" class="hidden">
-                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                                <p class="text-white/80 mb-6 text-center text-lg" data-i18n="vocab.didYouKnow">${t('vocab.didYouKnow')}</p>
-                                <div class="flex gap-6 justify-center">
-                                    <button onclick="window.app.recordVocabularyAnswer(true)" class="btn btn-success btn-lg px-8 py-4 text-lg">
-                                        <i data-lucide="check" class="w-6 h-6 mr-3"></i>
-                                        <span data-i18n="vocab.iKnowIt">${t('vocab.iKnowIt')}</span>
-                                    </button>
-                                    <button onclick="window.app.recordVocabularyAnswer(false)" class="btn btn-danger btn-lg px-8 py-4 text-lg">
-                                        <i data-lucide="x" class="w-6 h-6 mr-3"></i>
-                                        <span data-i18n="vocab.iDontKnow">${t('vocab.iDontKnow')}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
+
                 <div id="sessionComplete" class="hidden text-center">
-                    <div class="bg-green-500/20 rounded-2xl p-8">
-                        <h2 class="text-3xl font-bold text-white mb-4" data-i18n="vocab.sessionComplete">${t('vocab.sessionComplete')}</h2>
-                        <p class="text-white/80 mb-6" data-i18n="vocab.sessionCompleteDesc">${t('vocab.sessionCompleteDesc')}</p>
-                        <div class="flex gap-4 justify-center">
-                            <button onclick="window.app.startNewVocabularySession()" class="btn btn-primary">
-                                <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="vocab.startNewSession">${t('vocab.startNewSession')}</span>
+                    <div class="quiz-card">
+                        <div class="module-header" style="margin-bottom: 16px;">
+                            <div class="module-header-icon" aria-hidden="true">🎉</div>
+                            <h2 class="module-header-title" data-i18n="vocab.sessionComplete">${t('vocab.sessionComplete')}</h2>
+                            <p class="module-header-subtitle" data-i18n="vocab.sessionCompleteDesc">${t('vocab.sessionCompleteDesc')}</p>
+                        </div>
+                        <div class="module-actions" style="margin-bottom: 0;">
+                            <button onclick="window.app.startNewVocabularySession()" class="module-action-btn primary">
+                                <span class="module-action-icon"><i data-lucide="refresh-cw" class="w-5 h-5"></i></span>
+                                <span class="module-action-text"><span class="module-action-title" data-i18n="vocab.startNewSession">${t('vocab.startNewSession')}</span></span>
+                                <i data-lucide="chevron-right" class="w-5 h-5 module-action-chevron"></i>
                             </button>
-                            <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
-                                <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="common.backToHome">${t('common.backToHome')}</span>
+                            <button onclick="window.app.endCurrentSession()" class="module-action-btn">
+                                <span class="module-action-icon"><i data-lucide="home" class="w-5 h-5"></i></span>
+                                <span class="module-action-text"><span class="module-action-title" data-i18n="common.backToHome">${t('common.backToHome')}</span></span>
+                                <i data-lucide="chevron-right" class="w-5 h-5 module-action-chevron"></i>
                             </button>
                         </div>
                     </div>
@@ -2532,12 +2504,59 @@ class App {
             incorrect: 0,
             total: 0
         };
-        
+        this.vocabularySessionSize = window.toeicVocabulary && window.toeicVocabulary.currentSession
+            ? window.toeicVocabulary.currentSession.length
+            : 20;
+
         // Update vocabulary count display
         this.updateVocabularyCountDisplay();
-        
+
+        // Keyboard flow: Space/Enter reveals, → = I know it, ← = I don't.
+        // Registered once for the app's lifetime; guarded by screen state.
+        if (!this.vocabKeyboardBound) {
+            this.vocabKeyboardBound = true;
+            document.addEventListener('keydown', (e) => {
+                const screen = document.getElementById('vocabularyLearningScreen');
+                if (!screen || screen.classList.contains('hidden')) return;
+                const tag = (e.target.tagName || '').toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+                const answerButtons = document.getElementById('answerButtons');
+                const revealed = answerButtons && !answerButtons.classList.contains('hidden');
+
+                if (!revealed && (e.key === ' ' || e.key === 'Enter')) {
+                    e.preventDefault();
+                    this.revealVocabularyCard();
+                } else if (revealed && (e.key === 'ArrowRight' || e.key === '1')) {
+                    e.preventDefault();
+                    this.recordVocabularyAnswer(true);
+                } else if (revealed && (e.key === 'ArrowLeft' || e.key === '2')) {
+                    e.preventDefault();
+                    this.recordVocabularyAnswer(false);
+                }
+            });
+        }
+
         // Load first word
         this.loadNextVocabularyWord();
+    }
+
+    revealVocabularyCard() {
+        // Ignore taps once the card is already revealed
+        const answerButtons = document.getElementById('answerButtons');
+        if (answerButtons && !answerButtons.classList.contains('hidden')) return;
+
+        this.showWordMeaning();
+
+        const card = document.getElementById('vocabularyCard');
+        if (card) card.classList.add('revealed');
+    }
+
+    speakCurrentVocabularyWord() {
+        if (this.currentVocabularyWord && window.audioSystem &&
+            typeof window.audioSystem.speakWord === 'function') {
+            window.audioSystem.speakWord(this.currentVocabularyWord.word);
+        }
     }
     
     updateVocabularyCountDisplay() {
@@ -2575,10 +2594,12 @@ class App {
         const showMeaningBtn = document.getElementById('showMeaningBtn');
         const answerButtons = document.getElementById('answerButtons');
         const wordExamples = document.getElementById('wordExamples');
-        
+        const card = document.getElementById('vocabularyCard');
+
         if (showMeaningBtn) showMeaningBtn.classList.remove('hidden');
         if (answerButtons) answerButtons.classList.add('hidden');
         if (wordExamples) wordExamples.classList.add('hidden');
+        if (card) card.classList.remove('revealed');
     }
     
     updateVocabularyCard(wordData) {
@@ -2685,10 +2706,17 @@ class App {
         if (wordsRemainingEl) wordsRemainingEl.textContent = stats.wordsRemaining || 0;
         if (correctCountEl) correctCountEl.textContent = this.vocabularySessionStats.correct;
         if (incorrectCountEl) incorrectCountEl.textContent = this.vocabularySessionStats.incorrect;
-        
-        const accuracy = this.vocabularySessionStats.total > 0 ? 
+
+        const accuracy = this.vocabularySessionStats.total > 0 ?
             Math.round((this.vocabularySessionStats.correct / this.vocabularySessionStats.total) * 100) : 0;
         if (sessionAccuracyEl) sessionAccuracyEl.textContent = `${accuracy}%`;
+
+        // Session progress bar
+        const fill = document.getElementById('vocabProgressFill');
+        if (fill && this.vocabularySessionSize > 0) {
+            const done = this.vocabularySessionStats.total;
+            fill.style.width = `${Math.min(100, Math.round((done / this.vocabularySessionSize) * 100))}%`;
+        }
     }
     
     showSessionComplete() {

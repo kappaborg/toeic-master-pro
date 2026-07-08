@@ -285,6 +285,202 @@ class TOEICGrammarSystem {
             ]
         });
         
+        // Rules for the remaining categories (referenced by practice
+        // questions -- without these the feedback panel shows no rule)
+        this.grammarRules.set('articles', {
+            id: 'articles',
+            category: 'articles',
+            title: 'Articles (a / an / the)',
+            description: 'Use a/an for one non-specific countable noun, the for something specific or already known, and no article for general plurals and uncountables',
+            formula: 'a + consonant sound / an + vowel sound / the + specific noun',
+            examples: [
+                'We hired a new manager. The manager starts on Monday.',
+                'She has an MBA from a top university.',
+                'Information travels fast. (no article)'
+            ],
+            commonMistakes: [
+                'Choose a/an by SOUND, not spelling: an hour, a university',
+                'No article before uncountable nouns used generally (advice, equipment)',
+                'Use the when both speakers know which one is meant'
+            ],
+            toeicTips: [
+                'Part 5 often tests a vs. an before abbreviations (an HR issue)',
+                'Watch for uncountable business nouns: information, feedback, research',
+                'Superlatives almost always take the: the best solution'
+            ]
+        });
+
+        this.grammarRules.set('relative_clauses', {
+            id: 'relative_clauses',
+            category: 'relative_clauses',
+            title: 'Relative Clauses',
+            description: 'Clauses starting with who, which, that, whose, where that describe a noun',
+            formula: 'noun + who/which/that/whose/where + clause',
+            examples: [
+                'The candidate who interviewed on Friday accepted our offer.',
+                'The proposal, which took weeks to prepare, was approved.',
+                'The company whose shares rose fastest is based in Seoul.'
+            ],
+            commonMistakes: [
+                'who = people, which = things, whose = possession',
+                'that cannot follow a comma (non-restrictive clauses need which/who)',
+                'Don\'t repeat the subject: "the report which it arrived" is wrong'
+            ],
+            toeicTips: [
+                'Commas around the clause signal which, never that',
+                'whose + noun tests possession -- look for an ownership meaning',
+                'where replaces in which after place nouns'
+            ]
+        });
+
+        this.grammarRules.set('gerunds_infinitives', {
+            id: 'gerunds_infinitives',
+            category: 'gerunds_infinitives',
+            title: 'Gerunds & Infinitives',
+            description: 'Some verbs take -ing (enjoy, avoid, consider), others take to + verb (decide, plan, agree); a few change meaning (remember, stop, try)',
+            formula: 'verb + gerund (-ing) OR verb + to-infinitive',
+            examples: [
+                'We are considering opening a branch in Osaka.',
+                'The board decided to postpone the vote.',
+                'Please remember to lock the office.'
+            ],
+            commonMistakes: [
+                'enjoy/avoid/finish/suggest/consider take a gerund, never to-infinitive',
+                'decide/agree/plan/afford/refuse take to-infinitive',
+                'remember/stop/forget change meaning: remember to do (future duty) vs. remember doing (past memory)'
+            ],
+            toeicTips: [
+                'Memorize the governing verb -- the blank is decided by the verb BEFORE it',
+                'Prepositions are always followed by a gerund: interested in joining',
+                'look forward to + gerund is a classic TOEIC trap'
+            ]
+        });
+
+        this.grammarRules.set('comparatives', {
+            id: 'comparatives',
+            category: 'comparatives',
+            title: 'Comparatives & Superlatives',
+            description: 'Comparing two things (-er / more) or three and more (-est / most), plus as...as and the double comparative',
+            formula: 'adj-er + than / more + adj + than / the + adj-est / the most + adj',
+            examples: [
+                'This quarter\'s results are stronger than last year\'s.',
+                'It was the most successful launch in company history.',
+                'The sooner we ship, the happier the client will be.'
+            ],
+            commonMistakes: [
+                'Never combine forms: "more faster" is wrong',
+                'than follows a comparative; as...as needs the base form',
+                'Superlatives need the: the largest supplier'
+            ],
+            toeicTips: [
+                'See than in the sentence, the blank needs a comparative',
+                'The double pattern "the more..., the more..." keeps the in both halves',
+                'Irregulars: good/better/best, bad/worse/worst, far/further'
+            ]
+        });
+
+        this.grammarRules.set('conjunctions', {
+            id: 'conjunctions',
+            category: 'conjunctions',
+            title: 'Conjunctions & Connectors',
+            description: 'Words that join clauses: although, because, while, unless, despite, however -- the choice depends on the logic AND the grammar that follows',
+            formula: 'although/because/while + clause; despite/because of + noun; however + full sentence',
+            examples: [
+                'Although sales fell, profits rose.',
+                'Despite the delay, the client renewed the contract.',
+                'The launch was delayed; however, demand stayed strong.'
+            ],
+            commonMistakes: [
+                'despite/because of take a NOUN, although/because take a CLAUSE',
+                'however needs a semicolon or new sentence, not a comma splice',
+                'unless means if not -- don\'t add another negative'
+            ],
+            toeicTips: [
+                'First decide the logic (contrast? cause? condition?), then check what follows the blank',
+                'Noun after the blank: despite / because of / during',
+                'Both...and, either...or, neither...nor must stay paired'
+            ]
+        });
+
+        // Tense rules referenced by individual questions
+        this.grammarRules.set('past_continuous', {
+            id: 'past_continuous',
+            category: 'tenses',
+            title: 'Past Continuous',
+            description: 'An action in progress at a specific past moment, often interrupted by a past simple event',
+            formula: 'Subject + was/were + verb-ing',
+            examples: [
+                'She was presenting when the fire alarm rang.',
+                'We were reviewing the contract at 3 PM yesterday.'
+            ],
+            commonMistakes: [
+                'Use past simple, not continuous, for the interrupting event',
+                'State verbs (know, believe, own) rarely take continuous forms'
+            ],
+            toeicTips: [
+                'while + past continuous, when + past simple is the classic pairing',
+                'A specific past clock time often signals past continuous'
+            ]
+        });
+
+        this.grammarRules.set('present_perfect_continuous', {
+            id: 'present_perfect_continuous',
+            category: 'tenses',
+            title: 'Present Perfect Continuous',
+            description: 'An activity that started in the past and is still running (or just stopped), emphasizing duration',
+            formula: 'Subject + has/have been + verb-ing',
+            examples: [
+                'We have been negotiating with the supplier for three weeks.',
+                'She has been working here since 2020.'
+            ],
+            commonMistakes: [
+                'for + duration, since + starting point',
+                'Don\'t use it for completed counts -- use present perfect: has written three reports'
+            ],
+            toeicTips: [
+                'for/since plus an ongoing activity points here',
+                'Emphasis on HOW LONG: continuous; on RESULT: simple perfect'
+            ]
+        });
+
+        this.grammarRules.set('future_perfect', {
+            id: 'future_perfect',
+            category: 'tenses',
+            title: 'Future Perfect',
+            description: 'An action that will be completed before a specific future time',
+            formula: 'Subject + will have + past participle',
+            examples: [
+                'By Friday, we will have shipped all outstanding orders.',
+                'She will have finished the audit before the board meets.'
+            ],
+            commonMistakes: [
+                'Needs a future deadline (by..., before...) to make sense',
+                'Use the participle, not the base verb: will have written'
+            ],
+            toeicTips: [
+                'By + future time is the strongest signal for future perfect',
+                'Distinguish from future continuous (will be doing = in progress, not finished)'
+            ]
+        });
+
+        this.grammarRules.set('future_perfect_continuous', {
+            id: 'future_perfect_continuous',
+            category: 'tenses',
+            title: 'Future Perfect Continuous',
+            description: 'How long an activity will have been in progress by a future point',
+            formula: 'Subject + will have been + verb-ing',
+            examples: [
+                'By June, I will have been managing this team for five years.'
+            ],
+            commonMistakes: [
+                'Requires both a future reference point AND a duration',
+                'State verbs prefer future perfect simple'
+            ],
+            toeicTips: [
+                'Look for by + future time together with for + duration'
+            ]
+        });
+
         console.log(`✅ Loaded ${this.grammarRules.size} grammar rules`);
     }
     
@@ -875,6 +1071,1038 @@ class TOEICGrammarSystem {
             grammarRule: 'conjunctions'
         });
         
+        // Additional Modal Verbs Questions
+        this.practiceQuestions.set('q_modals_003', {
+            id: 'q_modals_003',
+            category: 'modals',
+            difficulty: 'B1',
+            question: 'Visitors _____ wear an identification badge at all times while in the factory.',
+            options: [
+                'must',
+                'might',
+                'would',
+                'may'
+            ],
+            correctAnswer: 0,
+            explanation: 'The phrase "at all times" signals a strict rule, so the modal of obligation "must" is needed. "Might" and "may" express possibility or permission, not obligation.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_004', {
+            id: 'q_modals_004',
+            category: 'modals',
+            difficulty: 'B1',
+            question: 'Employees _____ to complete the compliance training before Friday.',
+            options: [
+                'must',
+                'are required',
+                'should',
+                'can'
+            ],
+            correctAnswer: 1,
+            explanation: 'The blank is followed by "to complete", and modals like "must", "should", and "can" take the base verb directly without "to". Only "are required" can be followed by a to-infinitive.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_005', {
+            id: 'q_modals_005',
+            category: 'modals',
+            difficulty: 'A2',
+            question: 'Ms. Chen _____ speak both Mandarin and English, so she will interpret at tomorrow\'s meeting.',
+            options: [
+                'can',
+                'must',
+                'should',
+                'might'
+            ],
+            correctAnswer: 0,
+            explanation: 'The sentence describes an ability (speaking two languages) that explains why she will interpret. "Can" is the modal of ability.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_006', {
+            id: 'q_modals_006',
+            category: 'modals',
+            difficulty: 'B1',
+            question: '_____ I leave the office early today? I have a doctor\'s appointment at four.',
+            options: [
+                'May',
+                'Must',
+                'Would',
+                'Shall'
+            ],
+            correctAnswer: 0,
+            explanation: 'The speaker is asking for permission, and "May I...?" is the polite way to request it. "Must I" asks about obligation, and "Would I" is not used to request permission for oneself.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_007', {
+            id: 'q_modals_007',
+            category: 'modals',
+            difficulty: 'B2',
+            question: 'The shipment _____ have been delayed by the storm; it normally arrives on Tuesdays.',
+            options: [
+                'must',
+                'can',
+                'will',
+                'shall'
+            ],
+            correctAnswer: 0,
+            explanation: '"Must + have + past participle" expresses a logical conclusion about the past — the missing shipment plus the storm makes the delay the most likely explanation. "Can have been" is not used for positive past deduction.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_008', {
+            id: 'q_modals_008',
+            category: 'modals',
+            difficulty: 'B1',
+            question: 'You _____ back up important files regularly in case the server fails.',
+            options: [
+                'should',
+                'would',
+                'shall',
+                'used to'
+            ],
+            correctAnswer: 0,
+            explanation: 'The sentence gives advice about a good habit, signaled by "regularly" and "in case". "Should" is the modal of advice; "used to" refers to a past habit that has stopped.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_009', {
+            id: 'q_modals_009',
+            category: 'modals',
+            difficulty: 'B2',
+            question: 'The technician says the printer _____ repaired by Wednesday afternoon.',
+            options: [
+                'can be',
+                'can',
+                'can to be',
+                'can being'
+            ],
+            correctAnswer: 0,
+            explanation: 'The printer receives the action, so the passive is needed: modal + be + past participle ("can be repaired"). Modals are never followed by "to" or an -ing form.',
+            grammarRule: 'modal_verbs'
+        });
+
+        this.practiceQuestions.set('q_modals_010', {
+            id: 'q_modals_010',
+            category: 'modals',
+            difficulty: 'A2',
+            question: 'All visitors must _____ in at the front desk before entering the laboratory.',
+            options: [
+                'sign',
+                'to sign',
+                'signing',
+                'signed'
+            ],
+            correctAnswer: 0,
+            explanation: 'After a modal verb like "must", the base form of the verb is used — never "to + verb" or an -ing form.',
+            grammarRule: 'modal_verbs'
+        });
+
+        // Additional Prepositions Questions
+        this.practiceQuestions.set('q_prepositions_003', {
+            id: 'q_prepositions_003',
+            category: 'prepositions',
+            difficulty: 'A2',
+            question: 'Our fiscal year ends _____ December.',
+            options: [
+                'at',
+                'on',
+                'in',
+                'by'
+            ],
+            correctAnswer: 2,
+            explanation: '"In" is used with months and years. "On" is for specific dates and days, and "at" is for clock times.',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_004', {
+            id: 'q_prepositions_004',
+            category: 'prepositions',
+            difficulty: 'A2',
+            question: 'The store remains closed _____ public holidays.',
+            options: [
+                'in',
+                'on',
+                'at',
+                'for'
+            ],
+            correctAnswer: 1,
+            explanation: '"On" is used with days and holidays, just as with days of the week ("on Mondays", "on public holidays").',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_005', {
+            id: 'q_prepositions_005',
+            category: 'prepositions',
+            difficulty: 'B1',
+            question: 'Please submit your expense reports _____ Friday at the latest.',
+            options: [
+                'until',
+                'by',
+                'from',
+                'since'
+            ],
+            correctAnswer: 1,
+            explanation: 'The phrase "at the latest" signals a deadline, and "by" means "no later than". "Until" describes an action continuing up to a point, not a one-time submission.',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_006', {
+            id: 'q_prepositions_006',
+            category: 'prepositions',
+            difficulty: 'B1',
+            question: 'The customer service line stays open _____ 8 P.M. on weekdays.',
+            options: [
+                'by',
+                'until',
+                'at',
+                'in'
+            ],
+            correctAnswer: 1,
+            explanation: '"Stays open" is a continuing state, so "until" marks the point when it ends. "By" is only for deadlines of completed actions, not ongoing states.',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_007', {
+            id: 'q_prepositions_007',
+            category: 'prepositions',
+            difficulty: 'B1',
+            question: 'The warehouse renovation was completed _____ two weeks, well ahead of schedule.',
+            options: [
+                'during',
+                'in',
+                'for',
+                'since'
+            ],
+            correctAnswer: 1,
+            explanation: '"In + a period of time" tells how long something took to finish ("completed in two weeks"). "For" describes duration of an ongoing action, and "during" needs a named event, not a length of time.',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_008', {
+            id: 'q_prepositions_008',
+            category: 'prepositions',
+            difficulty: 'A2',
+            question: 'Mr. Park has worked in the accounting department _____ 2019.',
+            options: [
+                'for',
+                'since',
+                'from',
+                'in'
+            ],
+            correctAnswer: 1,
+            explanation: 'With the present perfect, "since" marks the starting point (a year, a date), while "for" is used with a length of time ("for five years").',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_009', {
+            id: 'q_prepositions_009',
+            category: 'prepositions',
+            difficulty: 'A2',
+            question: 'The training seminar lasted _____ three hours.',
+            options: [
+                'since',
+                'for',
+                'during',
+                'at'
+            ],
+            correctAnswer: 1,
+            explanation: '"For" is used with a length of time ("three hours"). "During" is followed by the name of an event ("during the seminar"), not a number of hours.',
+            grammarRule: 'time_prepositions'
+        });
+
+        this.practiceQuestions.set('q_prepositions_010', {
+            id: 'q_prepositions_010',
+            category: 'prepositions',
+            difficulty: 'B1',
+            question: 'Please switch off your mobile phones _____ the presentation.',
+            options: [
+                'while',
+                'during',
+                'for',
+                'since'
+            ],
+            correctAnswer: 1,
+            explanation: '"During" is a preposition and takes a noun ("the presentation"), whereas "while" is a conjunction and must be followed by a full clause with a subject and verb.',
+            grammarRule: 'time_prepositions'
+        });
+
+        // Additional Conditionals Questions
+        this.practiceQuestions.set('q_conditionals_003', {
+            id: 'q_conditionals_003',
+            category: 'conditionals',
+            difficulty: 'B1',
+            question: 'If the client _____ the revised terms, we will sign the contract tomorrow.',
+            options: [
+                'accepts',
+                'will accept',
+                'accepted',
+                'would accept'
+            ],
+            correctAnswer: 0,
+            explanation: 'In the first conditional, the if-clause takes the present simple even though the meaning is future — "will" belongs only in the main clause.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_004', {
+            id: 'q_conditionals_004',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: '_____ the invoice is paid by Friday, the order will not be shipped.',
+            options: [
+                'Unless',
+                'If',
+                'Because',
+                'Although'
+            ],
+            correctAnswer: 0,
+            explanation: '"Unless" means "if... not": the order will not ship if payment does not arrive. "If" would make the sentence illogical — paying the invoice would block the shipment.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_005', {
+            id: 'q_conditionals_005',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: 'If demand continues to grow, the factory _____ a second production line.',
+            options: [
+                'will add',
+                'adds',
+                'added',
+                'would add'
+            ],
+            correctAnswer: 0,
+            explanation: 'The if-clause uses the present simple ("continues"), so this is a first conditional about a real future possibility, and the main clause needs "will + base verb". "Would add" belongs to the unreal second conditional.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_006', {
+            id: 'q_conditionals_006',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: 'We will issue a full refund if the product _____ defective on arrival.',
+            options: [
+                'is',
+                'will be',
+                'were',
+                'would be'
+            ],
+            correctAnswer: 0,
+            explanation: 'The main clause "will issue" shows this is a first conditional, so the if-clause must stay in the present simple. Never use "will" or "would" directly after "if" in this pattern.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_007', {
+            id: 'q_conditionals_007',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: 'If you _____ any questions during the webinar, please type them in the chat box.',
+            options: [
+                'have',
+                'will have',
+                'had',
+                'would have'
+            ],
+            correctAnswer: 0,
+            explanation: 'A real conditional with an imperative main clause ("please type") still takes the present simple in the if-clause. "Had" would signal an unreal, hypothetical situation.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_008', {
+            id: 'q_conditionals_008',
+            category: 'conditionals',
+            difficulty: 'B1',
+            question: 'If the flight is delayed, the airline _____ passengers a meal voucher.',
+            options: [
+                'will give',
+                'would give',
+                'gave',
+                'giving'
+            ],
+            correctAnswer: 0,
+            explanation: 'The if-clause is in the present simple ("is delayed"), so the main clause of this first conditional needs "will + base verb" for the real future result.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_009', {
+            id: 'q_conditionals_009',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: 'Provided that the samples _____ our quality standards, we will place a bulk order.',
+            options: [
+                'meet',
+                'will meet',
+                'met',
+                'would meet'
+            ],
+            correctAnswer: 0,
+            explanation: '"Provided that" works exactly like "if" in a first conditional, so the condition clause takes the present simple, and "will" stays in the main clause.',
+            grammarRule: 'first_conditional'
+        });
+
+        this.practiceQuestions.set('q_conditionals_010', {
+            id: 'q_conditionals_010',
+            category: 'conditionals',
+            difficulty: 'B2',
+            question: 'If the elevator breaks down again, maintenance _____ immediately.',
+            options: [
+                'must be notified',
+                'must notify',
+                'must to notify',
+                'must notifying'
+            ],
+            correctAnswer: 0,
+            explanation: 'Maintenance receives the action (someone notifies them), so the passive "must be notified" is required. First conditionals can take a modal instead of "will" in the main clause.',
+            grammarRule: 'first_conditional'
+        });
+
+        // Additional Articles Questions
+        this.practiceQuestions.set('q_articles_003', {
+            id: 'q_articles_003',
+            category: 'articles',
+            difficulty: 'A2',
+            question: 'Ms. Rivera will give _____ presentation on the new marketing strategy.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 0,
+            explanation: '"Presentation" is a singular countable noun mentioned for the first time, so the indefinite article is needed, and it begins with a consonant sound, so "a" is correct.',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_004', {
+            id: 'q_articles_004',
+            category: 'articles',
+            difficulty: 'A2',
+            question: 'We have _____ appointment with the supplier at noon.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 1,
+            explanation: '"Appointment" begins with a vowel sound, so the indefinite article "an" is required for this first mention of a singular countable noun.',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_005', {
+            id: 'q_articles_005',
+            category: 'articles',
+            difficulty: 'B1',
+            question: 'He was promoted to _____ position of regional sales manager last month.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 2,
+            explanation: 'The noun is made specific by the phrase "of regional sales manager", which identifies exactly which position — so the definite article "the" is required.',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_006', {
+            id: 'q_articles_006',
+            category: 'articles',
+            difficulty: 'A2',
+            question: 'The training session lasted _____ hour longer than expected.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 1,
+            explanation: 'Article choice depends on sound, not spelling: the "h" in "hour" is silent, so the word begins with a vowel sound and takes "an".',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_007', {
+            id: 'q_articles_007',
+            category: 'articles',
+            difficulty: 'B1',
+            question: 'The technicians will bring _____ equipment needed for the installation.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 2,
+            explanation: '"Equipment" is uncountable, so "a/an" is impossible, but the phrase "needed for the installation" makes it specific — which calls for "the" rather than no article.',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_008', {
+            id: 'q_articles_008',
+            category: 'articles',
+            difficulty: 'A2',
+            question: '_____ headquarters of the corporation is located in Singapore.',
+            options: [
+                'A',
+                'An',
+                'The',
+                'No article'
+            ],
+            correctAnswer: 2,
+            explanation: 'The phrase "of the corporation" identifies which headquarters is meant, so the definite article "the" is required for this specific reference.',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_009', {
+            id: 'q_articles_009',
+            category: 'articles',
+            difficulty: 'B1',
+            question: 'She travels to Europe on business twice _____ year.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 0,
+            explanation: 'In frequency expressions like "twice a year" or "three times a week", the indefinite article "a" means "per".',
+            grammarRule: 'articles'
+        });
+
+        this.practiceQuestions.set('q_articles_010', {
+            id: 'q_articles_010',
+            category: 'articles',
+            difficulty: 'B1',
+            question: 'Mr. Osei earned _____ MBA before joining the finance team.',
+            options: [
+                'a',
+                'an',
+                'the',
+                'no article'
+            ],
+            correctAnswer: 1,
+            explanation: 'Abbreviations follow the pronunciation rule: "MBA" starts with the vowel sound /em/, so it takes "an" even though the letter M is a consonant.',
+            grammarRule: 'articles'
+        });
+
+        // Additional Relative Clauses Questions
+        this.practiceQuestions.set('q_relative_003', {
+            id: 'q_relative_003',
+            category: 'relative_clauses',
+            difficulty: 'B2',
+            question: 'The consultant _____ report impressed the board will lead the next project.',
+            options: [
+                'who',
+                'whose',
+                'which',
+                'whom'
+            ],
+            correctAnswer: 1,
+            explanation: 'The report belongs to the consultant, so the possessive relative pronoun "whose" is needed. "Who" and "whom" cannot be followed directly by a noun in this way.',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_004', {
+            id: 'q_relative_004',
+            category: 'relative_clauses',
+            difficulty: 'B1',
+            question: 'The proposal _____ was submitted last week has been approved by the committee.',
+            options: [
+                'which',
+                'who',
+                'whose',
+                'where'
+            ],
+            correctAnswer: 0,
+            explanation: 'The antecedent "proposal" is a thing acting as the subject of "was submitted", so "which" is correct. "Who" is only for people and "where" only for places.',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_005', {
+            id: 'q_relative_005',
+            category: 'relative_clauses',
+            difficulty: 'B2',
+            question: 'The hotel _____ the annual conference will be held offers attendees a special rate.',
+            options: [
+                'which',
+                'that',
+                'where',
+                'who'
+            ],
+            correctAnswer: 2,
+            explanation: 'The clause after the blank is complete ("the conference will be held"), so a relative adverb of place is needed. "Which" or "that" would require a preposition ("at which").',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_006', {
+            id: 'q_relative_006',
+            category: 'relative_clauses',
+            difficulty: 'B2',
+            question: 'The candidate _____ we interviewed yesterday has accepted our offer.',
+            options: [
+                'whom',
+                'which',
+                'whose',
+                'where'
+            ],
+            correctAnswer: 0,
+            explanation: 'The antecedent is a person who is the object of "interviewed" (we interviewed him/her), so the object pronoun "whom" is correct. "Which" is only for things.',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_007', {
+            id: 'q_relative_007',
+            category: 'relative_clauses',
+            difficulty: 'B2',
+            question: 'Employees _____ complete the survey will be entered into a prize drawing.',
+            options: [
+                'who',
+                'which',
+                'whose',
+                'whom'
+            ],
+            correctAnswer: 0,
+            explanation: 'The pronoun refers to people and is the subject of "complete", so "who" is needed. "Whom" is only for objects, and "whose" must be followed by a noun.',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_008', {
+            id: 'q_relative_008',
+            category: 'relative_clauses',
+            difficulty: 'B1',
+            question: '2019 was the year _____ the company expanded into overseas markets.',
+            options: [
+                'where',
+                'which',
+                'when',
+                'who'
+            ],
+            correctAnswer: 2,
+            explanation: 'The antecedent "the year" is a time expression followed by a complete clause, so the relative adverb "when" is needed. "Which" would require a preposition ("in which").',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_009', {
+            id: 'q_relative_009',
+            category: 'relative_clauses',
+            difficulty: 'C1',
+            question: 'The merger, _____ was announced in May, will create the region\'s largest logistics firm.',
+            options: [
+                'that',
+                'which',
+                'who',
+                'what'
+            ],
+            correctAnswer: 1,
+            explanation: 'The commas show this is a non-restrictive clause adding extra information, and "that" can never introduce a non-restrictive clause — only "which" can here.',
+            grammarRule: 'relative_clauses'
+        });
+
+        this.practiceQuestions.set('q_relative_010', {
+            id: 'q_relative_010',
+            category: 'relative_clauses',
+            difficulty: 'C1',
+            question: 'The firm hired two engineers, both of _____ have experience in renewable energy.',
+            options: [
+                'them',
+                'whom',
+                'which',
+                'who'
+            ],
+            correctAnswer: 1,
+            explanation: 'In the quantifier pattern "both of / all of / some of + relative pronoun", people take "whom" after the preposition "of". "Them" would create two independent clauses joined without a conjunction.',
+            grammarRule: 'relative_clauses'
+        });
+
+        // Additional Gerunds and Infinitives Questions
+        this.practiceQuestions.set('q_gerunds_003', {
+            id: 'q_gerunds_003',
+            category: 'gerunds_infinitives',
+            difficulty: 'B1',
+            question: 'The manager suggested _____ the deadline to give the team more time.',
+            options: [
+                'extend',
+                'extending',
+                'to extend',
+                'extended'
+            ],
+            correctAnswer: 1,
+            explanation: '"Suggest" belongs to the group of verbs (suggest, recommend, consider) that are followed by a gerund, never a to-infinitive.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_004', {
+            id: 'q_gerunds_004',
+            category: 'gerunds_infinitives',
+            difficulty: 'B1',
+            question: 'We look forward to _____ with your team next quarter.',
+            options: [
+                'working',
+                'work',
+                'to work',
+                'worked'
+            ],
+            correctAnswer: 0,
+            explanation: 'In "look forward to", the word "to" is a preposition, not part of an infinitive, so it must be followed by a gerund.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_005', {
+            id: 'q_gerunds_005',
+            category: 'gerunds_infinitives',
+            difficulty: 'B1',
+            question: 'The company plans _____ a new branch office in Shanghai next year.',
+            options: [
+                'opening',
+                'to open',
+                'open',
+                'opened'
+            ],
+            correctAnswer: 1,
+            explanation: '"Plan" belongs to the group of future-oriented verbs (plan, hope, intend, expect) that take a to-infinitive, not a gerund.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_006', {
+            id: 'q_gerunds_006',
+            category: 'gerunds_infinitives',
+            difficulty: 'B2',
+            question: 'Please remember _____ the storage room when you leave this evening.',
+            options: [
+                'locking',
+                'to lock',
+                'lock',
+                'locked'
+            ],
+            correctAnswer: 1,
+            explanation: '"Remember + to-infinitive" refers to a duty still to be done (lock the room later tonight), while "remember + gerund" recalls a past action. The future context "when you leave" signals the infinitive.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_007', {
+            id: 'q_gerunds_007',
+            category: 'gerunds_infinitives',
+            difficulty: 'B1',
+            question: 'The IT department has finished _____ the new software on all computers.',
+            options: [
+                'install',
+                'to install',
+                'installing',
+                'installed'
+            ],
+            correctAnswer: 2,
+            explanation: '"Finish" is always followed by a gerund (like "enjoy", "avoid", and "keep"), never by a to-infinitive.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_008', {
+            id: 'q_gerunds_008',
+            category: 'gerunds_infinitives',
+            difficulty: 'B1',
+            question: 'Mr. Tanaka agreed _____ the training workshop next month.',
+            options: [
+                'leading',
+                'to lead',
+                'lead',
+                'led'
+            ],
+            correctAnswer: 1,
+            explanation: '"Agree" takes a to-infinitive (like "decide", "offer", and "promise"). A gerund after "agree" is never correct.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_009', {
+            id: 'q_gerunds_009',
+            category: 'gerunds_infinitives',
+            difficulty: 'B2',
+            question: 'The new filing system helps staff avoid _____ important documents.',
+            options: [
+                'misplace',
+                'to misplace',
+                'misplacing',
+                'misplaced'
+            ],
+            correctAnswer: 2,
+            explanation: '"Avoid" is one of the verbs that must be followed by a gerund (avoid, deny, postpone, risk) — "avoid to do" is a classic error.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        this.practiceQuestions.set('q_gerunds_010', {
+            id: 'q_gerunds_010',
+            category: 'gerunds_infinitives',
+            difficulty: 'A2',
+            question: '_____ regular breaks improves concentration and productivity.',
+            options: [
+                'Take',
+                'Taking',
+                'To taking',
+                'Taken'
+            ],
+            correctAnswer: 1,
+            explanation: 'A verb acting as the subject of a sentence takes the gerund form: "Taking regular breaks" is the subject of "improves". A bare verb cannot be a subject.',
+            grammarRule: 'gerunds_infinitives'
+        });
+
+        // Additional Comparatives Questions
+        this.practiceQuestions.set('q_comparatives_003', {
+            id: 'q_comparatives_003',
+            category: 'comparatives',
+            difficulty: 'A2',
+            question: 'The new photocopier is much _____ than the old one.',
+            options: [
+                'fast',
+                'faster',
+                'fastest',
+                'more fast'
+            ],
+            correctAnswer: 1,
+            explanation: 'The word "than" signals a comparative, and one-syllable adjectives form it with -er ("faster"), not with "more".',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_004', {
+            id: 'q_comparatives_004',
+            category: 'comparatives',
+            difficulty: 'B1',
+            question: 'The downtown branch is _____ than any other branch in the region.',
+            options: [
+                'busier',
+                'more busy',
+                'busiest',
+                'busily'
+            ],
+            correctAnswer: 0,
+            explanation: 'Two-syllable adjectives ending in -y change to -ier for the comparative ("busy" → "busier"). "Busily" is an adverb and cannot follow "is" here.',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_005', {
+            id: 'q_comparatives_005',
+            category: 'comparatives',
+            difficulty: 'B1',
+            question: 'Of all our products, this model is the _____ popular with younger customers.',
+            options: [
+                'more',
+                'most',
+                'much',
+                'many'
+            ],
+            correctAnswer: 1,
+            explanation: 'The phrase "of all our products" compares one item with a whole group, which requires the superlative "the most". "The more" only compares two things.',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_006', {
+            id: 'q_comparatives_006',
+            category: 'comparatives',
+            difficulty: 'A2',
+            question: 'The new office is more spacious _____ the previous one.',
+            options: [
+                'that',
+                'than',
+                'then',
+                'as'
+            ],
+            correctAnswer: 1,
+            explanation: 'A comparative form ("more spacious") must be completed with "than". "Then" refers to time and is a common spelling trap; "as" pairs only with "as... as".',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_007', {
+            id: 'q_comparatives_007',
+            category: 'comparatives',
+            difficulty: 'B1',
+            question: 'The new packaging is just as _____ as the old design but costs less.',
+            options: [
+                'durable',
+                'more durable',
+                'most durable',
+                'durably'
+            ],
+            correctAnswer: 0,
+            explanation: 'The equality structure "as... as" takes the base (positive) form of the adjective — never a comparative or superlative between the two "as".',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_008', {
+            id: 'q_comparatives_008',
+            category: 'comparatives',
+            difficulty: 'B2',
+            question: 'The more customers we attract, _____ our revenue will grow.',
+            options: [
+                'the faster',
+                'faster',
+                'the fastest',
+                'fast'
+            ],
+            correctAnswer: 0,
+            explanation: 'This is the double comparative pattern "the + comparative..., the + comparative...", so the second clause must also begin with "the" plus a comparative form.',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_009', {
+            id: 'q_comparatives_009',
+            category: 'comparatives',
+            difficulty: 'A2',
+            question: 'This is _____ efficient machine in the entire plant.',
+            options: [
+                'the most',
+                'the more',
+                'most',
+                'more'
+            ],
+            correctAnswer: 0,
+            explanation: 'The phrase "in the entire plant" defines a group, which signals a superlative, and superlatives of long adjectives need "the most".',
+            grammarRule: 'comparatives'
+        });
+
+        this.practiceQuestions.set('q_comparatives_010', {
+            id: 'q_comparatives_010',
+            category: 'comparatives',
+            difficulty: 'B1',
+            question: 'Road conditions got _____ after the storm, delaying several deliveries.',
+            options: [
+                'worse',
+                'worst',
+                'more bad',
+                'badly'
+            ],
+            correctAnswer: 0,
+            explanation: '"Bad" has the irregular comparative "worse" — "more bad" does not exist. The superlative "worst" would need "the" and a comparison group.',
+            grammarRule: 'comparatives'
+        });
+
+        // Additional Conjunctions Questions
+        this.practiceQuestions.set('q_conjunctions_003', {
+            id: 'q_conjunctions_003',
+            category: 'conjunctions',
+            difficulty: 'A2',
+            question: 'The venue was small, _____ the seminar was a great success.',
+            options: [
+                'and',
+                'but',
+                'so',
+                'or'
+            ],
+            correctAnswer: 1,
+            explanation: 'The two clauses contrast (a small venue versus a great success), so the contrast conjunction "but" is needed.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_004', {
+            id: 'q_conjunctions_004',
+            category: 'conjunctions',
+            difficulty: 'A2',
+            question: 'The flight was delayed, _____ we missed the connecting train.',
+            options: [
+                'so',
+                'because',
+                'but',
+                'or'
+            ],
+            correctAnswer: 0,
+            explanation: 'The second clause is the result of the first (delay → missed train), so "so" is correct. "Because" would reverse the logic, making the delay the result.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_005', {
+            id: 'q_conjunctions_005',
+            category: 'conjunctions',
+            difficulty: 'B2',
+            question: '_____ the high cost, the board approved the expansion plan.',
+            options: [
+                'Although',
+                'Despite',
+                'Because',
+                'Even'
+            ],
+            correctAnswer: 1,
+            explanation: 'The blank is followed by a noun phrase ("the high cost"), so the preposition "despite" is required. "Although" introduces a full clause with a subject and verb.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_006', {
+            id: 'q_conjunctions_006',
+            category: 'conjunctions',
+            difficulty: 'B1',
+            question: '_____ it was raining heavily, the outdoor event went ahead as planned.',
+            options: [
+                'Despite',
+                'Although',
+                'Because of',
+                'However'
+            ],
+            correctAnswer: 1,
+            explanation: 'The blank is followed by a full clause ("it was raining"), so the conjunction "although" fits. "Despite" and "because of" take only noun phrases, and "however" cannot join two clauses this way.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_007', {
+            id: 'q_conjunctions_007',
+            category: 'conjunctions',
+            difficulty: 'A2',
+            question: 'Both the manager _____ her assistant attended the trade fair in Osaka.',
+            options: [
+                'or',
+                'and',
+                'but',
+                'nor'
+            ],
+            correctAnswer: 1,
+            explanation: '"Both" always pairs with "and" in the correlative pattern "both... and". "Or" pairs with "either", and "nor" pairs with "neither".',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_008', {
+            id: 'q_conjunctions_008',
+            category: 'conjunctions',
+            difficulty: 'A2',
+            question: 'You can pay either by credit card _____ by bank transfer.',
+            options: [
+                'and',
+                'or',
+                'nor',
+                'but'
+            ],
+            correctAnswer: 1,
+            explanation: 'The word "either" earlier in the sentence signals the correlative pair "either... or", which presents two alternatives.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_009', {
+            id: 'q_conjunctions_009',
+            category: 'conjunctions',
+            difficulty: 'B1',
+            question: 'The report must be finished today _____ the client meeting is early tomorrow morning.',
+            options: [
+                'since',
+                'so that',
+                'despite',
+                'unless'
+            ],
+            correctAnswer: 0,
+            explanation: 'The second clause gives the reason for the deadline, and "since" here means "because". "So that" introduces a purpose and would need a modal like "can" in its clause.',
+            grammarRule: 'conjunctions'
+        });
+
+        this.practiceQuestions.set('q_conjunctions_010', {
+            id: 'q_conjunctions_010',
+            category: 'conjunctions',
+            difficulty: 'A2',
+            question: 'Please review the attached file _____ let me know if any changes are needed.',
+            options: [
+                'but',
+                'or',
+                'and',
+                'so'
+            ],
+            correctAnswer: 2,
+            explanation: 'The sentence joins two actions the reader should do in sequence, so the additive conjunction "and" is correct — there is no contrast or choice here.',
+            grammarRule: 'conjunctions'
+        });
+
         console.log(`✅ Loaded ${this.practiceQuestions.size} practice questions`);
     }
     

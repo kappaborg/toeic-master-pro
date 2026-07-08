@@ -3338,8 +3338,11 @@ class App {
             return;
         }
         
+        this.grammarAwaitingContinue = false;
+        this.bindGrammarKeyboard();
+
         content.innerHTML = `
-            <div class="module-shell">
+            <div class="module-shell" id="grammarPracticeRoot">
                 <!-- Progress Header -->
                 <div class="quiz-card">
                     <div class="flex justify-between items-center">
@@ -3358,39 +3361,41 @@ class App {
                 <!-- Question -->
                 <div class="quiz-card">
                     <div class="mb-6">
-                        <div class="flex items-center gap-2 mb-4">
+                        <div class="flex items-center gap-2 mb-4 flex-wrap">
                             <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-semibold">
-                                ${question.category.replace('_', ' ').toUpperCase()}
+                                ${question.category.replace(/_/g, ' ').toUpperCase()}
                             </span>
+                            ${question.grammarRule && question.grammarRule.title ? `
+                            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                                ${question.grammarRule.title}
+                            </span>` : ''}
                             <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-sm">
                                 ${question.difficulty}
                             </span>
                         </div>
 
-                        <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${question.progress.current}</h4>
                         <p class="text-white/90 text-lg mb-6">${question.question}</p>
 
+                        <!-- One click answers: picking an option submits it -->
                         <div>
                             ${question.options.map((option, index) => `
-                                <label class="quiz-option-btn cursor-pointer">
-                                    <input type="radio" name="grammarAnswer" value="${index}" class="mr-1">
+                                <label class="quiz-option-btn cursor-pointer"
+                                       onclick="this.querySelector('input').checked = true; window.app.submitGrammarAnswer();">
+                                    <input type="radio" name="grammarAnswer" value="${index}" class="sr-only" style="position:absolute;opacity:0;">
                                     <span class="quiz-option-letter">${String.fromCharCode(65 + index)}</span>
                                     <span class="text-white/90">${option}</span>
+                                    <span class="key-hint" style="margin-left:auto;">${index + 1}</span>
                                 </label>
                             `).join('')}
                         </div>
                     </div>
 
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <button onclick="window.app.previousGrammarQuestion()" class="btn btn-secondary" ${question.progress.current <= 1 ? 'disabled' : ''}>
                             <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
                             ${t('quiz.previousQuestion')}
                         </button>
-
-                        <button onclick="window.app.submitGrammarAnswer()" class="btn btn-primary">
-                            <i data-lucide="check" class="w-5 h-5 mr-2"></i>
-                            ${t('reading.submitAnswer')}
-                        </button>
+                        <span class="text-white/40 text-xs">${t('grammar.keyboardHint')}</span>
                     </div>
                 </div>
 
@@ -3402,24 +3407,61 @@ class App {
                 </div>
             </div>
         `;
-        
+
         // Re-initialize Lucide icons
         if (window.lucide) {
             window.lucide.createIcons();
         }
     }
+
+    bindGrammarKeyboard() {
+        // Keyboard flow, registered once: 1-4 answers the question,
+        // Enter/ArrowRight continues after feedback, ArrowLeft goes back
+        if (this.grammarKeyboardBound) return;
+        this.grammarKeyboardBound = true;
+
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('grammarPracticeRoot')) return;
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+            if (this.grammarAwaitingContinue) {
+                if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    this.continueToNextGrammarQuestion();
+                }
+                return;
+            }
+
+            if (['1', '2', '3', '4'].includes(e.key)) {
+                const radios = document.querySelectorAll('input[name="grammarAnswer"]');
+                const idx = parseInt(e.key, 10) - 1;
+                if (radios[idx]) {
+                    e.preventDefault();
+                    radios[idx].checked = true;
+                    this.submitGrammarAnswer();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                this.previousGrammarQuestion();
+            }
+        });
+    }
     
     submitGrammarAnswer() {
         if (!window.toeicGrammar) return;
-        
+
+        // Ignore repeat submits while feedback is on screen
+        if (this.grammarAwaitingContinue) return;
+
         // Get current answer if selected
         const selectedAnswer = document.querySelector('input[name="grammarAnswer"]:checked');
         if (!selectedAnswer) {
-            // Show alert if no answer selected
-            alert(t('grammar.selectAnswer'));
+            // Options submit on click, so this only happens via keyboard misuse
             return;
         }
-        
+
+        this.grammarAwaitingContinue = true;
         const answerIndex = parseInt(selectedAnswer.value);
         const isCorrect = window.toeicGrammar.answerQuestion(answerIndex);
         
@@ -3444,12 +3486,9 @@ class App {
             });
         }
         
-        // Wait 10 seconds before moving to next question to show feedback
-        // (cancelled if the user clicks Continue first)
-        this.grammarAdvanceTimer = setTimeout(() => {
-            this.grammarAdvanceTimer = null;
-            this.continueToNextGrammarQuestion();
-        }, 10000);
+        // No auto-advance: students control the pace and read the
+        // explanation as long as they need. Continue via button, Enter,
+        // or the right-arrow key.
     }
     
     nextGrammarQuestion() {
@@ -3520,7 +3559,7 @@ class App {
         
         // Update the interface to show feedback
         const feedbackHTML = `
-            <div class="module-shell">
+            <div class="module-shell" id="grammarPracticeRoot">
                 <!-- Progress Header -->
                 <div class="quiz-card">
                     <div class="flex justify-between items-center">
@@ -3603,16 +3642,11 @@ class App {
                     </div>
 
                     <div class="flex justify-center">
-                        <button onclick="window.app.continueToNextGrammarQuestion()" class="btn btn-primary">
-                            <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
+                        <button onclick="window.app.continueToNextGrammarQuestion()" class="dashboard-primary-btn" id="grammarContinueBtn" style="min-width: 240px;">
                             ${t('grammar.continueNext')}
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            <span class="key-hint">Enter</span>
                         </button>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <div class="text-white/60 text-sm">
-                            ${t('common.autoContinuing', { seconds: 10 })}
-                        </div>
                     </div>
                 </div>
 
@@ -3741,6 +3775,7 @@ class App {
             clearTimeout(this.grammarAdvanceTimer);
             this.grammarAdvanceTimer = null;
         }
+        this.grammarAwaitingContinue = false;
 
         if (!window.toeicGrammar || !window.toeicGrammar.currentSession) {
             return;
@@ -3758,7 +3793,8 @@ class App {
     
     previousGrammarQuestion() {
         if (!window.toeicGrammar) return;
-        
+        this.grammarAwaitingContinue = false;
+
         const hasPrevious = window.toeicGrammar.previousQuestion();
         if (hasPrevious) {
             const session = window.toeicGrammar.currentSession;

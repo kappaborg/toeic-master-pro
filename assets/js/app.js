@@ -1485,12 +1485,32 @@ class App {
                     </div>
                 </div>
 
+                ${(() => {
+                    // TOEIC Part 7 double passage: a passage may carry a
+                    // linkedPassageId pointing to its companion text —
+                    // render both, labeled, under one card
+                    const companion = passage.linkedPassageId && window.toeicReading
+                        ? window.toeicReading.passages.get(passage.linkedPassageId)
+                        : null;
+                    if (companion) {
+                        return `
+                <div class="quiz-card">
+                    <div class="flex items-center gap-2 mb-4 flex-wrap">
+                        <h4 class="text-lg font-semibold text-white" style="margin-bottom: 0;">${t('reading.passage')}</h4>
+                        <span class="toeic-part-badge" style="margin-bottom: 0;">${t('reading.doublePassage')}</span>
+                    </div>
+                    <p class="vocab-examples-title">${t('reading.text1')} · ${passage.title || ''}</p>
+                    <div class="text-white/90 leading-relaxed whitespace-pre-line mb-6" id="passageContent">${passage.content}</div>
+                    <p class="vocab-examples-title" style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 16px;">${t('reading.text2')} · ${companion.title || ''}</p>
+                    <div class="text-white/90 leading-relaxed whitespace-pre-line">${companion.content}</div>
+                </div>`;
+                    }
+                    return `
                 <div class="quiz-card">
                     <h4 class="text-lg font-semibold text-white mb-4">${t('reading.passage')}</h4>
-                    <div class="text-white/90 leading-relaxed" id="passageContent">
-                        ${passage.content}
-                    </div>
-                </div>
+                    <div class="text-white/90 leading-relaxed whitespace-pre-line" id="passageContent">${passage.content}</div>
+                </div>`;
+                })()}
 
                 <div class="quiz-card glass-effect">
                     <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')}</h4>

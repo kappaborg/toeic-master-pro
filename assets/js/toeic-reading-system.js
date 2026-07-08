@@ -490,7 +490,100 @@ Note: Attendance at all sessions is mandatory. If you cannot attend on April 6, 
         ];
 
         // Combine all passages
-        const allPassages = [...emailPassages, ...newsPassages, ...adPassages, ...emailPassages2, ...memoPassages, ...adPassages2, ...newsPassages2, ...letterPassages, ...formPassages];
+                // Double passages (TOEIC Part 7 style): the _a text carries
+        // linkedPassageId so the UI renders both texts together; questions
+        // reference the _a id and may require information from both texts
+        const doublePassages = [
+            {
+                id: 'dp_training_a',
+                type: 'business_email',
+                title: 'Workshop Invitation',
+                linkedPassageId: 'dp_training_b',
+                content: `Subject: Data Skills Workshop - Friday, May 10
+
+Dear Staff,
+
+We are pleased to invite you to a one-day Data Skills Workshop on Friday, May 10, in Training Room 4. The morning session (9:00 AM - 12:00 PM) covers spreadsheet analysis, and the afternoon session (1:30 PM - 4:30 PM) covers data visualization.
+
+Each employee may attend one session only, as seats are limited to 18 per session. Lunch will be provided for all participants in the staff cafeteria at noon.
+
+To reserve your seat, reply to this email by Wednesday, May 8, stating which session you would like to join.
+
+Best regards,
+Karen Lopez
+Training Coordinator`,
+                wordCount: 120,
+                difficulty: 'B1',
+                category: 'human_resources'
+            },
+            {
+                id: 'dp_training_b',
+                type: 'business_email',
+                title: 'Reply from Daniel Reyes',
+                partOf: 'dp_training_a',
+                content: `Subject: RE: Data Skills Workshop - Friday, May 10
+
+Dear Ms. Lopez,
+
+Thank you for the invitation. I would like to reserve a seat in the afternoon session on data visualization. Unfortunately, I cannot attend in the morning because I have a client meeting from 9:30 to 11:00 that cannot be moved.
+
+My colleague Priya Nair from the marketing team asked me to mention that she would like to take the spreadsheet analysis session, as it relates directly to her monthly reporting duties.
+
+Could you also tell me whether we need to bring our own laptops, or will computers be provided in Training Room 4?
+
+Best regards,
+Daniel Reyes
+Sales Department`,
+                wordCount: 115,
+                difficulty: 'B2',
+                category: 'human_resources'
+            },
+            {
+                id: 'dp_hotel_a',
+                type: 'advertisement',
+                title: 'Grandview Hotel Weekend Package',
+                linkedPassageId: 'dp_hotel_b',
+                content: `GRANDVIEW HOTEL - SPECIAL WEEKEND PACKAGE
+
+Enjoy a relaxing weekend escape in the heart of the city!
+
+Our Weekend Package includes:
+- Two nights in a deluxe double room
+- Full breakfast for two on both mornings
+- Free access to the rooftop pool and fitness center
+- Late check-out until 2:00 PM on Sunday
+
+Price: $199 per package (regular price $280)
+
+To receive this special rate, book by June 30 and mention the code WEEKEND at the time of booking. The offer applies to stays completed before August 31 and cannot be combined with other discounts. Reservations: (555) 210-8800 or reservations@grandviewhotel.com.`,
+                wordCount: 110,
+                difficulty: 'B1',
+                category: 'travel'
+            },
+            {
+                id: 'dp_hotel_b',
+                type: 'business_email',
+                title: 'Booking Inquiry from Ms. Weber',
+                partOf: 'dp_hotel_a',
+                content: `Subject: Weekend Package Booking - Code WEEKEND
+
+Dear Reservations Team,
+
+I saw your Weekend Package advertisement and would like to book it for my wedding anniversary. We would like to stay Saturday, September 6 and Sunday, September 7, in a deluxe double room.
+
+Please confirm that the WEEKEND code still applies to these dates. Also, my husband\'s flight does not land until 11:00 PM on Friday, so could we request a late arrival note on the booking?
+
+Finally, does the package price include parking? We will be driving from Portland on Saturday morning.
+
+Thank you very much,
+Claudia Weber`,
+                wordCount: 105,
+                difficulty: 'B2',
+                category: 'travel'
+            }
+        ];
+
+        const allPassages = [...doublePassages, ...emailPassages, ...newsPassages, ...adPassages, ...emailPassages2, ...memoPassages, ...adPassages2, ...newsPassages2, ...letterPassages, ...formPassages];
         
         allPassages.forEach(passage => {
             this.passages.set(passage.id, {
@@ -1858,6 +1951,130 @@ Thank you for helping us create a greener workplace.`;
         ];
 
         // Combine all questions
+        // Questions for the double passages (several require BOTH texts)
+        const doublePassageQuestions = [
+            {
+                id: 'q_dp_training_1',
+                passageId: 'dp_training_a',
+                type: 'reading_comprehension',
+                question: 'What topic will Mr. Reyes study at the workshop?',
+                options: [
+                    'Spreadsheet analysis',
+                    'Data visualization',
+                    'Client communication',
+                    'Monthly reporting'
+                ],
+                correctAnswer: 1,
+                explanation: 'In his reply (Text 2) Mr. Reyes reserves the AFTERNOON session, and the invitation (Text 1) says the afternoon session covers data visualization — this needs both texts.',
+                difficulty: 'B2'
+            },
+            {
+                id: 'q_dp_training_2',
+                passageId: 'dp_training_a',
+                type: 'reading_comprehension',
+                question: 'What time will Ms. Nair\'s session begin?',
+                options: [
+                    'At 9:00 AM',
+                    'At noon',
+                    'At 1:30 PM',
+                    'At 4:30 PM'
+                ],
+                correctAnswer: 0,
+                explanation: 'Text 2 says Ms. Nair wants the spreadsheet analysis session; Text 1 places spreadsheet analysis in the morning session starting at 9:00 AM.',
+                difficulty: 'B2'
+            },
+            {
+                id: 'q_dp_training_3',
+                passageId: 'dp_training_a',
+                type: 'reading_comprehension',
+                question: 'Why can\'t Mr. Reyes attend the morning session?',
+                options: [
+                    'He is traveling to another city.',
+                    'He has a client meeting that cannot be moved.',
+                    'The morning session is already full.',
+                    'He must prepare a monthly report.'
+                ],
+                correctAnswer: 1,
+                explanation: 'Text 2: "I cannot attend in the morning because I have a client meeting from 9:30 to 11:00 that cannot be moved."',
+                difficulty: 'B1'
+            },
+            {
+                id: 'q_dp_training_4',
+                passageId: 'dp_training_a',
+                type: 'reading_comprehension',
+                question: 'What does Mr. Reyes want to know?',
+                options: [
+                    'Whether lunch will be provided',
+                    'Whether computers will be provided in the training room',
+                    'Whether he can attend both sessions',
+                    'Whether the workshop can be rescheduled'
+                ],
+                correctAnswer: 1,
+                explanation: 'Text 2 asks: "whether we need to bring our own laptops, or will computers be provided in Training Room 4?" Lunch is already answered in Text 1.',
+                difficulty: 'B1'
+            },
+            {
+                id: 'q_dp_hotel_1',
+                passageId: 'dp_hotel_a',
+                type: 'reading_comprehension',
+                question: 'Why is Ms. Weber writing to the hotel?',
+                options: [
+                    'To cancel an existing reservation',
+                    'To complain about a previous stay',
+                    'To book the advertised package for an anniversary',
+                    'To apply for a job at the reception desk'
+                ],
+                correctAnswer: 2,
+                explanation: 'Text 2 opens: "I saw your Weekend Package advertisement and would like to book it for my wedding anniversary."',
+                difficulty: 'B1'
+            },
+            {
+                id: 'q_dp_hotel_2',
+                passageId: 'dp_hotel_a',
+                type: 'reading_comprehension',
+                question: 'What problem is there with Ms. Weber\'s requested dates?',
+                options: [
+                    'The hotel is fully booked in September.',
+                    'Her stay would end after the offer\'s August 31 limit.',
+                    'The rooftop pool is closed on weekends.',
+                    'The deluxe double room is not part of the package.'
+                ],
+                correctAnswer: 1,
+                explanation: 'Text 1 says the offer "applies to stays completed before August 31", but Text 2 requests September 6-7 — spotting the conflict requires both texts.',
+                difficulty: 'C1'
+            },
+            {
+                id: 'q_dp_hotel_3',
+                passageId: 'dp_hotel_a',
+                type: 'reading_comprehension',
+                question: 'What is included in the Weekend Package?',
+                options: [
+                    'Free parking for two days',
+                    'Dinner at the rooftop restaurant',
+                    'Late check-out on Sunday until 2:00 PM',
+                    'Airport transfer service'
+                ],
+                correctAnswer: 2,
+                explanation: 'Text 1 lists "Late check-out until 2:00 PM on Sunday". Parking is asked about in Text 2 but never promised in the ad.',
+                difficulty: 'B1'
+            },
+            {
+                id: 'q_dp_hotel_4',
+                passageId: 'dp_hotel_a',
+                type: 'reading_comprehension',
+                question: 'What does Ms. Weber ask about that the advertisement does NOT mention?',
+                options: [
+                    'Breakfast hours',
+                    'Whether parking is included',
+                    'The price of the package',
+                    'Access to the fitness center'
+                ],
+                correctAnswer: 1,
+                explanation: 'Text 2 asks "does the package price include parking?" — the ad in Text 1 covers breakfast, price, pool and fitness access, but says nothing about parking.',
+                difficulty: 'B2'
+            }
+        ];
+
         // Questions for email_002 (Product Launch Announcement)
         const email002Questions = [
             {
@@ -1957,6 +2174,7 @@ Thank you for helping us create a greener workplace.`;
         ];
 
         const allQuestions = [
+            ...doublePassageQuestions,
             ...email001Questions,
             ...email002Questions,
             ...ad001Questions,

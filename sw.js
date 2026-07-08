@@ -1,8 +1,8 @@
 // WordMaster Pro - Service Worker
 // Version 2.0.0 - Professional ESL Learning Platform
 
-const CACHE_NAME = 'toeic-master-pro-v3.6.1';
-const DATA_CACHE_NAME = 'toeic-data-v3.6.1';
+const CACHE_NAME = 'toeic-master-pro-v3.6.2';
+const DATA_CACHE_NAME = 'toeic-data-v3.6.2';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [

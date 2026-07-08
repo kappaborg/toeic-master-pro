@@ -1421,9 +1421,10 @@ class App {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
         
-        // Start a reading session
+        // Start a reading session (10 questions now that the bank is
+        // large enough for real variety)
         if (window.toeicReading) {
-            const session = window.toeicReading.startSession({ count: 5 });
+            const session = window.toeicReading.startSession({ count: 10 });
             this.showReadingInterface(session);
         } else {
             console.error('❌ TOEIC Reading system not available');

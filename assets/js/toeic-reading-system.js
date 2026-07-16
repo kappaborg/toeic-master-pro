@@ -2620,9 +2620,11 @@ Management`,
         const overallAccuracy = (totalCorrect + totalIncorrect) > 0 ? 
             (totalCorrect / (totalCorrect + totalIncorrect)) * 100 : 0;
         
-        // Calculate estimated TOEIC reading score directly
-        const estimatedScore = answeredQuestions > 0 ? 
-            Math.round((overallAccuracy / 100) * 400) : 0;
+        // Estimated TOEIC reading-section score on the real 5-495 scale,
+        // same linear mapping the test simulator uses — one formula
+        // everywhere instead of the three that used to disagree
+        const estimatedScore = answeredQuestions > 0 ?
+            Math.max(5, Math.min(495, Math.round(5 + (overallAccuracy / 100) * 490))) : 0;
         
         return {
             totalQuestions,
@@ -2637,36 +2639,6 @@ Management`,
         };
     }
     
-    // Calculate estimated TOEIC reading score
-    calculateTOEICReadingScore() {
-        const totalQuestions = this.questions.size;
-        const answeredQuestions = this.userProgress.size;
-        
-        const totalCorrect = Array.from(this.userProgress.values())
-            .reduce((sum, stats) => sum + stats.correctCount, 0);
-        
-        const totalIncorrect = Array.from(this.userProgress.values())
-            .reduce((sum, stats) => sum + stats.incorrectCount, 0);
-        
-        const overallAccuracy = (totalCorrect + totalIncorrect) > 0 ? 
-            (totalCorrect / (totalCorrect + totalIncorrect)) * 100 : 0;
-        
-        if (answeredQuestions === 0) return 0;
-        
-        // Base score from accuracy
-        let baseScore = (overallAccuracy / 100) * 400; // Max 400 for reading
-        
-        // Coverage bonus
-        const progressPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
-        const coverageBonus = (progressPercentage / 100) * 200; // Max 200 for coverage
-        
-        // Difficulty bonus (based on question types answered)
-        const difficultyBonus = this.calculateDifficultyBonus();
-        
-        const estimatedScore = Math.min(Math.round(baseScore + coverageBonus + difficultyBonus), 495);
-        
-        return Math.max(estimatedScore, 5); // Minimum score of 5
-    }
     
     // End current session
     endSession() {
@@ -2685,22 +2657,6 @@ Management`,
         console.log('✅ TOEIC Reading session ended');
     }
     
-    calculateDifficultyBonus() {
-        let bonus = 0;
-        
-        for (const [questionId, stats] of this.userProgress) {
-            const question = this.questions.get(questionId);
-            if (question) {
-                const accuracy = stats.timesAnswered > 0 ? 
-                    stats.correctCount / stats.timesAnswered : 0;
-                
-                if (question.difficulty === 'B2' && accuracy > 0.7) bonus += 2;
-                else if (question.difficulty === 'B1' && accuracy > 0.8) bonus += 1;
-            }
-        }
-        
-        return Math.min(bonus, 100); // Max 100 bonus points
-    }
     
     // Get statistics by question type
     getStatsByType() {

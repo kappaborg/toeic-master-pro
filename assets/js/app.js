@@ -1078,118 +1078,6 @@ class App {
         `;
     }
     
-    showTOEICModuleScreen(moduleType, data = null) {
-        // Create or show TOEIC module screen
-        let screen = document.getElementById('toeicModuleScreen');
-        if (!screen) {
-            screen = document.createElement('div');
-            screen.id = 'toeicModuleScreen';
-            screen.className = 'screen';
-            document.querySelector('main').appendChild(screen);
-        }
-        
-        screen.innerHTML = this.generateTOEICModuleHTML(moduleType, data);
-        screen.classList.remove('hidden');
-        
-        // Initialize module-specific functionality
-        this.initializeTOEICModuleFunctionality(moduleType);
-    }
-    
-    generateTOEICModuleHTML(moduleType, data) {
-        const baseHTML = `
-            <div class="max-w-6xl mx-auto">
-                <div class="flex items-center justify-between mb-8">
-                    <button onclick="window.app.showWelcomeScreen()" class="btn btn-glass">
-                        <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
-                        <span data-i18n="common.backToHome">${t('common.backToHome')}</span>
-                    </button>
-                    <h1 class="text-3xl font-bold text-white" data-i18n="module.${moduleType}.title">${t('module.' + moduleType + '.title')}</h1>
-                    <div class="w-24"></div>
-                </div>
-                
-                <div id="toeicModuleContent" class="glass-effect rounded-2xl p-8">
-                    <!-- Module content will be loaded here -->
-                </div>
-            </div>
-        `;
-        
-        return baseHTML;
-    }
-    
-    initializeTOEICModuleFunctionality(moduleType) {
-        // Initialize module-specific functionality
-        switch(moduleType) {
-            case 'vocabulary':
-                this.initializeVocabularyModule();
-                break;
-            case 'reading':
-                this.initializeReadingModule();
-                break;
-            case 'listening':
-                this.initializeListeningModule();
-                break;
-            case 'test':
-                this.initializeTestModule();
-                break;
-            case 'flashcards':
-                this.initializeFlashcardModule();
-                break;
-            case 'grammar':
-                this.initializeGrammarModule();
-                break;
-        }
-    }
-    
-    initializeVocabularyModule() {
-        const content = document.getElementById('toeicModuleContent');
-        if (!content) return;
-        
-        content.innerHTML = `
-            <div class="module-shell">
-                <button class="module-back-btn" onclick="goHome()">
-                    <span aria-hidden="true">←</span>
-                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
-                </button>
-
-                <div class="module-header">
-                    <span class="toeic-part-badge">PARTS 1–7 · VOCABULARY</span>
-                    <div class="module-header-icon" aria-hidden="true">📚</div>
-                    <h2 class="module-header-title" data-i18n="module.vocabulary.title">${t('module.vocabulary.title')}</h2>
-                    <p class="module-header-subtitle" data-i18n="module.vocabulary.desc">${t('module.vocabulary.desc')}</p>
-                </div>
-
-                <div class="module-stats">
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="wordsStudied">0</span>
-                        <span class="module-stat-label" data-i18n="vocab.wordsStudied">${t('vocab.wordsStudied')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="vocabularyAccuracy">0%</span>
-                        <span class="module-stat-label" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="masteryLevel">A1</span>
-                        <span class="module-stat-label" data-i18n="vocab.masteryLevel">${t('vocab.masteryLevel')}</span>
-                    </div>
-                </div>
-
-                <div class="module-actions">
-                    <button onclick="window.startVocabularySession()" class="module-action-btn primary">
-                        <span class="module-action-icon" aria-hidden="true">▶</span>
-                        <div class="module-action-text">
-                            <div class="module-action-title" data-i18n="vocab.startSession">${t('vocab.startSession')}</div>
-                            <div class="module-action-desc" data-i18n="vocab.learningSubtitle">${t('vocab.learningSubtitle')}</div>
-                        </div>
-                        <span class="module-action-chevron" aria-hidden="true">›</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Update stats
-        this.updateVocabularyStats();
-    }
-    
     initializeReadingModule() {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
@@ -1642,156 +1530,6 @@ class App {
         if (incorrectElement) incorrectElement.textContent = stats.incorrectAnswers;
     }
     
-    updateReadingStats() {
-        if (!window.toeicReading) return;
-        
-        const stats = window.toeicReading.getOverallStats();
-        
-        // Update passages read
-        const passagesReadElement = document.getElementById('passagesRead');
-        if (passagesReadElement) {
-            passagesReadElement.textContent = stats.answeredQuestions || 0;
-        }
-        
-        // Update accuracy
-        const accuracyElement = document.getElementById('readingAccuracy');
-        if (accuracyElement) {
-            accuracyElement.textContent = `${stats.overallAccuracy || 0}%`;
-        }
-        
-        // Update reading speed (placeholder)
-        const speedElement = document.getElementById('readingSpeed');
-        if (speedElement) {
-            speedElement.textContent = '120 WPM'; // Placeholder
-        }
-    }
-    
-    initializeListeningModule() {
-        const content = document.getElementById('toeicModuleContent');
-        if (!content) return;
-        
-        content.innerHTML = `
-            <div class="module-shell">
-                <button class="module-back-btn" onclick="goHome()">
-                    <span aria-hidden="true">←</span>
-                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
-                </button>
-
-                <div class="module-header">
-                    <span class="toeic-part-badge">LISTENING · PARTS 1–4</span>
-                    <div class="module-header-icon" aria-hidden="true">🎧</div>
-                    <h2 class="module-header-title" data-i18n="module.listening.title">${t('module.listening.title')}</h2>
-                    <p class="module-header-subtitle" data-i18n="module.listening.desc">${t('module.listening.desc')}</p>
-                </div>
-
-                <div class="module-stats">
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="exercisesCompleted">0</span>
-                        <span class="module-stat-label" data-i18n="listening.exercisesCompleted">${t('listening.exercisesCompleted')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="listeningAccuracy">0%</span>
-                        <span class="module-stat-label" data-i18n="quiz.accuracy">${t('quiz.accuracy')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="responseTime">0s</span>
-                        <span class="module-stat-label" data-i18n="listening.responseTime">${t('listening.responseTime')}</span>
-                    </div>
-                </div>
-
-                <div class="module-actions">
-                    <button onclick="window.app.startListeningPractice()" class="module-action-btn primary">
-                        <span class="module-action-icon" aria-hidden="true">🎧</span>
-                        <div class="module-action-text">
-                            <div class="module-action-title" data-i18n="listening.startPractice">${t('listening.startPractice')}</div>
-                            <div class="module-action-desc" data-i18n="listening.practiceDesc">${t('listening.practiceDesc')}</div>
-                        </div>
-                        <span class="module-action-chevron" aria-hidden="true">›</span>
-                    </button>
-                </div>
-            </div>
-        `;
-
-        this.updateListeningStats();
-    }
-
-    startListeningPractice() {
-        // Listening practice runs on the test simulator's listening
-        // section — every question carries a transcript, so it works as
-        // written listening practice even without audio files
-        if (!window.toeicTestSimulator) {
-            console.error('❌ Test simulator not available for listening practice');
-            return;
-        }
-        const test = window.toeicTestSimulator.startTest({ type: 'listening' });
-        this.showTOEICTestInterface(test);
-    }
-    
-    initializeTestModule() {
-        const content = document.getElementById('toeicModuleContent');
-        if (!content) return;
-        
-        content.innerHTML = `
-            <div class="module-shell">
-                <button class="module-back-btn" onclick="goHome()">
-                    <span aria-hidden="true">←</span>
-                    <span data-i18n="quiz.backToMenu">${t('quiz.backToMenu')}</span>
-                </button>
-
-                <div class="module-header">
-                    <span class="toeic-part-badge">FULL TEST · PARTS 1–7</span>
-                    <div class="module-header-icon" aria-hidden="true">📋</div>
-                    <h2 class="module-header-title" data-i18n="module.test.title">${t('module.test.title')}</h2>
-                    <p class="module-header-subtitle" data-i18n="module.test.desc">${t('module.test.desc')}</p>
-                </div>
-
-                <div class="module-stats">
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="testsCompleted">0</span>
-                        <span class="module-stat-label" data-i18n="test.testsCompleted">${t('test.testsCompleted')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="bestScore">0</span>
-                        <span class="module-stat-label" data-i18n="test.bestScore">${t('test.bestScore')}</span>
-                    </div>
-                    <div class="module-stat">
-                        <span class="module-stat-value" id="averageScore">0</span>
-                        <span class="module-stat-label" data-i18n="test.averageScore">${t('test.averageScore')}</span>
-                    </div>
-                </div>
-
-                <div class="module-actions">
-                    <button onclick="window.app.startFullTest()" class="module-action-btn primary">
-                        <span class="module-action-icon" aria-hidden="true">📋</span>
-                        <div class="module-action-text">
-                            <div class="module-action-title" data-i18n="test.startFullTimed">${t('test.startFullTimed')}</div>
-                            <div class="module-action-desc" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</div>
-                        </div>
-                        <span class="module-action-chevron" aria-hidden="true">›</span>
-                    </button>
-                    <button onclick="window.app.startListeningTest()" class="module-action-btn">
-                        <span class="module-action-icon" aria-hidden="true">🎧</span>
-                        <div class="module-action-text">
-                            <div class="module-action-title" data-i18n="test.listeningOnly">${t('test.listeningOnly')}</div>
-                            <div class="module-action-desc" data-i18n="test.listeningTestDesc">${t('test.listeningTestDesc')}</div>
-                        </div>
-                        <span class="module-action-chevron" aria-hidden="true">›</span>
-                    </button>
-                    <button onclick="window.app.startReadingTest()" class="module-action-btn">
-                        <span class="module-action-icon" aria-hidden="true">📖</span>
-                        <div class="module-action-text">
-                            <div class="module-action-title" data-i18n="test.readingOnly">${t('test.readingOnly')}</div>
-                            <div class="module-action-desc" data-i18n="test.readingTestDesc">${t('test.readingTestDesc')}</div>
-                        </div>
-                        <span class="module-action-chevron" aria-hidden="true">›</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        this.updateTestStats();
-    }
-    
     initializeFlashcardModule() {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
@@ -1980,19 +1718,6 @@ class App {
     }
     
     // Update statistics methods
-    updateVocabularyStats() {
-        if (window.toeicVocabulary) {
-            const stats = window.toeicVocabulary.getOverallStats();
-            const wordsStudiedEl = document.getElementById('wordsStudied');
-            const accuracyEl = document.getElementById('vocabularyAccuracy');
-            const masteryEl = document.getElementById('masteryLevel');
-            
-            if (wordsStudiedEl) wordsStudiedEl.textContent = stats.reviewedWords;
-            if (accuracyEl) accuracyEl.textContent = stats.overallAccuracy + '%';
-            if (masteryEl) masteryEl.textContent = this.getLevelFromScore(stats.estimatedTOEICScore);
-        }
-    }
-    
     updateReadingStats() {
         if (window.toeicReading) {
             const stats = window.toeicReading.getOverallStats();
@@ -2003,20 +1728,6 @@ class App {
             if (passagesEl) passagesEl.textContent = stats.answeredQuestions;
             if (accuracyEl) accuracyEl.textContent = stats.overallAccuracy + '%';
             if (speedEl) speedEl.textContent = '120 WPM'; // Placeholder
-        }
-    }
-    
-    
-    updateTestStats() {
-        if (window.toeicTestSimulator) {
-            const stats = window.toeicTestSimulator.getProgressStats();
-            const testsEl = document.getElementById('testsCompleted');
-            const bestEl = document.getElementById('bestScore');
-            const avgEl = document.getElementById('averageScore');
-            
-            if (testsEl) testsEl.textContent = stats.totalTests;
-            if (bestEl) bestEl.textContent = stats.bestScore;
-            if (avgEl) avgEl.textContent = stats.averageScore;
         }
     }
     
@@ -2551,37 +2262,6 @@ class App {
         }
         
         console.log('✅ Session ended successfully');
-    }
-    
-    // TOEIC Test Simulator Functions
-    startFullTest() {
-        if (window.toeicTestSimulator) {
-            const test = window.toeicTestSimulator.startTest({ type: 'full' });
-            console.log('📝 Full TOEIC test started');
-            this.showTOEICTestInterface(test);
-        } else {
-            console.error('❌ TOEIC Test Simulator not available');
-        }
-    }
-    
-    startListeningTest() {
-        if (window.toeicTestSimulator) {
-            const test = window.toeicTestSimulator.startTest({ type: 'listening' });
-            console.log('🎧 Listening test started');
-            this.showTOEICTestInterface(test);
-        } else {
-            console.error('❌ TOEIC Test Simulator not available');
-        }
-    }
-    
-    startReadingTest() {
-        if (window.toeicTestSimulator) {
-            const test = window.toeicTestSimulator.startTest({ type: 'reading' });
-            console.log('📖 Reading test started');
-            this.showTOEICTestInterface(test);
-        } else {
-            console.error('❌ TOEIC Test Simulator not available');
-        }
     }
     
     // Flashcard Functions
@@ -3193,65 +2873,6 @@ class App {
         // or the right-arrow key.
     }
     
-    nextGrammarQuestion() {
-        if (!window.toeicGrammar) return;
-        
-        // Get current answer if selected
-        const selectedAnswer = document.querySelector('input[name="grammarAnswer"]:checked');
-        if (selectedAnswer) {
-            const answerIndex = parseInt(selectedAnswer.value);
-            const isCorrect = window.toeicGrammar.answerQuestion(answerIndex);
-            
-            // Show immediate feedback
-            this.showGrammarAnswerFeedback(answerIndex, isCorrect);
-            
-            // Track analytics
-            if (window.advancedAnalytics && typeof window.advancedAnalytics.recordLearningEvent === 'function') {
-                window.advancedAnalytics.recordLearningEvent('grammar_answer', {
-                    answerIndex: answerIndex,
-                    isCorrect: isCorrect,
-                    timestamp: new Date().toISOString()
-                });
-            }
-            
-            // Track student activity
-            this.trackStudentActivity('grammar_answer_submitted', {
-                answerIndex: answerIndex,
-                isCorrect: isCorrect,
-                questionType: 'grammar'
-            });
-            
-            // Wait 2 seconds before moving to next question to show feedback
-            setTimeout(() => {
-                // Move to next question
-                console.log('🔍 Debug: Moving to next grammar question...');
-                const hasNext = window.toeicGrammar.nextQuestion();
-                console.log('🔍 Debug: hasNext result:', hasNext);
-                if (hasNext) {
-                    const session = window.toeicGrammar.currentSession;
-                    console.log('🔍 Debug: Showing next question interface');
-                    this.showGrammarPracticeInterface(session);
-                } else {
-                    console.log('🔍 Debug: No more questions, completing session');
-                    this.completeGrammarSession();
-                }
-            }, 2000);
-        } else {
-            // No answer selected, just move to next question
-            console.log('🔍 Debug: No answer selected, moving to next question...');
-            const hasNext = window.toeicGrammar.nextQuestion();
-            console.log('🔍 Debug: hasNext result (no answer):', hasNext);
-            if (hasNext) {
-                const session = window.toeicGrammar.currentSession;
-                console.log('🔍 Debug: Showing next question interface (no answer)');
-                this.showGrammarPracticeInterface(session);
-            } else {
-                console.log('🔍 Debug: No more questions, completing session (no answer)');
-                this.completeGrammarSession();
-            }
-        }
-    }
-    
     showGrammarAnswerFeedbackInline(selectedIndex, isCorrect) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
@@ -3383,92 +3004,6 @@ class App {
         if (window.lucide) {
             window.lucide.createIcons();
         }
-    }
-    
-    showGrammarAnswerFeedback(selectedIndex, isCorrect) {
-        const content = document.getElementById('toeicModuleContent');
-        if (!content) return;
-        
-        const currentQuestion = window.toeicGrammar.getCurrentQuestion();
-        if (!currentQuestion) return;
-        
-        // Create feedback overlay
-        const feedbackOverlay = document.createElement('div');
-        feedbackOverlay.id = 'grammarFeedbackOverlay';
-        feedbackOverlay.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        feedbackOverlay.innerHTML = `
-            <div class="glass-effect rounded-xl p-8 max-w-2xl mx-4 text-center">
-                <div class="mb-6">
-                    ${isCorrect ?
-                        `<div class="text-6xl mb-4">✅</div><h3 class="text-2xl font-bold text-green-400 mb-2">${t('quiz.correct')}</h3>` :
-                        `<div class="text-6xl mb-4">❌</div><h3 class="text-2xl font-bold text-red-400 mb-2">${t('quiz.incorrect')}</h3>`
-                    }
-                </div>
-                
-                <div class="mb-6">
-                    <p class="text-white/90 text-lg mb-4">${currentQuestion.question}</p>
-                    
-                    <div class="space-y-2 mb-4">
-                        ${currentQuestion.options.map((option, index) => {
-                            let optionClass = 'p-3 rounded-lg text-left';
-                            let icon = '';
-                            
-                            if (index === selectedIndex) {
-                                optionClass += isCorrect ? ' bg-green-500/20 border-2 border-green-500' : ' bg-red-500/20 border-2 border-red-500';
-                                icon = isCorrect ? '✅' : '❌';
-                            } else if (index === currentQuestion.correctAnswer) {
-                                optionClass += ' bg-green-500/20 border-2 border-green-500';
-                                icon = '✅';
-                            } else {
-                                optionClass += ' bg-white/5 border border-white/10';
-                            }
-                            
-                            return `
-                                <div class="${optionClass}">
-                                    <span class="text-white/90">${String.fromCharCode(65 + index)}. ${option} ${icon}</span>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                    
-                    ${currentQuestion.explanation ? `
-                        <div class="bg-blue-500/10 rounded-lg p-4 mb-4">
-                            <h4 class="text-blue-400 font-semibold mb-2">${t('quiz.explanation')}:</h4>
-                            <p class="text-white/80">${currentQuestion.explanation}</p>
-                        </div>
-                    ` : ''}
-
-                    ${currentQuestion.grammarRule ? `
-                        <div class="bg-purple-500/10 rounded-lg p-4">
-                            <h4 class="text-purple-400 font-semibold mb-2">${t('grammar.rule')}: ${currentQuestion.grammarRule.title}</h4>
-                            <p class="text-white/80 text-sm">${currentQuestion.grammarRule.description}</p>
-                        </div>
-                    ` : ''}
-                </div>
-
-                <div class="flex justify-center gap-4">
-                    <button onclick="window.app.continueToNextGrammarQuestion()" class="btn btn-primary">
-                        <i data-lucide="arrow-right" class="w-5 h-5 mr-2"></i>
-                        ${t('quiz.continue')}
-                    </button>
-                </div>
-
-                <div class="text-white/60 text-sm mt-4">
-                    ${t('common.autoContinuing', { seconds: 3 })}
-                </div>
-            </div>
-        `;
-        
-        // Add to page
-        document.body.appendChild(feedbackOverlay);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            if (feedbackOverlay.parentNode) {
-                feedbackOverlay.parentNode.removeChild(feedbackOverlay);
-                this.continueToNextGrammarQuestion();
-            }
-        }, 3000);
     }
     
     continueToNextGrammarQuestion() {
@@ -3615,12 +3150,6 @@ class App {
         if (window.lucide) {
             window.lucide.createIcons();
         }
-    }
-    
-    // Stats and Settings Functions
-    showStats() {
-        // Progress dashboard removed - show test history instead
-        this.showTOEICTestHistory();
     }
     
     // Generic TOEIC Module Screen Handler
@@ -3895,80 +3424,6 @@ class App {
             .filter(Boolean);
     }
 
-    showTestSimulatorModule(options) {
-        const content = document.getElementById('toeicModuleContent');
-        content.innerHTML = `
-            <div class="max-w-4xl mx-auto">
-                <div class="text-center mb-8">
-                    <h3 class="text-2xl font-bold text-white mb-4" data-i18n="test.simulatorTitle">${t('test.simulatorTitle')}</h3>
-                    <p class="text-white/80 mb-6" data-i18n="module.test.desc">${t('module.test.desc')}</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="glass-effect rounded-xl p-6">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">📋</div>
-                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.fullTest">${t('test.fullTest')}</h4>
-                            <p class="text-white/80 mb-4" data-i18n="test.fullTestDesc">${t('test.fullTestDesc')}</p>
-                            <button onclick="window.startFullTest()" class="btn btn-primary w-full">
-                                <i data-lucide="play" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="test.startFull">${t('test.startFull')}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect rounded-xl p-6">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">🎧</div>
-                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.listeningTest">${t('test.listeningTest')}</h4>
-                            <p class="text-white/80 mb-4" data-i18n="test.listeningTestDesc">${t('test.listeningTestDesc')}</p>
-                            <button onclick="window.startListeningTest()" class="btn btn-primary w-full">
-                                <i data-lucide="headphones" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="test.startListening">${t('test.startListening')}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect rounded-xl p-6">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">📖</div>
-                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.readingTest">${t('test.readingTest')}</h4>
-                            <p class="text-white/80 mb-4" data-i18n="test.readingTestDesc">${t('test.readingTestDesc')}</p>
-                            <button onclick="window.startReadingTest()" class="btn btn-primary w-full">
-                                <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="test.startReading">${t('test.startReading')}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="glass-effect rounded-xl p-6">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">📊</div>
-                            <h4 class="text-xl font-bold text-white mb-2" data-i18n="test.results">${t('test.results')}</h4>
-                            <p class="text-white/80 mb-4" data-i18n="test.resultsDesc">${t('test.resultsDesc')}</p>
-                            <button onclick="window.app.showTestResults()" class="btn btn-secondary w-full">
-                                <i data-lucide="bar-chart" class="w-5 h-5 mr-2"></i>
-                                <span data-i18n="test.viewResults">${t('test.viewResults')}</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center mt-8">
-                    <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
-                        <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                        <span data-i18n="common.backToMainMenu">${t('common.backToMainMenu')}</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Re-initialize Lucide icons
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-    }
-    
     showTestModule(options = {}) {
         const content = document.getElementById('toeicModuleContent');
         content.innerHTML = `
@@ -4453,19 +3908,6 @@ class App {
         this.showTestResults(results);
     }
     
-    getTestStats() {
-        // This would calculate actual test statistics
-        // For now, return sample data
-        return {
-            score: 850,
-            correct: 85,
-            incorrect: 15,
-            total: 100,
-            timeSpent: 7200000, // 2 hours in milliseconds
-            accuracy: 85
-        };
-    }
-    
     showTestResults(results) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
@@ -4712,58 +4154,9 @@ window.startReadingSession = function() {
 };
 
 
-
-window.startFullTest = function() {
-    if (window.app) {
-        window.app.startFullTest();
-    }
-};
-
-window.startListeningTest = function() {
-    if (window.app) {
-        window.app.startListeningTest();
-    }
-};
-
-window.startReadingTest = function() {
-    if (window.app) {
-        window.app.startReadingTest();
-    }
-};
-
-window.startFlashcardReview = function() {
-    if (window.app && window.toeicVocabulary) {
-        console.log('🃏 Flashcard review started');
-        // Implement flashcard review functionality
-    }
-};
-
-window.showFlashcardSettings = function() {
-    console.log('⚙️ Flashcard settings');
-    // Implement flashcard settings
-};
-
-window.startGrammarPractice = function() {
-    console.log('📚 Grammar practice started');
-    // Implement grammar practice
-};
-
-window.showStats = function() {
-    if (window.app && window.app.showStats) {
-        window.app.showStats();
-    }
-};
-
 window.showSettings = function() {
     if (window.app && window.app.showSettings) {
         window.app.showSettings();
-    }
-};
-
-window.toggleMobileMenu = function() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenu) {
-        mobileMenu.classList.toggle('hidden');
     }
 };
 

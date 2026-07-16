@@ -321,13 +321,125 @@ class SettingsPanel {
 
     createActionsSection() {
         return `
+            <section class="settings-card">
+                <h3 class="settings-card-title">
+                    <i data-lucide="database" class="w-5 h-5"></i>
+                    ${this.t('settings.dataSection', 'My Data')}
+                </h3>
+                <button class="settings-action-btn" onclick="window.settingsPanel.exportProgress()">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    ${this.t('settings.exportProgress', 'Export Progress (backup file)')}
+                </button>
+                <button class="settings-action-btn" onclick="window.settingsPanel.importProgress()">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    ${this.t('settings.importProgress', 'Import Progress (restore backup)')}
+                </button>
+            </section>
             <section class="settings-card settings-actions">
                 <button class="settings-action-btn settings-action-danger" onclick="window.settingsPanel.resetSettings()">
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     ${this.t('settings.resetDefaults', 'Reset to Defaults')}
                 </button>
+                <button class="settings-action-btn settings-action-danger" onclick="window.settingsPanel.resetAllProgress()">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    ${this.t('settings.resetAllProgress', 'Delete ALL Learning Progress')}
+                </button>
             </section>
         `;
+    }
+
+    // Every localStorage key that holds learner progress or preferences.
+    // Prefix entries (ending with *) match any key with that prefix.
+    static PROGRESS_KEYS = [
+        'toeicVocabularyProgress', 'toeicReadingProgress', 'toeic_grammar_progress',
+        'dailyConversationProgress', 'toeicTestHistory', 'toeicLastModule',
+        'enhancedProgress', 'studySessions', 'srs_schedules', 'srs_history_*',
+        'srs_times_*', 'toeic_timeline', 'toeic_user_timezone',
+        'toeic_analytics_data', 'toeic_performance_metrics', 'toeic_learning_analytics',
+        'toeic_user_id', 'wordmaster_settings', 'audio_settings', 'preferredLanguage'
+    ];
+
+    collectProgressKeys() {
+        const exact = new Set();
+        const prefixes = [];
+        SettingsPanel.PROGRESS_KEYS.forEach(k => {
+            if (k.endsWith('*')) prefixes.push(k.slice(0, -1));
+            else exact.add(k);
+        });
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key) continue;
+            if (exact.has(key) || prefixes.some(p => key.startsWith(p))) keys.push(key);
+        }
+        return keys;
+    }
+
+    exportProgress() {
+        const data = {
+            app: 'toeic-master-pro',
+            exportVersion: 1,
+            exportedAt: new Date().toISOString(),
+            keys: {}
+        };
+        this.collectProgressKeys().forEach(key => {
+            data.keys[key] = localStorage.getItem(key);
+        });
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `toeic-progress-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        console.log(`💾 Exported ${Object.keys(data.keys).length} progress keys`);
+    }
+
+    importProgress() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json,.json';
+        input.onchange = () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(reader.result);
+                    if (data.app !== 'toeic-master-pro' || !data.keys || typeof data.keys !== 'object') {
+                        alert(this.t('settings.importInvalid', 'This file is not a TOEIC Master Pro backup.'));
+                        return;
+                    }
+                    const count = Object.keys(data.keys).length;
+                    if (!confirm(this.t('settings.importConfirm', 'Restore backup? Current progress will be overwritten.'))) return;
+                    Object.entries(data.keys).forEach(([key, value]) => {
+                        if (typeof value === 'string') localStorage.setItem(key, value);
+                    });
+                    console.log(`📥 Imported ${count} progress keys — reloading`);
+                    window.location.reload();
+                } catch (e) {
+                    alert(this.t('settings.importInvalid', 'This file is not a TOEIC Master Pro backup.'));
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    resetAllProgress() {
+        const first = confirm(this.t('settings.resetProgressConfirm1',
+            'Delete ALL learning progress (vocabulary, reading, grammar, tests, streaks)? This cannot be undone.'));
+        if (!first) return;
+        const second = confirm(this.t('settings.resetProgressConfirm2',
+            'Are you sure? Consider exporting a backup first. Press OK to permanently delete.'));
+        if (!second) return;
+
+        this.collectProgressKeys().forEach(key => localStorage.removeItem(key));
+        console.log('🗑️ All learning progress deleted — reloading');
+        window.location.reload();
     }
 
     updateSetting(path, value) {

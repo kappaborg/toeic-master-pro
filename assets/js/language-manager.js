@@ -84,6 +84,14 @@ class LanguageManager {
                 'settings.highContrast': 'High Contrast',
                 'settings.reducedMotion': 'Reduced Motion',
                 'settings.resetDefaults': 'Reset to Defaults',
+                'settings.dataSection': 'My Data',
+                'settings.exportProgress': 'Export Progress (backup file)',
+                'settings.importProgress': 'Import Progress (restore backup)',
+                'settings.importInvalid': 'This file is not a TOEIC Master Pro backup.',
+                'settings.importConfirm': 'Restore backup? Current progress will be overwritten.',
+                'settings.resetAllProgress': 'Delete ALL Learning Progress',
+                'settings.resetProgressConfirm1': 'Delete ALL learning progress (vocabulary, reading, grammar, tests, streaks)? This cannot be undone.',
+                'settings.resetProgressConfirm2': 'Are you sure? Consider exporting a backup first. Press OK to permanently delete.',
                 'settings.resetConfirm': 'Reset all settings to defaults?',
 
                 // Study Dashboard
@@ -560,6 +568,14 @@ class LanguageManager {
                 'settings.highContrast': '高对比度',
                 'settings.reducedMotion': '减少动画',
                 'settings.resetDefaults': '恢复默认设置',
+                'settings.dataSection': '我的数据',
+                'settings.exportProgress': '导出学习进度（备份文件）',
+                'settings.importProgress': '导入学习进度（恢复备份）',
+                'settings.importInvalid': '该文件不是 TOEIC Master Pro 的备份文件。',
+                'settings.importConfirm': '恢复备份？当前进度将被覆盖。',
+                'settings.resetAllProgress': '删除全部学习进度',
+                'settings.resetProgressConfirm1': '删除全部学习进度（词汇、阅读、语法、测试、连续记录）？此操作无法撤销。',
+                'settings.resetProgressConfirm2': '确定吗？建议先导出备份。按"确定"将永久删除。',
                 'settings.resetConfirm': '确定要将所有设置恢复为默认值吗？',
 
                 // Study Dashboard

@@ -283,7 +283,17 @@ class SpacedRepetitionSystem {
     reset() {
         this.wordSchedules.clear();
         localStorage.removeItem('srs_schedules');
-        console.log('🔄 SRS data reset');
+        // Also remove the per-word history/timing keys - resetting only
+        // srs_schedules used to orphan up to ~1,200 srs_* keys forever
+        const orphans = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('srs_history_') || key.startsWith('srs_times_'))) {
+                orphans.push(key);
+            }
+        }
+        orphans.forEach(key => localStorage.removeItem(key));
+        console.log(`🔄 SRS data reset (${orphans.length} per-word keys cleared)`);
     }
     
     // Export data for backup

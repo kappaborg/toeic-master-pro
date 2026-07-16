@@ -490,23 +490,25 @@ class TOEICVocabularySystem {
         
         const reviewPercentage = reviewedWords / totalWords;
         
-        // Base score calculation
-        let baseScore = (averageMastery / 6) * 400; // Max 400 for vocabulary
+        // Components sum to a true max of 990 so every level tier is
+        // reachable (the old 400+200+200 formula maxed out at 800, making
+        // the C1 badge at 801+ impossible)
+        let baseScore = (averageMastery / 6) * 590; // Max 590 for mastery depth
         let reviewBonus = reviewPercentage * 200; // Max 200 for coverage
-        
+
         // Accuracy bonus
         const totalCorrect = Array.from(this.userProgress.values())
             .reduce((sum, progress) => sum + progress.correctCount, 0);
         const totalIncorrect = Array.from(this.userProgress.values())
             .reduce((sum, progress) => sum + progress.incorrectCount, 0);
-        
-        const accuracy = (totalCorrect + totalIncorrect) > 0 ? 
+
+        const accuracy = (totalCorrect + totalIncorrect) > 0 ?
             totalCorrect / (totalCorrect + totalIncorrect) : 0;
-        
+
         let accuracyBonus = accuracy * 200; // Max 200 for accuracy
-        
+
         const estimatedScore = Math.min(Math.round(baseScore + reviewBonus + accuracyBonus), 990);
-        
+
         return Math.max(estimatedScore, 10); // Minimum score of 10
     }
     

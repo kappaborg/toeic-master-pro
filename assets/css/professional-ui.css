@@ -2801,3 +2801,329 @@ html.reduce-motion *::after {
 }
 
 .flashcard-actions .key-hint { margin-left: 8px; opacity: 0.8; }
+
+/* ============================================================
+   TOEIC Reading Module — session interface
+   ============================================================ */
+
+/* Top bar: part badge, progress, score chips, end button */
+.reading-topbar { padding: 16px 24px; }
+
+.reading-topbar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.reading-progress-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: auto;
+}
+
+.reading-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.reading-chip.good { color: var(--success-400); border-color: rgba(52, 211, 153, 0.4); }
+.reading-chip.bad { color: var(--error-400); border-color: rgba(248, 113, 113, 0.4); }
+
+/* Two-panel layout: passage stays visible while answering */
+.reading-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.reading-layout.no-passage {
+    grid-template-columns: minmax(0, 640px);
+    justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .reading-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Passage panel scrolls independently on tall texts */
+.reading-passage-panel {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .reading-passage-panel {
+        position: static;
+        max-height: 45vh;
+        margin-bottom: 0;
+    }
+}
+
+.reading-question-panel { margin-bottom: 0; }
+
+/* "Questions 3–6 refer to the following e-mail." */
+.reading-refer-line {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-bottom: 14px;
+}
+
+/* Passage rendered as a document, like a real TOEIC test sheet */
+.reading-doc {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.reading-doc + .reading-doc { margin-top: 16px; }
+
+.reading-doc-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.reading-doc-tag {
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.reading-doc-type {
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.reading-doc-words {
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.reading-doc-body {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1rem;
+    line-height: 1.75;
+    white-space: pre-line;
+}
+
+/* Question block */
+.reading-question-number {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.reading-question-text {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.55;
+    margin-bottom: 18px;
+}
+
+/* Answer options: big targets, letter badges, clear states */
+.reading-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reading-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.reading-option:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.reading-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.reading-option-letter {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.reading-option-text {
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.5;
+    flex: 1;
+    padding-top: 2px;
+}
+
+.reading-option-mark {
+    flex-shrink: 0;
+    font-weight: 800;
+    font-size: 1rem;
+    min-width: 18px;
+    text-align: center;
+    padding-top: 2px;
+}
+
+.reading-option.selected {
+    background: rgba(139, 92, 246, 0.22);
+    border-color: #8b5cf6;
+}
+
+.reading-option.selected .reading-option-letter {
+    background: #8b5cf6;
+    border-color: #8b5cf6;
+}
+
+.reading-option.reading-answer-correct .reading-option-letter {
+    background: var(--correct-border);
+    border-color: var(--correct-border);
+}
+
+.reading-option.reading-answer-correct .reading-option-mark { color: var(--correct-border); }
+
+.reading-option.reading-answer-incorrect .reading-option-letter {
+    background: var(--incorrect-border);
+    border-color: var(--incorrect-border);
+}
+
+.reading-option.reading-answer-incorrect .reading-option-mark { color: var(--incorrect-border); }
+
+/* Feedback panel under the options */
+#readingFeedback .reading-feedback-message {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid;
+    font-size: 0.95rem;
+}
+
+#readingFeedback .is-correct {
+    background: var(--correct-bg);
+    border-color: var(--correct-border);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#readingFeedback .is-incorrect {
+    background: var(--incorrect-bg);
+    border-color: var(--incorrect-border);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#readingFeedback .reading-feedback-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+#readingFeedback .reading-feedback-line {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.55;
+}
+
+/* Actions row */
+.reading-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.reading-actions .hidden { display: none; }
+
+.reading-kbd-hint {
+    margin-left: auto;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+    .reading-kbd-hint { display: none; }
+}
+
+/* End-of-session mistake review */
+.reading-review-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+}
+
+.reading-review-question {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.reading-review-line {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-top: 4px;
+}
+
+.reading-review-line.wrong { color: var(--error-400); }
+.reading-review-line.right { color: var(--success-400); }
+
+.reading-review-expl {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}

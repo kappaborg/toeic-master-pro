@@ -2298,10 +2298,6 @@ Management`,
     
     // Start a reading comprehension session
     startSession(options = {}) {
-        console.log('🔍 startSession called with options:', options);
-        console.log('🔍 passages size:', this.passages.size);
-        console.log('🔍 questions size:', this.questions.size);
-        
         this.sessionStats = {
             totalQuestions: 0,
             correctAnswers: 0,
@@ -2309,128 +2305,172 @@ Management`,
             timeSpent: 0,
             startTime: Date.now()
         };
-        
+
         const questionType = options.type || 'mixed';
         const difficulty = options.difficulty || 'mixed';
         const count = options.count || 20;
-        
-        console.log('🔍 Generating session with:', { questionType, difficulty, count });
-        
+
         this.currentSession = this.generateSession(questionType, difficulty, count);
-        this.currentQuestionIndex = 0; // Initialize question index
+        this.currentQuestionIndex = 0;
+        this.sessionAnswers = []; // per-session answer log for the review screen
         this.sessionStats.totalQuestions = this.currentSession.length;
-        
-        console.log('🔍 Generated session:', this.currentSession);
+
         console.log(`📖 Started TOEIC reading session with ${this.currentSession.length} questions`);
         return this.currentSession;
     }
-    
+
+    // Build a session the way a real TOEIC test is structured:
+    // questions that share a passage stay together and in order
+    // (Part 7), text-completion questions stay with their text
+    // (Part 6), and grammar items stand alone (Part 5). Passages
+    // the student has practiced least come first; ties are
+    // shuffled so every session feels different.
     generateSession(type, difficulty, count) {
-        console.log('🔍 generateSession called with:', { type, difficulty, count });
-        
         let availableQuestions = Array.from(this.questions.values());
-        console.log('🔍 Total available questions:', availableQuestions.length);
-        
-        // Filter by type
+
         if (type !== 'mixed') {
             availableQuestions = availableQuestions.filter(q => q.type === type);
-            console.log('🔍 After type filter:', availableQuestions.length);
         }
-        
-        // Filter by difficulty
+
         if (difficulty !== 'mixed') {
             availableQuestions = availableQuestions.filter(q => q.difficulty === difficulty);
-            console.log('🔍 After difficulty filter:', availableQuestions.length);
         }
-        
-        // Sort by user performance (show weaker areas first)
-        availableQuestions.sort((a, b) => {
-            const aStats = this.userProgress.get(a.id) || { correctCount: 0, incorrectCount: 0 };
-            const bStats = this.userProgress.get(b.id) || { correctCount: 0, incorrectCount: 0 };
-            
-            const aAccuracy = aStats.correctCount + aStats.incorrectCount > 0 ? 
-                aStats.correctCount / (aStats.correctCount + aStats.incorrectCount) : 0.5;
-            const bAccuracy = bStats.correctCount + bStats.incorrectCount > 0 ? 
-                bStats.correctCount / (bStats.correctCount + bStats.incorrectCount) : 0.5;
-            
-            return aAccuracy - bAccuracy; // Lower accuracy first
+
+        // Group questions that belong to the same text. Passage-based
+        // questions group by passageId; text-completion questions group
+        // by their shared inline passage; grammar items are singletons.
+        const groups = new Map();
+        availableQuestions.forEach(q => {
+            const key = q.passageId || (q.passage ? `inline:${q.passage.slice(0, 40)}` : `single:${q.id}`);
+            if (!groups.has(key)) {
+                groups.set(key, { key, type: q.type, questionIds: [] });
+            }
+            groups.get(key).questionIds.push(q.id);
         });
-        
-        const sessionQuestions = availableQuestions.slice(0, count).map(q => q.id);
-        console.log('🔍 Final session questions:', sessionQuestions);
-        
+
+        // Order groups by how much the student has practiced them
+        // (least-seen first) with a random tiebreak for variety.
+        const practiceScore = (group) => group.questionIds.reduce((sum, id) => {
+            const stats = this.userProgress.get(id);
+            return sum + (stats ? stats.timesAnswered || 0 : 0);
+        }, 0) / group.questionIds.length;
+
+        const shuffled = Array.from(groups.values())
+            .map(g => ({ group: g, score: practiceScore(g), jitter: Math.random() }))
+            .sort((a, b) => (a.score - b.score) || (a.jitter - b.jitter))
+            .map(entry => entry.group);
+
+        // Present in TOEIC part order: grammar (Part 5), then text
+        // completion (Part 6), then passages (Part 7).
+        const partOrder = { incomplete_sentences: 0, text_completion: 1, reading_comprehension: 2 };
+        const ordered = shuffled
+            .map((g, index) => ({ g, index }))
+            .sort((a, b) => (partOrder[a.g.type] ?? 3) - (partOrder[b.g.type] ?? 3) || (a.index - b.index))
+            .map(entry => entry.g);
+
+        // For mixed sessions, cap grammar and text completion so most
+        // of the session is real passage reading.
+        const budgets = type === 'mixed'
+            ? { incomplete_sentences: Math.max(1, Math.round(count * 0.3)), text_completion: Math.max(1, Math.round(count * 0.2)), reading_comprehension: count }
+            : null;
+        const usedPerType = {};
+
+        const sessionQuestions = [];
+        for (const group of ordered) {
+            if (sessionQuestions.length >= count) break;
+            if (budgets) {
+                const used = usedPerType[group.type] || 0;
+                if (used >= budgets[group.type]) continue;
+            }
+            // Keep whole groups so a passage's questions are never split
+            // across the session boundary; small overflow past `count`
+            // beats orphaning questions from their passage.
+            sessionQuestions.push(...group.questionIds);
+            usedPerType[group.type] = (usedPerType[group.type] || 0) + group.questionIds.length;
+        }
+
         return sessionQuestions;
     }
-    
-    // Get next passage
-    getNextPassage() {
-        console.log('🔍 getNextPassage called');
-        console.log('🔍 currentSession:', this.currentSession);
-        console.log('🔍 passages size:', this.passages.size);
-        console.log('🔍 questions size:', this.questions.size);
-        
-        if (!this.currentSession || this.currentSession.length === 0) {
-            console.log('❌ No current session or empty session');
-            return null;
-        }
 
-        // Get the first question to find its passage
-        const questionId = this.currentSession[0];
-        console.log('🔍 First question ID:', questionId);
-        
-        const question = this.questions.get(questionId);
-        console.log('🔍 Question found:', question);
-
-        if (!question) {
-            console.log('❌ Question not found');
-            return null;
-        }
-
-        const passage = this.passages.get(question.passageId);
-        console.log('🔍 Passage found:', passage);
-        
-        return passage;
-    }
-    
-    // Peek at next question without removing from session
-    peekNextQuestion() {
-        console.log('🔍 peekNextQuestion called');
-        console.log('🔍 currentSession:', this.currentSession);
-        
-        if (!this.currentSession || this.currentSession.length === 0) {
-            console.log('❌ No current session or empty session');
-            return null;
-        }
-        
-        const questionId = this.currentSession[0];
-        console.log('🔍 First question ID:', questionId);
-        
-        const question = this.questions.get(questionId);
-        console.log('🔍 Question found:', question);
-        console.log('🔍 Question correctAnswer:', question?.correctAnswer);
-        
-        if (!question) {
-            console.log('❌ Question not found');
-            return null;
-        }
-        
-        let passage = null;
+    // Resolve the passage a question should display. Passage-based
+    // questions look up the passages map; text-completion questions
+    // carry their text inline, so wrap it to the same shape.
+    resolvePassage(question) {
         if (question.passageId) {
-            passage = this.passages.get(question.passageId);
+            return this.passages.get(question.passageId) || null;
         }
-        
+        if (question.passage) {
+            return {
+                id: null,
+                type: question.type,
+                title: '',
+                content: question.passage,
+                inline: true
+            };
+        }
+        return null;
+    }
+
+    // Session position: 1-based current question number and total
+    getSessionPosition() {
+        if (!this.currentSession) return { current: 0, total: 0 };
+        return {
+            current: Math.min(this.currentQuestionIndex + 1, this.currentSession.length),
+            total: this.currentSession.length
+        };
+    }
+
+    // The contiguous run of questions sharing this question's passage,
+    // so the UI can show "Questions 3–6 refer to the following e-mail"
+    getQuestionGroupRange(index) {
+        if (!this.currentSession) return null;
+        const keyAt = (i) => {
+            const q = this.questions.get(this.currentSession[i]);
+            if (!q) return `missing:${i}`;
+            return q.passageId || (q.passage ? `inline:${q.passage.slice(0, 40)}` : `single:${this.currentSession[i]}`);
+        };
+        const key = keyAt(index);
+        let start = index;
+        let end = index;
+        while (start > 0 && keyAt(start - 1) === key) start--;
+        while (end < this.currentSession.length - 1 && keyAt(end + 1) === key) end++;
+        return { start: start + 1, end: end + 1 };
+    }
+
+    // Get the passage for the current question (may be null for
+    // standalone grammar items — that is a valid state, not an error)
+    getNextPassage() {
+        const question = this.currentRawQuestion();
+        return question ? this.resolvePassage(question) : null;
+    }
+
+    currentRawQuestion() {
+        if (!this.currentSession || this.currentQuestionIndex >= this.currentSession.length) {
+            return null;
+        }
+        return this.questions.get(this.currentSession[this.currentQuestionIndex]) || null;
+    }
+
+    buildQuestionView(question) {
+        if (!question) return null;
+        const passage = this.resolvePassage(question);
+        const companionPassage = passage && passage.linkedPassageId
+            ? this.passages.get(passage.linkedPassageId) || null
+            : null;
         return {
             id: question.id,
             type: question.type,
+            passageId: question.passageId || null,
             question: question.question,
             options: question.options,
             correctAnswer: question.correctAnswer,
             explanation: question.explanation,
             passage: passage,
+            companionPassage: companionPassage,
             difficulty: question.difficulty,
             timeLimit: this.questionTypes[question.type].timeLimit,
             points: this.questionTypes[question.type].points,
-            userStats: this.userProgress.get(questionId) || {
+            userStats: this.userProgress.get(question.id) || {
                 timesAnswered: 0,
                 correctCount: 0,
                 incorrectCount: 0,
@@ -2439,58 +2479,27 @@ Management`,
             }
         };
     }
-    
-    // Move to next question in session
+
+    // Current question without advancing the cursor
+    peekNextQuestion() {
+        return this.buildQuestionView(this.currentRawQuestion());
+    }
+
+    // Advance the cursor. Returns true while another question exists.
     moveToNextQuestion() {
-        if (!this.currentSession || this.currentSession.length === 0) {
+        if (!this.currentSession || this.currentQuestionIndex >= this.currentSession.length - 1) {
+            if (this.currentSession) this.currentQuestionIndex = this.currentSession.length;
             return false;
         }
-        
-        // Remove current question from session
-        this.currentSession.shift();
-        
-        return this.currentSession.length > 0;
+        this.currentQuestionIndex++;
+        return true;
     }
-    
-    // Get next question and advance the session pointer.
-    // Non-destructive: uses the same shift-based cursor as
-    // peekNextQuestion()/moveToNextQuestion() so the two flows
-    // can never disagree about the current position.
-    getNextQuestion() {
-        if (!this.currentSession || this.currentSession.length === 0) {
-            return null;
-        }
 
-        const questionId = this.currentSession[0];
-        this.moveToNextQuestion();
-        const question = this.questions.get(questionId);
-        
-        if (!question) return null;
-        
-        let passage = null;
-        if (question.passageId) {
-            passage = this.passages.get(question.passageId);
-        }
-        
-        return {
-            id: question.id,
-            type: question.type,
-            question: question.question,
-            options: question.options,
-            correctAnswer: question.correctAnswer,
-            explanation: question.explanation,
-            passage: passage,
-            difficulty: question.difficulty,
-            timeLimit: this.questionTypes[question.type].timeLimit,
-            points: this.questionTypes[question.type].points,
-            userStats: this.userProgress.get(questionId) || {
-                timesAnswered: 0,
-                correctCount: 0,
-                incorrectCount: 0,
-                averageTime: 0,
-                lastAnswered: null
-            }
-        };
+    // Get the current question and advance the cursor past it
+    getNextQuestion() {
+        const view = this.peekNextQuestion();
+        if (view) this.moveToNextQuestion();
+        return view;
     }
     
     // Check answer
@@ -2538,7 +2547,16 @@ Management`,
         questionStats.averageTime = totalTime / questionStats.timesAnswered;
         
         this.userProgress.set(questionId, questionStats);
-        
+
+        // Log the answer for this session's review screen
+        if (Array.isArray(this.sessionAnswers)) {
+            this.sessionAnswers.push({
+                questionId: questionId,
+                selectedAnswer: selectedAnswer,
+                isCorrect: isCorrect
+            });
+        }
+
         // Update passage stats if applicable
         if (question.passageId) {
             const passage = this.passages.get(question.passageId);
@@ -2582,7 +2600,9 @@ Management`,
             ...this.sessionStats,
             accuracy: Math.round(accuracy),
             timeSpent: timeSpent,
-            questionsRemaining: this.currentSession?.length ?? 0
+            questionsRemaining: this.currentSession
+                ? Math.max(0, this.currentSession.length - this.currentQuestionIndex)
+                : 0
         };
     }
     

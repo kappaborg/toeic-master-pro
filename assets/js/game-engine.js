@@ -3438,17 +3438,43 @@ class ReadingComprehensionGame extends BaseGame {
         ];
         this.currentText = null;
         this.currentQuestionIndex = 0;
+        this.textOrder = [];
+        this.textPointer = 0;
     }
-    
-    async generateQuestion(questionNumber) {
-        if (questionNumber === 0 || !this.currentText) {
-            // Select a new reading text
-            this.currentText = this.readingTexts[Math.floor(Math.random() * this.readingTexts.length)];
-            this.currentQuestionIndex = 0;
+
+    // Shuffled order of all texts so a session cycles through every
+    // passage before any repeats
+    shuffleTextOrder() {
+        this.textOrder = [...this.readingTexts];
+        for (let i = this.textOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.textOrder[i], this.textOrder[j]] = [this.textOrder[j], this.textOrder[i]];
         }
-        
+        this.textPointer = 0;
+    }
+
+    advanceToNextText() {
+        this.textPointer++;
+        if (this.textPointer >= this.textOrder.length) {
+            this.shuffleTextOrder();
+        }
+        this.currentText = this.textOrder[this.textPointer];
+        this.currentQuestionIndex = 0;
+    }
+
+    async generateQuestion(questionNumber) {
+        if (questionNumber === 0 || !this.currentText || this.textOrder.length === 0) {
+            // New session: reshuffle and start from the first text
+            this.shuffleTextOrder();
+            this.currentText = this.textOrder[0];
+            this.currentQuestionIndex = 0;
+        } else if (this.currentQuestionIndex >= this.currentText.questions.length) {
+            // Finished this text's questions — move on to a new text
+            this.advanceToNextText();
+        }
+
         const question = this.currentText.questions[this.currentQuestionIndex];
-        
+
         return {
             type: 'reading_comprehension',
             title: this.currentText.title,
@@ -3460,14 +3486,15 @@ class ReadingComprehensionGame extends BaseGame {
             isFirstQuestion: this.currentQuestionIndex === 0
         };
     }
-    
+
     async checkAnswer(answerIndex, responseTime) {
         const question = this.currentText.questions[this.currentQuestionIndex];
         const isCorrect = answerIndex === question.correct;
-        
-        // Move to next question for next time
-        this.currentQuestionIndex = (this.currentQuestionIndex + 1) % this.currentText.questions.length;
-        
+
+        // Move to next question; generateQuestion() switches to a new
+        // text once this one's questions are used up
+        this.currentQuestionIndex++;
+
         return {
             isCorrect: isCorrect,
             correctAnswer: question.choices[question.correct],

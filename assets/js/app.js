@@ -1431,30 +1431,32 @@ class App {
         }
     }
     
+    // Human label for the document type shown above a passage,
+    // matching how real TOEIC labels its Part 7 texts
+    getReadingDocLabel(passage) {
+        if (!passage) return t('reading.docType.text');
+        const title = passage.title || '';
+        if (/^memo/i.test(title)) return t('reading.docType.memo');
+        if (/^letter/i.test(title)) return t('reading.docType.letter');
+        if (/^schedule/i.test(title)) return t('reading.docType.form');
+        if (passage.type === 'business_email') return t('reading.docType.email');
+        if (passage.type === 'news_article') return t('reading.docType.article');
+        if (passage.type === 'advertisement') return t('reading.docType.ad');
+        return t('reading.docType.text');
+    }
+
     showReadingInterface(session) {
-        console.log('🔍 showReadingInterface called with session:', session);
-        
         const content = document.getElementById('toeicModuleContent');
-        console.log('🔍 toeicModuleContent element:', content);
-        
         if (!content) {
             console.error('❌ toeicModuleContent element not found!');
             return;
         }
-        
-        // Show the content area
         content.classList.remove('hidden');
-        console.log('🔍 Content area made visible');
-        
-        // Get passage and question without removing from session
-        const passage = window.toeicReading.getNextPassage();
-        const question = window.toeicReading.peekNextQuestion();
-        
-        console.log('🔍 Passage:', passage);
-        console.log('🔍 Question:', question);
-        
-        if (!passage || !question) {
-            console.log('❌ No passage or question available');
+
+        const reading = window.toeicReading;
+        const question = reading ? reading.peekNextQuestion() : null;
+
+        if (!question) {
             content.innerHTML = `
                 <div class="text-center">
                     <h3 class="text-xl font-bold text-white mb-4">${t('reading.noMaterials')}</h3>
@@ -1466,116 +1468,166 @@ class App {
             `;
             return;
         }
-        
+
+        const pos = reading.getSessionPosition();
+        const range = reading.getQuestionGroupRange(reading.currentQuestionIndex);
+        const passage = question.passage;
+        const companion = question.companionPassage;
+
+        const partBadge = question.type === 'incomplete_sentences'
+            ? 'PART 5 · INCOMPLETE SENTENCES'
+            : question.type === 'text_completion'
+                ? 'PART 6 · TEXT COMPLETION'
+                : companion
+                    ? 'PART 7 · DOUBLE PASSAGE'
+                    : 'PART 7 · READING COMPREHENSION';
+
+        // "Questions 3–6 refer to the following e-mail." — or the part
+        // instruction when there is no passage (Part 5 grammar items)
+        const referLine = passage
+            ? (range && range.end > range.start
+                ? t('reading.questionsRefer', { start: range.start, end: range.end })
+                : t('reading.questionRefers', { n: pos.current }))
+            : t('reading.instrPart5');
+
+        const renderDoc = (p, tag) => `
+            <article class="reading-doc">
+                <header class="reading-doc-head">
+                    ${tag ? `<span class="reading-doc-tag">${tag}</span>` : ''}
+                    <span class="reading-doc-type">${this.getReadingDocLabel(p)}</span>
+                    ${p.wordCount ? `<span class="reading-doc-words">${t('reading.words', { count: p.wordCount })}</span>` : ''}
+                </header>
+                <div class="reading-doc-body">${p.content}</div>
+            </article>`;
+
         content.innerHTML = `
-            <div class="module-shell">
-                <div class="quiz-card">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-white">${t('reading.comprehension')}</h3>
-                        <div class="flex items-center gap-4">
-                            <span class="text-white/80">${t('quiz.questionOf', { current: (session.currentQuestionIndex || 0) + 1, total: session.length })}</span>
-                            <button onclick="window.app.endCurrentSession()" class="module-back-btn" style="margin-bottom: 0;">
-                                <span aria-hidden="true">⏹</span>
-                                ${t('common.endSession')}
-                            </button>
-                        </div>
+            <div class="module-shell reading-shell">
+                <div class="quiz-card reading-topbar">
+                    <div class="reading-topbar-row">
+                        <span class="toeic-part-badge" style="margin-bottom: 0;">${partBadge}</span>
+                        <span class="reading-progress-label">${t('quiz.questionOf', { current: pos.current, total: pos.total })}</span>
+                        <span class="reading-chip good">✓ <strong id="readingCorrectCount">0</strong></span>
+                        <span class="reading-chip bad">✗ <strong id="readingIncorrectCount">0</strong></span>
+                        <button onclick="window.app.endCurrentSession()" class="module-back-btn" style="margin-bottom: 0;">
+                            <span aria-hidden="true">⏹</span>
+                            ${t('common.endSession')}
+                        </button>
                     </div>
                     <div class="quiz-progress-track">
-                        <div class="quiz-progress-fill" style="width: ${(((session.currentQuestionIndex || 0) + 1) / session.length) * 100}%"></div>
+                        <div class="quiz-progress-fill" style="width: ${(pos.current / pos.total) * 100}%"></div>
                     </div>
                 </div>
 
-                ${(() => {
-                    // TOEIC Part 7 double passage: a passage may carry a
-                    // linkedPassageId pointing to its companion text —
-                    // render both, labeled, under one card
-                    const companion = passage.linkedPassageId && window.toeicReading
-                        ? window.toeicReading.passages.get(passage.linkedPassageId)
-                        : null;
-                    if (companion) {
-                        return `
-                <div class="quiz-card">
-                    <div class="flex items-center gap-2 mb-4 flex-wrap">
-                        <h4 class="text-lg font-semibold text-white" style="margin-bottom: 0;">${t('reading.passage')}</h4>
-                        <span class="toeic-part-badge" style="margin-bottom: 0;">${t('reading.doublePassage')}</span>
-                    </div>
-                    <p class="vocab-examples-title">${t('reading.text1')} · ${passage.title || ''}</p>
-                    <div class="text-white/90 leading-relaxed whitespace-pre-line mb-6" id="passageContent">${passage.content}</div>
-                    <p class="vocab-examples-title" style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 16px;">${t('reading.text2')} · ${companion.title || ''}</p>
-                    <div class="text-white/90 leading-relaxed whitespace-pre-line">${companion.content}</div>
-                </div>`;
-                    }
-                    return `
-                <div class="quiz-card">
-                    <h4 class="text-lg font-semibold text-white mb-4">${t('reading.passage')}</h4>
-                    <div class="text-white/90 leading-relaxed whitespace-pre-line" id="passageContent">${passage.content}</div>
-                </div>`;
-                })()}
+                <div class="reading-layout${passage ? '' : ' no-passage'}">
+                    ${passage ? `
+                    <div class="quiz-card reading-passage-panel">
+                        <p class="reading-refer-line">${referLine}</p>
+                        ${renderDoc(passage, companion ? t('reading.text1') : '')}
+                        ${companion ? renderDoc(companion, t('reading.text2')) : ''}
+                    </div>` : ''}
 
-                <div class="quiz-card glass-effect">
-                    <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')}</h4>
-                    <p class="text-white/90 mb-4">${question.question}</p>
+                    <div class="quiz-card reading-question-panel">
+                        ${passage ? '' : `<p class="reading-refer-line">${referLine}</p>`}
+                        <p class="reading-question-number">${t('status.question')} ${pos.current}</p>
+                        <p class="reading-question-text">${question.question}</p>
 
-                    <div class="space-y-3" id="questionOptions">
-                        ${question.options.map((option, index) => `
-                            <label class="flex items-center p-3 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors">
-                                <input type="radio" name="answer" value="${index}" class="mr-3">
-                                <span class="text-white/90">${String.fromCharCode(65 + index)}. ${option}</span>
-                            </label>
-                        `).join('')}
-                    </div>
+                        <div class="reading-options" id="questionOptions">
+                            ${question.options.map((option, index) => `
+                                <label class="reading-option">
+                                    <input type="radio" name="answer" value="${index}">
+                                    <span class="reading-option-letter">${String.fromCharCode(65 + index)}</span>
+                                    <span class="reading-option-text">${option}</span>
+                                    <span class="reading-option-mark" aria-hidden="true"></span>
+                                </label>
+                            `).join('')}
+                        </div>
 
-                    <div class="flex justify-between items-center mt-6">
-                        <button onclick="window.app.submitReadingAnswer()" class="btn btn-primary" id="submitBtn" disabled>
-                            ${t('reading.submitAnswer')}
-                        </button>
-                        <div class="text-white/80">
-                            <span id="sessionStats">${t('reading.sessionStats', { correct: 0, incorrect: 0, time: 0 })}</span>
+                        <div id="readingFeedback"></div>
+
+                        <div class="reading-actions">
+                            <button onclick="window.app.submitReadingAnswer()" class="btn btn-primary" id="submitBtn" disabled>
+                                ${t('reading.submitAnswer')}
+                            </button>
+                            <button onclick="window.app.goToNextReadingQuestion()" class="btn btn-primary hidden" id="nextQuestionBtn">
+                                ${pos.current >= pos.total ? t('reading.seeResults') : t('quiz.nextQuestion')} →
+                            </button>
+                            <span class="reading-kbd-hint">${t('reading.kbdHint')}</span>
                         </div>
                     </div>
                 </div>
             </div>
         `;
-        
-        // Add event listeners for radio buttons
-        const radioButtons = content.querySelectorAll('input[name="answer"]');
-        const submitBtn = document.getElementById('submitBtn');
-        
-        radioButtons.forEach(radio => {
+
+        // Selection state: highlight the chosen option, enable submit
+        content.querySelectorAll('input[name="answer"]').forEach(radio => {
             radio.addEventListener('change', () => {
-                submitBtn.disabled = false;
+                content.querySelectorAll('.reading-option').forEach(o => o.classList.remove('selected'));
+                radio.closest('.reading-option').classList.add('selected');
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) submitBtn.disabled = false;
             });
         });
-        
-        // Update session stats
+
         this.updateReadingSessionStats();
+        this.bindReadingKeyboard();
+    }
+
+    // Keyboard shortcuts for the reading session: A–D / 1–4 select an
+    // option, Enter submits or advances. The handler no-ops when the
+    // reading question UI is not on screen.
+    bindReadingKeyboard() {
+        if (this._readingKeyHandler) {
+            document.removeEventListener('keydown', this._readingKeyHandler);
+        }
+        this._readingKeyHandler = (e) => {
+            const options = document.getElementById('questionOptions');
+            if (!options) return;
+            const tag = e.target && e.target.tagName;
+            if ((tag === 'INPUT' && e.target.type !== 'radio') || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+            const key = e.key.toLowerCase();
+            let index = ['a', 'b', 'c', 'd'].indexOf(key);
+            if (index === -1) index = ['1', '2', '3', '4'].indexOf(e.key);
+            if (index !== -1) {
+                const radio = options.querySelector(`input[value="${index}"]`);
+                if (radio && !radio.disabled) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+                return;
+            }
+            if (e.key === 'Enter') {
+                const nextBtn = document.getElementById('nextQuestionBtn');
+                const submitBtn = document.getElementById('submitBtn');
+                if (nextBtn && !nextBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    nextBtn.click();
+                } else if (submitBtn && !submitBtn.disabled && !submitBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    submitBtn.click();
+                }
+            }
+        };
+        document.addEventListener('keydown', this._readingKeyHandler);
+    }
+
+    unbindReadingKeyboard() {
+        if (this._readingKeyHandler) {
+            document.removeEventListener('keydown', this._readingKeyHandler);
+            this._readingKeyHandler = null;
+        }
     }
     
     submitReadingAnswer() {
         const selectedAnswer = document.querySelector('input[name="answer"]:checked');
         if (!selectedAnswer) return;
 
-        const answerIndex = parseInt(selectedAnswer.value);
-        const question = window.toeicReading.peekNextQuestion();
-
+        const reading = window.toeicReading;
+        const question = reading ? reading.peekNextQuestion() : null;
         if (!question) return;
 
-        // Debug logging
-        console.log('🔍 Reading Answer Debug:');
-        console.log('🔍 Question ID:', question.id);
-        console.log('🔍 Question:', question.question);
-        console.log('🔍 Options:', question.options);
-        console.log('🔍 Selected answer index:', answerIndex);
-        console.log('🔍 Correct answer index:', question.correctAnswer);
-        console.log('🔍 Selected answer text:', question.options[answerIndex]);
-        console.log('🔍 Correct answer text:', question.options[question.correctAnswer]);
-        
-        window.logger?.debug(`Question data:`, question);
-        window.logger?.debug(`Answer index: ${answerIndex}, Correct answer: ${question.correctAnswer}`);
-
-        // Check answer without recording yet
+        const answerIndex = parseInt(selectedAnswer.value);
         const isCorrect = answerIndex === question.correctAnswer;
-        console.log('🔍 Is correct:', isCorrect);
 
         // Track time
         if (this.timeTracker) {
@@ -1593,155 +1645,77 @@ class App {
                 questionId: question.id,
                 isCorrect: isCorrect,
                 answerIndex: answerIndex,
-                correctAnswer: question.correctAnswer,
-                timeSpent: Date.now() - (question.startTime || Date.now())
+                correctAnswer: question.correctAnswer
             });
         }
 
-        // Record the answer in the reading system
-        if (window.toeicReading && typeof window.toeicReading.recordAnswer === 'function') {
-            window.toeicReading.recordAnswer(question.id, answerIndex, 0);
-            console.log(`📝 Recorded answer: ${answerIndex} for question ${question.id}, correct: ${isCorrect}`);
+        // Record the answer (recordAnswer owns session stats) and
+        // remember the choice for the end-of-session review screen
+        reading.recordAnswer(question.id, answerIndex, 0);
+        const progress = reading.userProgress.get(question.id);
+        if (progress) {
+            progress.lastAnswer = answerIndex;
+            progress.lastCorrect = isCorrect;
+            reading.userProgress.set(question.id, progress);
         }
 
-        // Show enhanced feedback with color-coded buttons and the
-        // question's explanation so students learn why, not just what
+        // Color-coded option feedback plus the question's explanation,
+        // so students learn why, not just what
         this.showReadingAnswerFeedback(answerIndex, question.correctAnswer, isCorrect, question.explanation);
 
-        // Disable submit button and show next question button
         const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.style.display = 'none';
+        if (submitBtn) submitBtn.classList.add('hidden');
+        const nextBtn = document.getElementById('nextQuestionBtn');
+        if (nextBtn) {
+            nextBtn.classList.remove('hidden');
+            nextBtn.focus();
+        }
 
-        // Show next question button
-        this.showNextQuestionButton();
-
-        // Update stats (answer already recorded above)
         this.updateReadingSessionStats();
     }
 
     showReadingAnswerFeedback(selectedIndex, correctIndex, isCorrect, explanation = '') {
-        // Debug logging
-        console.log('🎯 Answer Feedback Debug:');
-        console.log('🎯 Selected index:', selectedIndex);
-        console.log('🎯 Correct index:', correctIndex);
-        console.log('🎯 Is correct:', isCorrect);
-        
-        window.logger?.debug(`Answer feedback - selectedIndex: ${selectedIndex}, correctIndex: ${correctIndex}, isCorrect: ${isCorrect}`);
-        
-        const options = document.querySelectorAll('input[name="answer"]');
-        console.log('🎯 Found options:', options.length);
-        
-        options.forEach((option, index) => {
-            const label = option.closest('label');
-            const optionText = label.querySelector('span');
-            
-            console.log(`🎯 Processing option ${index}:`, {
-                isCorrect: index === correctIndex,
-                isSelected: index === selectedIndex,
-                isSelectedAndWrong: index === selectedIndex && !isCorrect
-            });
-            
-            // Remove any existing feedback classes
-            label.classList.remove('reading-answer-correct', 'reading-answer-incorrect', 'reading-answer-disabled', 'bg-green-500/20', 'border-green-500', 'bg-red-500/20', 'border-red-500', 'bg-blue-500/20', 'border-blue-500');
-            
-            // Disable all radio buttons
-            option.disabled = true;
-            
+        document.querySelectorAll('#questionOptions .reading-option').forEach((option, index) => {
+            const input = option.querySelector('input');
+            if (input) input.disabled = true;
+            option.classList.remove('selected');
+
+            const mark = option.querySelector('.reading-option-mark');
             if (index === correctIndex) {
-                // Correct answer - always green
-                console.log(`🎯 Marking option ${index} as CORRECT`);
-                label.classList.add('reading-answer-correct');
-                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-green-400 font-semibold">${t('quiz.correctMark')}</span>`;
+                option.classList.add('reading-answer-correct');
+                if (mark) mark.textContent = '✓';
             } else if (index === selectedIndex && !isCorrect) {
-                // Wrong selected answer - red
-                console.log(`🎯 Marking option ${index} as WRONG (selected but incorrect)`);
-                label.classList.add('reading-answer-incorrect');
-                optionText.innerHTML = `${String.fromCharCode(65 + index)}. ${optionText.textContent.split('. ')[1]} <span class="text-red-400 font-semibold">${t('quiz.wrongMark')}</span>`;
+                option.classList.add('reading-answer-incorrect');
+                if (mark) mark.textContent = '✗';
             } else {
-                // Other options - subtle styling
-                console.log(`🎯 Marking option ${index} as DISABLED`);
-                label.classList.add('reading-answer-disabled');
+                option.classList.add('reading-answer-disabled');
             }
         });
 
-        // Show feedback message
         this.showReadingFeedbackMessage(isCorrect, correctIndex, explanation);
     }
 
     showReadingFeedbackMessage(isCorrect, correctIndex, explanation = '') {
-        const feedbackContainer = document.querySelector('.glass-effect .space-y-3');
-        if (!feedbackContainer) return;
+        const container = document.getElementById('readingFeedback');
+        if (!container) return;
 
-        // Debug logging
-        window.logger?.debug(`Feedback message - isCorrect: ${isCorrect}, correctIndex: ${correctIndex}`);
-
-        const feedbackDiv = document.createElement('div');
-        feedbackDiv.className = `mt-4 p-4 rounded-lg border-2 reading-feedback-message ${
-            isCorrect 
-                ? 'bg-green-500/10 border-green-500 text-green-300' 
-                : 'bg-red-500/10 border-red-500 text-red-300'
-        }`;
-        
-        // Generate the correct answer letter
         const correctAnswerLetter = String.fromCharCode(65 + correctIndex);
-        window.logger?.debug(`Correct answer letter: ${correctAnswerLetter}`);
-        
-        feedbackDiv.innerHTML = `
-            <div class="flex items-center gap-2">
-                <i data-lucide="${isCorrect ? 'check-circle' : 'x-circle'}" class="w-5 h-5"></i>
-                <span class="font-semibold">
-                    ${isCorrect ? t('quiz.correct') : t('quiz.incorrect')}
-                </span>
+        container.innerHTML = `
+            <div class="reading-feedback-message ${isCorrect ? 'is-correct' : 'is-incorrect'}">
+                <div class="reading-feedback-title">${isCorrect ? `✅ ${t('quiz.correct')}` : `❌ ${t('quiz.incorrect')}`}</div>
+                ${!isCorrect ? `<p class="reading-feedback-line">${t('quiz.correctAnswerIs')} <strong>${correctAnswerLetter}</strong></p>` : ''}
+                ${explanation ? `<p class="reading-feedback-line"><strong>${t('quiz.explanation')}:</strong> ${explanation}</p>` : ''}
             </div>
-            ${!isCorrect ? `<p class="mt-2 text-sm">${t('quiz.correctAnswerIs')} <strong>${correctAnswerLetter}</strong></p>` : ''}
-            ${explanation ? `<p class="mt-2 text-sm text-white/80"><strong>${t('quiz.explanation')}:</strong> ${explanation}</p>` : ''}
         `;
-        
-        feedbackContainer.appendChild(feedbackDiv);
-        
-        // Re-initialize Lucide icons
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-    }
-
-    showNextQuestionButton() {
-        const buttonContainer = document.querySelector('.flex.justify-between.items-center.mt-6');
-        if (!buttonContainer) return;
-
-        // Check if next question button already exists
-        if (document.getElementById('nextQuestionBtn')) return;
-
-        const nextBtn = document.createElement('button');
-        nextBtn.id = 'nextQuestionBtn';
-        nextBtn.className = 'btn btn-primary';
-        nextBtn.innerHTML = `<i data-lucide="arrow-right" class="w-4 h-4 mr-2"></i>${t('quiz.nextQuestion')}`;
-        nextBtn.onclick = () => this.goToNextReadingQuestion();
-
-        // Insert next to the submit button position
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.parentNode.insertBefore(nextBtn, submitBtn.nextSibling);
-        } else {
-            buttonContainer.appendChild(nextBtn);
-        }
-
-        // Re-initialize Lucide icons
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     goToNextReadingQuestion() {
-        // Move to next question in session
         const hasNext = window.toeicReading.moveToNextQuestion();
 
         if (hasNext) {
-            // Show next question
             this.showReadingInterface(window.toeicReading.currentSession);
         } else {
-            // Session completed
             this.showReadingSessionComplete();
         }
     }
@@ -1749,17 +1723,26 @@ class App {
     showReadingSessionComplete() {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
-        
+
+        this.unbindReadingKeyboard();
+
         const stats = window.toeicReading.getSessionStats();
-        const accuracy = stats.correctAnswers > 0 ? 
-            Math.round((stats.correctAnswers / (stats.correctAnswers + stats.incorrectAnswers)) * 100) : 0;
-        
+        const answered = stats.correctAnswers + stats.incorrectAnswers;
+        const accuracy = answered > 0 ?
+            Math.round((stats.correctAnswers / answered) * 100) : 0;
+        const minutes = Math.floor((stats.timeSpent || 0) / 60000);
+        const seconds = Math.round(((stats.timeSpent || 0) % 60000) / 1000);
+
+        // Collect per-question results BEFORE endSession clears the session
+        const sessionResults = this.getSessionResults();
+        const mistakes = sessionResults.filter(r => !r.isCorrect && r.selectedAnswer !== undefined && r.selectedAnswer !== -1);
+
         content.innerHTML = `
-            <div class="max-w-2xl mx-auto text-center">
-                <div class="glass-effect rounded-xl p-8 mb-6">
+            <div class="module-shell">
+                <div class="quiz-card text-center">
                     <h3 class="text-2xl font-bold text-white mb-6">📚 ${t('reading.sessionComplete')}</h3>
 
-                    <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                         <div class="bg-green-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-green-400">${stats.correctAnswers || 0}</div>
                             <div class="text-white/80">${t('common.correct')}</div>
@@ -1768,20 +1751,17 @@ class App {
                             <div class="text-2xl font-bold text-red-400">${stats.incorrectAnswers || 0}</div>
                             <div class="text-white/80">${t('common.incorrect')}</div>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="bg-blue-500/20 rounded-lg p-4">
                             <div class="text-2xl font-bold text-blue-400">${accuracy}%</div>
                             <div class="text-white/80">${t('quiz.accuracy')}</div>
                         </div>
                         <div class="bg-purple-500/20 rounded-lg p-4">
-                            <div class="text-2xl font-bold text-purple-400">${Math.round((stats.timeSpent || 0) / 1000)}s</div>
+                            <div class="text-2xl font-bold text-purple-400">${minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`}</div>
                             <div class="text-white/80">${t('common.time')}</div>
                         </div>
                     </div>
 
-                    <div class="flex justify-center gap-4">
+                    <div class="flex justify-center gap-4 flex-wrap">
                         <button onclick="window.app.initializeReadingModule()" class="btn btn-primary">
                             <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
                             ${t('reading.backToReading')}
@@ -1792,28 +1772,44 @@ class App {
                         </button>
                     </div>
                 </div>
+
+                ${mistakes.length > 0 ? `
+                <div class="quiz-card">
+                    <h3 class="text-xl font-bold text-white mb-6">📚 ${t('reading.answerReview')}</h3>
+                    <div class="space-y-4">
+                        ${mistakes.map(result => `
+                            <div class="reading-review-item">
+                                <p class="reading-review-question">${result.question}</p>
+                                <p class="reading-review-line wrong">✗ ${String.fromCharCode(65 + result.selectedAnswer)}. ${result.options[result.selectedAnswer] ?? ''}</p>
+                                <p class="reading-review-line right">✓ ${String.fromCharCode(65 + result.correctAnswer)}. ${result.options[result.correctAnswer]}</p>
+                                ${result.explanation ? `<p class="reading-review-expl">💡 ${result.explanation}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
             </div>
         `;
-        
+
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
         // End the reading session
         window.toeicReading.endSession();
-        
+
         console.log('📚 Reading session completed successfully');
     }
-    
+
     updateReadingSessionStats() {
         if (!window.toeicReading) return;
-        
+
         const stats = window.toeicReading.getSessionStats();
-        const statsElement = document.getElementById('sessionStats');
-        
-        if (statsElement) {
-            statsElement.textContent = t('reading.sessionStats', {
-                correct: stats.correctAnswers,
-                incorrect: stats.incorrectAnswers,
-                time: Math.round(stats.timeSpent / 1000)
-            });
-        }
+        const correctElement = document.getElementById('readingCorrectCount');
+        const incorrectElement = document.getElementById('readingIncorrectCount');
+
+        if (correctElement) correctElement.textContent = stats.correctAnswers;
+        if (incorrectElement) incorrectElement.textContent = stats.incorrectAnswers;
     }
     
     updateReadingStats() {
@@ -2841,6 +2837,7 @@ class App {
         if (window.toeicReading && window.toeicReading.currentSession) {
             window.toeicReading.endSession();
         }
+        this.unbindReadingKeyboard();
 
         // Clear timers
         if (this.readingTimer) {
@@ -3965,9 +3962,9 @@ class App {
                 this.showVocabularyModule(options);
                 break;
             case 'reading':
-                // If we have a session, show practice interface, otherwise show module selection
+                // If we have a session, show the reading interface, otherwise show module selection
                 if (options && options.length) {
-                    this.showReadingPracticeInterface(options);
+                    this.showReadingInterface(options);
                 } else {
                     this.showReadingModule(options);
                 }
@@ -4190,957 +4187,28 @@ class App {
         }
     }
     
-    showReadingPracticeInterface(session) {
-        const content = document.getElementById('toeicModuleContent');
-        if (!content) return;
-        
-        // Get current question
-        const currentQuestion = window.toeicReading ? window.toeicReading.getCurrentQuestion() : null;
-        const currentIndex = window.toeicReading ? window.toeicReading.currentQuestionIndex : 0;
-        const totalQuestions = session.length;
-        const progress = ((currentIndex + 1) / totalQuestions) * 100;
-        
-        content.innerHTML = `
-            <div class="max-w-6xl mx-auto">
-                <!-- Header with Progress -->
-                <div class="glass-effect rounded-2xl p-6 mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-white mb-2">📖 ${t('reading.practiceTitle')}</h2>
-                            <p class="text-white/80">${t('quiz.questionOf', { current: currentIndex + 1, total: totalQuestions })}</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">
-                                <div class="text-white/80 text-sm">${t('common.time')}</div>
-                                <div class="text-white font-bold" id="readingTimer">00:00</div>
-                            </div>
-                            <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
-                                <i data-lucide="x" class="w-5 h-5 mr-2"></i>
-                                ${t('common.exit')}
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-white/10 rounded-full h-3 mb-4">
-                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" 
-                             style="width: ${progress}%"></div>
-                    </div>
-                    
-                    <!-- Session Stats (ids prefixed to avoid clashing with the global status bar / vocab screen) -->
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div class="bg-green-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-green-300" id="readingCorrectCount">0</div>
-                            <div class="text-white/80 text-sm">${t('common.correct')}</div>
-                        </div>
-                        <div class="bg-red-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-red-300" id="readingIncorrectCount">0</div>
-                            <div class="text-white/80 text-sm">${t('common.incorrect')}</div>
-                        </div>
-                        <div class="bg-blue-500/20 rounded-lg p-3">
-                            <div class="text-lg font-bold text-blue-300" id="readingAccuracy">0%</div>
-                            <div class="text-white/80 text-sm">${t('quiz.accuracy')}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Question Content -->
-                <div class="glass-effect rounded-2xl p-8 mb-8">
-                    ${currentQuestion ? this.generateReadingQuestionHTML(currentQuestion, currentIndex) : `
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">📚</div>
-                            <h3 class="text-2xl font-bold text-white mb-4">${t('reading.loadingQuestion')}</h3>
-                            <p class="text-white/80">${t('reading.loadingQuestionDesc')}</p>
-                        </div>
-                    `}
-                </div>
-                
-                <!-- Navigation -->
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="window.app.previousReadingQuestion()"
-                            class="btn btn-secondary ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                            ${currentIndex === 0 ? 'disabled' : ''}>
-                        <i data-lucide="chevron-left" class="w-5 h-5 mr-2"></i>
-                        ${t('quiz.previousQuestion')}
-                    </button>
-
-                    <div class="text-center">
-                        <div class="text-white/80 text-sm">${t('quiz.questionOf', { current: currentIndex + 1, total: totalQuestions })}</div>
-                    </div>
-
-                    <button onclick="window.app.nextReadingQuestion()"
-                            class="btn btn-primary" id="nextBtnNav" disabled>
-                        ${t('common.next')}
-                        <i data-lucide="chevron-right" class="w-5 h-5 ml-2"></i>
-                    </button>
-                </div>
-
-                <!-- Next Button - Fixed Position -->
-                <div class="fixed bottom-6 right-6 z-50">
-                    <button onclick="window.app.nextReadingQuestion()"
-                            class="btn btn-primary shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 text-lg font-semibold"
-                            id="nextBtn" disabled>
-                        <span class="hidden sm:inline">${t('quiz.nextQuestion')}</span>
-                        <i data-lucide="chevron-right" class="w-5 h-5 sm:ml-2"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        // Initialize reading session
-        this.initializeReadingSession(session);
-        
-        // Re-initialize Lucide icons
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-    }
-    
-    generateReadingQuestionHTML(question, index) {
-        const questionType = question.type || 'reading_comprehension';
-        const typeInfo = window.toeicReading ? window.toeicReading.questionTypes[questionType] : null;
-        
-        // Get the passage for this question
-        let passage = null;
-        if (question.passageId && window.toeicReading) {
-            passage = window.toeicReading.passages.get(question.passageId);
-        }
-        
-        return `
-            <div class="space-y-6">
-                <!-- Question Header -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                            <span class="text-blue-300 font-bold">${index + 1}</span>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-white">${typeInfo ? typeInfo.name : t('reading.questionDefault')}</h3>
-                            <p class="text-white/60 text-sm">${typeInfo ? typeInfo.description : ''}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-white/80 text-sm">${t('reading.timeLimit')}</div>
-                        <div class="text-white font-bold" id="questionTimer">${typeInfo ? typeInfo.timeLimit : 60}s</div>
-                    </div>
-                </div>
-
-                <!-- Reading Passage -->
-                ${passage ? `
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">📖 ${t('reading.readingPassage')}</h4>
-                    <div class="text-white/90 leading-relaxed whitespace-pre-line max-h-96 overflow-y-auto">${passage.content}</div>
-                </div>
-                ` : question.passage ? `
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">📖 ${t('reading.readingPassage')}</h4>
-                    <div class="text-white/90 leading-relaxed whitespace-pre-line max-h-96 overflow-y-auto">${question.passage}</div>
-                </div>
-                ` : ''}
-
-                <!-- Question Text -->
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h4 class="text-lg font-semibold text-white mb-4">❓ ${t('status.question')}</h4>
-                    <p class="text-white/90 text-lg leading-relaxed">${question.question}</p>
-                </div>
-
-                <!-- Answer Options -->
-                <div class="space-y-3">
-                    <h4 class="text-lg font-semibold text-white mb-4">📝 ${t('reading.chooseAnswer')}</h4>
-                    ${question.options ? question.options.map((option, optionIndex) => `
-                        <label class="flex items-center p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer hover:bg-white/10 transition-colors answer-option" 
-                               data-option="${optionIndex}">
-                            <input type="radio" name="readingAnswer" value="${optionIndex}" 
-                                   class="sr-only" onchange="window.app.selectReadingAnswer(${optionIndex})">
-                            <div class="w-6 h-6 rounded-full border-2 border-white/30 mr-4 flex items-center justify-center option-indicator">
-                                <div class="w-3 h-3 rounded-full bg-transparent option-dot"></div>
-                            </div>
-                            <span class="text-white/90 flex-1">${option}</span>
-                        </label>
-                    `).join('') : ''}
-                </div>
-                
-                <!-- Question Info -->
-                <div class="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
-                    <div class="flex items-center gap-2 text-blue-300">
-                        <i data-lucide="info" class="w-5 h-5"></i>
-                        <span class="text-sm font-medium">${t('reading.tip')}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    initializeReadingSession(session) {
-        // Initialize selected answer
-        this.selectedReadingAnswer = undefined;
-
-        // Start session timer — this runs on every question render, so never
-        // stack intervals and only set the start time once per session
-        if (this.readingTimer) {
-            clearInterval(this.readingTimer);
-            this.readingTimer = null;
-        }
-        if (!this.readingSessionStartTime || this.readingSessionActive !== session) {
-            this.readingSessionStartTime = Date.now();
-            this.readingSessionActive = session;
-        }
-        this.readingTimer = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - this.readingSessionStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            const timerElement = document.getElementById('readingTimer');
-            if (timerElement) {
-                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }, 1000);
-        
-        // Start question countdown timer
-        this.startQuestionCountdown();
-        
-        // Update session stats
-        this.updateReadingSessionStats();
-        
-        // Ensure next buttons are properly initialized
-        const nextBtn = document.getElementById('nextBtn');
-        const nextBtnNav = document.getElementById('nextBtnNav');
-        
-        if (nextBtn) {
-            nextBtn.disabled = true; // Start disabled until answer is selected
-            console.log('🔘 Fixed next button initialized and disabled');
-        } else {
-            console.log('❌ Fixed next button not found during initialization!');
-        }
-        
-        if (nextBtnNav) {
-            nextBtnNav.disabled = true; // Start disabled until answer is selected
-            console.log('🔘 Navigation next button initialized and disabled');
-        } else {
-            console.log('❌ Navigation next button not found during initialization!');
-        }
-    }
-    
-    startQuestionCountdown() {
-        // Clear any existing question timer
-        if (this.questionCountdownTimer) {
-            clearInterval(this.questionCountdownTimer);
-        }
-        
-        // Get current question time limit
-        const currentQuestion = window.toeicReading ? window.toeicReading.getCurrentQuestion() : null;
-        const timeLimit = currentQuestion ? 
-            (window.toeicReading.questionTypes[currentQuestion.type]?.timeLimit || 60) : 60;
-        
-        let timeRemaining = timeLimit;
-        const timerElement = document.getElementById('questionTimer');
-        
-        // Update timer display immediately
-        if (timerElement) {
-            timerElement.textContent = `${timeRemaining}s`;
-            timerElement.className = timeRemaining <= 10 ? 'text-red-400 font-bold' : 'text-white font-bold';
-        }
-        
-        // Start countdown
-        this.questionCountdownTimer = setInterval(() => {
-            timeRemaining--;
-            
-            if (timerElement) {
-                timerElement.textContent = `${timeRemaining}s`;
-                
-                // Change color when time is running low
-                if (timeRemaining <= 10) {
-                    timerElement.className = 'text-red-400 font-bold';
-                } else if (timeRemaining <= 30) {
-                    timerElement.className = 'text-yellow-400 font-bold';
-                } else {
-                    timerElement.className = 'text-white font-bold';
-                }
-            }
-            
-            // Auto-submit when time runs out
-            if (timeRemaining <= 0) {
-                this.autoSubmitQuestion();
-            }
-        }, 1000);
-    }
-    
-    autoSubmitQuestion() {
-        // Clear the countdown timer
-        if (this.questionCountdownTimer) {
-            clearInterval(this.questionCountdownTimer);
-        }
-        
-        // If no answer was selected, mark as incorrect and show timeout feedback
-        if (this.selectedReadingAnswer === undefined) {
-            this.selectedReadingAnswer = -1; // Mark as no answer
-            
-            if (!window.toeicReading) {
-                console.error('❌ TOEIC Reading system not available');
-                return;
-            }
-            
-            // Record the timeout as incorrect
-            window.toeicReading.answerQuestion(-1);
-            
-            // Show correct answer
-            const currentQuestion = window.toeicReading.getCurrentQuestion();
-            if (currentQuestion) {
-                document.querySelectorAll('.answer-option').forEach((option, index) => {
-                    const indicator = option.querySelector('.option-indicator');
-                    const dot = option.querySelector('.option-dot');
-                    
-                    if (index === currentQuestion.correctAnswer) {
-                        // Highlight correct answer
-                        indicator.classList.add('border-green-400', 'bg-green-500/30');
-                        dot.classList.add('bg-green-400');
-                        option.classList.add('bg-green-500/20', 'border-green-400/50', 'ring-2', 'ring-green-400/30');
-                    }
-                });
-            }
-            
-            // Enable next buttons
-            const nextBtn = document.getElementById('nextBtn');
-            const nextBtnNav = document.getElementById('nextBtnNav');
-            
-            if (nextBtn) {
-                nextBtn.disabled = false;
-            }
-            if (nextBtnNav) {
-                nextBtnNav.disabled = false;
-            }
-            
-            // Update session stats
-            this.updateReadingSessionStats();
-            
-            // Show timeout feedback
-            this.showImmediateFeedback(false, true);
-            
-            // Highlight answer in passage for timeout
-            this.highlightAnswerInPassage(currentQuestion, -1, false);
-        }
-    }
-    
-    updateReadingSessionStats() {
-        if (!window.toeicReading) return;
-        
-        const stats = window.toeicReading.getSessionStats();
-        const correctElement = document.getElementById('readingCorrectCount');
-        const incorrectElement = document.getElementById('readingIncorrectCount');
-        const accuracyElement = document.getElementById('readingAccuracy');
-        
-        if (correctElement) correctElement.textContent = stats.correctAnswers;
-        if (incorrectElement) incorrectElement.textContent = stats.incorrectAnswers;
-        if (accuracyElement) {
-            const total = stats.correctAnswers + stats.incorrectAnswers;
-            const accuracy = total > 0 ? Math.round((stats.correctAnswers / total) * 100) : 0;
-            accuracyElement.textContent = `${accuracy}%`;
-        }
-    }
-    
-    selectReadingAnswer(optionIndex) {
-        // Clear the countdown timer
-        if (this.questionCountdownTimer) {
-            clearInterval(this.questionCountdownTimer);
-        }
-        
-        if (!window.toeicReading) {
-            console.error('❌ TOEIC Reading system not available');
-            return;
-        }
-        
-        // Get current question
-        const currentQuestion = window.toeicReading.getCurrentQuestion();
-        if (!currentQuestion) {
-            console.error('❌ No current question available');
-            return;
-        }
-        
-        // Check if answer is correct
-        const isCorrect = optionIndex === currentQuestion.correctAnswer;
-        
-        // Record the answer
-        window.toeicReading.answerQuestion(optionIndex);
-        
-        // Track student activity
-        this.trackStudentActivity('reading_answer_submitted', {
-            answerIndex: optionIndex,
-            isCorrect: isCorrect,
-            questionType: 'reading_comprehension'
-        });
-        
-        // Update UI to show correct/incorrect answers immediately
-        document.querySelectorAll('.answer-option').forEach((option, index) => {
-            const indicator = option.querySelector('.option-indicator');
-            const dot = option.querySelector('.option-dot');
-            
-            if (index === optionIndex) {
-                // Selected answer
-                if (isCorrect) {
-                    indicator.classList.add('border-green-400', 'bg-green-500/30');
-                    dot.classList.add('bg-green-400');
-                    option.classList.add('bg-green-500/20', 'border-green-400/50', 'ring-2', 'ring-green-400/30');
-                } else {
-                    indicator.classList.add('border-red-400', 'bg-red-500/30');
-                    dot.classList.add('bg-red-400');
-                    option.classList.add('bg-red-500/20', 'border-red-400/50', 'ring-2', 'ring-red-400/30');
-                }
-            } else if (index === currentQuestion.correctAnswer) {
-                // Correct answer (highlight if wrong answer was selected)
-                if (!isCorrect) {
-                    indicator.classList.add('border-green-400', 'bg-green-500/30');
-                    dot.classList.add('bg-green-400');
-                    option.classList.add('bg-green-500/20', 'border-green-400/50', 'ring-2', 'ring-green-400/30');
-                }
-            }
-        });
-        
-        // Enable next buttons
-        const nextBtn = document.getElementById('nextBtn');
-        const nextBtnNav = document.getElementById('nextBtnNav');
-        
-        if (nextBtn) {
-            nextBtn.disabled = false;
-            console.log('✅ Fixed next button enabled');
-        } else {
-            console.log('❌ Fixed next button not found!');
-        }
-        
-        if (nextBtnNav) {
-            nextBtnNav.disabled = false;
-            console.log('✅ Navigation next button enabled');
-        } else {
-            console.log('❌ Navigation next button not found!');
-        }
-        
-        // Update session stats
-        this.updateReadingSessionStats();
-        
-        // Show immediate feedback
-        this.showImmediateFeedback(isCorrect);
-        
-        // Highlight answer in passage
-        console.log('🎯 Attempting to highlight answer in passage for question:', currentQuestion.id);
-        this.highlightAnswerInPassage(currentQuestion, optionIndex, isCorrect);
-        
-        // Store selected answer
-        this.selectedReadingAnswer = optionIndex;
-    }
-    
-    showImmediateFeedback(isCorrect, isTimeout = false) {
-        // Create immediate feedback message
-        let feedbackMessage, feedbackIcon, feedbackTitle;
-        
-        if (isTimeout) {
-            feedbackMessage = `⏰ ${t('feedback.timeUpMsg')}`;
-            feedbackIcon = '⏰';
-            feedbackTitle = t('feedback.timeUp');
-        } else if (isCorrect) {
-            feedbackMessage = `✅ ${t('feedback.correctMsg')}`;
-            feedbackIcon = '✅';
-            feedbackTitle = t('quiz.correct');
-        } else {
-            feedbackMessage = `❌ ${t('feedback.incorrectMsg')}`;
-            feedbackIcon = '❌';
-            feedbackTitle = t('quiz.incorrect');
-        }
-        
-        // Create feedback element
-        const feedbackElement = document.createElement('div');
-        feedbackElement.id = 'immediateFeedback';
-        feedbackElement.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transition-all duration-500 ${
-            isCorrect ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'
-        }`;
-        feedbackElement.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="text-2xl">${feedbackIcon}</div>
-                <div>
-                    <div class="font-semibold">${feedbackTitle}</div>
-                    <div class="text-sm opacity-90">${feedbackMessage}</div>
-                </div>
-            </div>
-        `;
-        
-        // Add to page
-        document.body.appendChild(feedbackElement);
-        
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            if (feedbackElement && feedbackElement.parentNode) {
-                feedbackElement.style.opacity = '0';
-                feedbackElement.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    if (feedbackElement.parentNode) {
-                        feedbackElement.parentNode.removeChild(feedbackElement);
-                    }
-                }, 500);
-            }
-        }, 3000);
-    }
-    
-    highlightAnswerInPassage(question, selectedAnswer, isCorrect) {
-        // Get the passage element - try multiple selectors
-        let passageElement = document.querySelector('.text-white\\/90.leading-relaxed.whitespace-pre-line');
-        if (!passageElement) {
-            passageElement = document.querySelector('[class*="text-white"][class*="leading-relaxed"]');
-        }
-        if (!passageElement) {
-            passageElement = document.querySelector('.max-h-96.overflow-y-auto');
-        }
-        if (!passageElement) {
-            // Try to find any div containing the passage text
-            const allDivs = document.querySelectorAll('div');
-            for (let div of allDivs) {
-                if (div.textContent && div.textContent.includes('Sarah Williams') && div.textContent.includes('Innovation Solutions')) {
-                    passageElement = div;
-                    break;
-                }
-            }
-        }
-        if (!passageElement) {
-            console.log('❌ Could not find passage element for highlighting');
-            return;
-        }
-        
-        // Get the passage content
-        const passageContent = passageElement.textContent;
-        if (!passageContent) return;
-        
-        // Define answer highlighting patterns based on question type and content
-        const highlightingPatterns = this.getAnswerHighlightingPatterns(question, selectedAnswer, isCorrect);
-        console.log('🎨 Highlighting patterns found:', highlightingPatterns.length);
-        
-        if (highlightingPatterns.length === 0) {
-            console.log('⚠️ No highlighting patterns found for question:', question.id);
-            return;
-        }
-        
-        // Apply highlighting to the passage
-        let highlightedContent = passageContent;
-        
-        highlightingPatterns.forEach(pattern => {
-            const regex = new RegExp(pattern.text, 'gi');
-            highlightedContent = highlightedContent.replace(regex, (match) => {
-                // Make highlighting more prominent if user got it wrong
-                let enhancedClass = pattern.class;
-                if (!isCorrect) {
-                    // Make it even more visible for wrong answers
-                    enhancedClass = enhancedClass.replace('bg-', 'bg-').replace('300', '200');
-                    enhancedClass += ' animate-bounce ring-4 ring-white/50';
-                }
-                return `<span class="${enhancedClass}">${match}</span>`;
-            });
-        });
-        
-        // Update the passage content with highlighting
-        passageElement.innerHTML = highlightedContent;
-    }
-    
-    getAnswerHighlightingPatterns(question, selectedAnswer, isCorrect) {
-        const patterns = [];
-        const correctAnswer = question.options[question.correctAnswer];
-        
-        console.log('🎯 Getting highlighting patterns for question:', question.id);
-        console.log('📝 Correct answer:', correctAnswer);
-        console.log('❓ Question:', question.question);
-        
-        // Enhanced highlighting based on specific question content and correct answer
-        if (question.id === 'q_email_001_1') {
-            // "What is the main purpose of this email?"
-            if (correctAnswer.includes('meeting') || correctAnswer.includes('discuss')) {
-                patterns.push({
-                    text: 'meeting',
-                    class: 'bg-lime-300 text-black px-4 py-3 rounded-xl underline decoration-lime-800 decoration-4 font-black border-4 border-lime-500 shadow-2xl animate-pulse'
-                });
-                patterns.push({
-                    text: 'discuss',
-                    class: 'bg-lime-300 text-black px-4 py-3 rounded-xl underline decoration-lime-800 decoration-4 font-black border-4 border-lime-500 shadow-2xl animate-pulse'
-                });
-                patterns.push({
-                    text: 'present our findings',
-                    class: 'bg-lime-300 text-black px-4 py-3 rounded-xl underline decoration-lime-800 decoration-4 font-black border-4 border-lime-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_email_001_2') {
-            // "According to the email, what do the preliminary results show?"
-            if (correctAnswer.includes('opportunities') || correctAnswer.includes('technology sector')) {
-                patterns.push({
-                    text: 'preliminary results show significant opportunities',
-                    class: 'bg-yellow-300 text-black px-4 py-3 rounded-xl underline decoration-yellow-800 decoration-4 font-black border-4 border-yellow-500 shadow-2xl animate-pulse'
-                });
-                patterns.push({
-                    text: 'European market',
-                    class: 'bg-cyan-300 text-black px-4 py-3 rounded-xl underline decoration-cyan-800 decoration-4 font-black border-4 border-cyan-500 shadow-2xl animate-pulse'
-                });
-                patterns.push({
-                    text: 'technology sector',
-                    class: 'bg-pink-300 text-black px-4 py-3 rounded-xl underline decoration-pink-800 decoration-4 font-black border-4 border-pink-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_email_001_3') {
-            // "When is Sarah available for a meeting?"
-            if (correctAnswer.includes('Tuesday') || correctAnswer.includes('Wednesday')) {
-                patterns.push({
-                    text: 'Tuesday or Wednesday afternoon',
-                    class: 'bg-orange-300 text-black px-4 py-3 rounded-xl underline decoration-orange-800 decoration-4 font-black border-4 border-orange-500 shadow-2xl animate-pulse'
-                });
-                patterns.push({
-                    text: 'available for a meeting',
-                    class: 'bg-emerald-300 text-black px-4 py-3 rounded-xl underline decoration-emerald-800 decoration-4 font-black border-4 border-emerald-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_email_003_1' || question.id === 'q_email_003_2' || question.id === 'q_email_003_3') {
-            // Delivery email questions
-            if (correctAnswer.includes('delay') || correctAnswer.includes('delivery')) {
-                patterns.push({
-                    text: 'delivery delay',
-                    class: 'bg-red-300 text-black px-4 py-3 rounded-xl underline decoration-red-800 decoration-4 font-black border-4 border-red-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('compensation')) {
-                patterns.push({
-                    text: 'compensation',
-                    class: 'bg-indigo-300 text-black px-4 py-3 rounded-xl underline decoration-indigo-800 decoration-4 font-black border-4 border-indigo-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_email_004_1' || question.id === 'q_email_004_2' || question.id === 'q_email_004_3' || question.id === 'q_email_004_4') {
-            // Website project questions
-            if (correctAnswer.includes('website') || correctAnswer.includes('redesign')) {
-                patterns.push({
-                    text: 'website redesign',
-                    class: 'bg-violet-300 text-black px-4 py-3 rounded-xl underline decoration-violet-800 decoration-4 font-black border-4 border-violet-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('checkout')) {
-                patterns.push({
-                    text: 'checkout process',
-                    class: 'bg-teal-300 text-black px-4 py-3 rounded-xl underline decoration-teal-800 decoration-4 font-black border-4 border-teal-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('database')) {
-                patterns.push({
-                    text: 'database migration',
-                    class: 'bg-amber-300 text-black px-4 py-3 rounded-xl underline decoration-amber-800 decoration-4 font-black border-4 border-amber-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_email_005_1' || question.id === 'q_email_005_2' || question.id === 'q_email_005_3' || question.id === 'q_email_005_4') {
-            // Professional development questions
-            if (correctAnswer.includes('development') || correctAnswer.includes('program')) {
-                patterns.push({
-                    text: 'professional development program',
-                    class: 'bg-sky-300 text-black px-4 py-3 rounded-xl underline decoration-sky-800 decoration-4 font-black border-4 border-sky-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('modules')) {
-                patterns.push({
-                    text: 'modules',
-                    class: 'bg-rose-300 text-black px-4 py-3 rounded-xl underline decoration-rose-800 decoration-4 font-black border-4 border-rose-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('participants')) {
-                patterns.push({
-                    text: 'participants',
-                    class: 'bg-fuchsia-300 text-black px-4 py-3 rounded-xl underline decoration-fuchsia-800 decoration-4 font-black border-4 border-fuchsia-500 shadow-2xl animate-pulse'
-                });
-            }
-        } else if (question.id === 'q_news_001_1' || question.id === 'q_news_001_2') {
-            // News questions
-            if (correctAnswer.includes('GDP') || correctAnswer.includes('growth')) {
-                patterns.push({
-                    text: 'global GDP growth',
-                    class: 'bg-green-300 text-black px-4 py-3 rounded-xl underline decoration-green-800 decoration-4 font-black border-4 border-green-500 shadow-2xl animate-pulse'
-                });
-            }
-            if (correctAnswer.includes('technology')) {
-                patterns.push({
-                    text: 'technology sector',
-                    class: 'bg-blue-300 text-black px-4 py-3 rounded-xl underline decoration-blue-800 decoration-4 font-black border-4 border-blue-500 shadow-2xl animate-pulse'
-                });
-            }
-        }
-        
-        // Enhanced generic highlighting for common question types
-        if (question.question.toLowerCase().includes('main purpose')) {
-            patterns.push({
-                text: 'purpose',
-                class: 'bg-yellow-300 text-black px-4 py-3 rounded-xl underline decoration-yellow-800 decoration-4 font-black border-4 border-yellow-500 shadow-2xl animate-pulse'
-            });
-        }
-        
-        if (question.question.toLowerCase().includes('when')) {
-            patterns.push({
-                text: 'Tuesday|Wednesday|Monday|Thursday|Friday|Saturday|Sunday|morning|afternoon|evening|next week|tomorrow|today',
-                class: 'bg-green-300 text-black px-4 py-3 rounded-xl underline decoration-green-800 decoration-4 font-black border-4 border-green-500 shadow-2xl animate-pulse'
-            });
-        }
-        
-        // Intelligent answer-based highlighting
-        if (patterns.length === 0) {
-            console.log('🔍 No specific patterns found, using intelligent highlighting');
-            this.addIntelligentHighlighting(patterns, correctAnswer, question);
-        }
-        
-        console.log('🎨 Final highlighting patterns:', patterns.length);
-        return patterns;
-    }
-    
-    addIntelligentHighlighting(patterns, correctAnswer, question) {
-        // Extract key words from the correct answer
-        const answerWords = correctAnswer.toLowerCase()
-            .replace(/[^\w\s]/g, ' ') // Remove punctuation
-            .split(/\s+/)
-            .filter(word => word.length > 3); // Only words longer than 3 characters
-        
-        console.log('🔍 Key words from answer:', answerWords);
-        
-        // Add patterns for each significant word
-        answerWords.forEach(word => {
-            if (word.length > 3) {
-                patterns.push({
-                    text: word,
-                    class: 'bg-green-300 text-black px-4 py-3 rounded-xl underline decoration-green-800 decoration-4 font-black border-4 border-green-500 shadow-2xl animate-pulse'
-                });
-            }
-        });
-        
-        // Add patterns for common phrases in the answer
-        const commonPhrases = [
-            'significant opportunities',
-            'European market',
-            'technology sector',
-            'preliminary results',
-            'market analysis',
-            'project proposal',
-            'meeting room',
-            'professional development',
-            'website redesign',
-            'checkout process',
-            'database migration',
-            'delivery delay',
-            'compensation',
-            'global GDP growth'
-        ];
-        
-        commonPhrases.forEach(phrase => {
-            if (correctAnswer.toLowerCase().includes(phrase.toLowerCase())) {
-                patterns.push({
-                    text: phrase,
-                    class: 'bg-blue-300 text-black px-4 py-3 rounded-xl underline decoration-blue-800 decoration-4 font-black border-4 border-blue-500 shadow-2xl animate-pulse'
-                });
-            }
-        });
-    }
-    
-    nextReadingQuestion() {
-        if (!window.toeicReading) return;
-        
-        // Remove any existing immediate feedback
-        const existingFeedback = document.getElementById('immediateFeedback');
-        if (existingFeedback) {
-            existingFeedback.remove();
-        }
-        
-        const hasNext = window.toeicReading.nextQuestion();
-        if (hasNext) {
-            this.showReadingPracticeInterface(window.toeicReading.currentSession);
-            // Restart countdown timer for new question
-            this.startQuestionCountdown();
-        } else {
-            this.completeReadingSession();
-        }
-    }
-    
-    previousReadingQuestion() {
-        if (!window.toeicReading) return;
-        
-        // Remove any existing immediate feedback
-        const existingFeedback = document.getElementById('immediateFeedback');
-        if (existingFeedback) {
-            existingFeedback.remove();
-        }
-        
-        const hasPrevious = window.toeicReading.previousQuestion();
-        if (hasPrevious) {
-            this.showReadingPracticeInterface(window.toeicReading.currentSession);
-            // Restart countdown timer for the question
-            this.startQuestionCountdown();
-        }
-    }
-    
-    completeReadingSession() {
-        if (!window.toeicReading) return;
-        
-        // Clear timers
-        if (this.readingTimer) {
-            clearInterval(this.readingTimer);
-        }
-        if (this.questionCountdownTimer) {
-            clearInterval(this.questionCountdownTimer);
-        }
-        
-        const stats = window.toeicReading.getSessionStats();
-        const accuracy = stats.totalQuestions > 0 ? Math.round((stats.correctAnswers / stats.totalQuestions) * 100) : 0;
-        
-        // Get session results for review
-        const sessionResults = this.getSessionResults();
-        
-        const content = document.getElementById('toeicModuleContent');
-        if (content) {
-            content.innerHTML = `
-                <div class="max-w-6xl mx-auto">
-                    <!-- Results Summary -->
-                    <div class="glass-effect rounded-2xl p-8 text-center mb-8">
-                        <div class="text-6xl mb-6">🎉</div>
-                        <h2 class="text-3xl font-bold text-white mb-4">${t('reading.practiceComplete')}</h2>
-                        <p class="text-white/80 text-lg mb-8">${t('reading.practiceCompleteDesc')}</p>
-
-                        <!-- Results Summary -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-green-500/20 border border-green-400/30 rounded-xl p-6">
-                                <div class="text-3xl font-bold text-green-300">${stats.correctAnswers}</div>
-                                <div class="text-white/80">${t('quiz.correctAnswers')}</div>
-                            </div>
-                            <div class="bg-red-500/20 border border-red-400/30 rounded-xl p-6">
-                                <div class="text-3xl font-bold text-red-300">${stats.incorrectAnswers}</div>
-                                <div class="text-white/80">${t('common.incorrectAnswers')}</div>
-                            </div>
-                            <div class="bg-blue-500/20 border border-blue-400/30 rounded-xl p-6">
-                                <div class="text-3xl font-bold text-blue-300">${accuracy}%</div>
-                                <div class="text-white/80">${t('quiz.accuracy')}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Detailed Answer Review -->
-                    <div class="glass-effect rounded-2xl p-8 mb-8">
-                        <h3 class="text-2xl font-bold text-white mb-6 text-center">📚 ${t('reading.answerReview')}</h3>
-                        <div class="space-y-6">
-                            ${sessionResults.map((result, index) => `
-                                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full flex items-center justify-center ${result.isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}">
-                                                <span class="text-sm font-bold ${result.isCorrect ? 'text-green-400' : 'text-red-400'}">${index + 1}</span>
-                                            </div>
-                                            <div>
-                                                <h4 class="text-lg font-semibold text-white">${t('status.question')} ${index + 1}</h4>
-                                                <p class="text-white/60 text-sm">${result.questionType}</p>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-2xl">${result.isCorrect ? '✅' : '❌'}</div>
-                                            <div class="text-white/60 text-sm">${result.isCorrect ? t('common.correct') : t('common.incorrect')}</div>
-                                        </div>
-                                    </div>
-
-                                    ${result.passage ? `
-                                    <div class="bg-white/5 rounded-xl p-4 mb-4">
-                                        <h5 class="text-sm font-semibold text-white mb-2">📖 ${t('reading.passage')}:</h5>
-                                        <div class="text-white/80 text-sm leading-relaxed max-h-32 overflow-y-auto">${result.passage}</div>
-                                    </div>
-                                    ` : ''}
-
-                                    <div class="bg-white/5 rounded-xl p-4 mb-4">
-                                        <h5 class="text-sm font-semibold text-white mb-2">❓ ${t('status.question')}:</h5>
-                                        <p class="text-white/80 text-sm">${result.question}</p>
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <h5 class="text-sm font-semibold text-white mb-2">📝 ${t('reading.answerOptions')}</h5>
-                                        ${result.options.map((option, optionIndex) => `
-                                            <div class="flex items-center p-3 rounded-lg ${optionIndex === result.selectedAnswer ? 
-                                                (result.isCorrect ? 'bg-green-500/20 border border-green-400/30' : 'bg-red-500/20 border border-red-400/30') :
-                                                (optionIndex === result.correctAnswer ? 'bg-green-500/10 border border-green-400/20' : 'bg-white/5')
-                                            }">
-                                                <div class="w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${optionIndex === result.selectedAnswer ? 
-                                                    (result.isCorrect ? 'border-green-400 bg-green-500/20' : 'border-red-400 bg-red-500/20') :
-                                                    (optionIndex === result.correctAnswer ? 'border-green-400 bg-green-500/20' : 'border-white/30')
-                                                }">
-                                                    <div class="w-2 h-2 rounded-full ${optionIndex === result.selectedAnswer ? 
-                                                        (result.isCorrect ? 'bg-green-400' : 'bg-red-400') :
-                                                        (optionIndex === result.correctAnswer ? 'bg-green-400' : 'bg-transparent')
-                                                    }"></div>
-                                                </div>
-                                                <span class="text-white/90 text-sm flex-1">${option}</span>
-                                                ${optionIndex === result.correctAnswer ? `<span class="text-green-400 text-xs font-semibold">${t('quiz.correctMark')}</span>` : ''}
-                                                ${optionIndex === result.selectedAnswer && !result.isCorrect ? `<span class="text-red-400 text-xs font-semibold">${t('quiz.yourAnswerMark')}</span>` : ''}
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                    
-                                    ${result.explanation ? `
-                                    <div class="bg-blue-500/10 rounded-xl p-4 mt-4">
-                                        <h5 class="text-sm font-semibold text-blue-300 mb-2">💡 ${t('quiz.explanation')}:</h5>
-                                        <p class="text-white/80 text-sm">${result.explanation}</p>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="flex gap-4 justify-center">
-                        <button onclick="window.app.showReadingModule()" class="btn btn-primary">
-                            <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
-                            ${t('common.practiceAgain')}
-                        </button>
-                        <button onclick="window.app.endCurrentSession()" class="btn btn-secondary">
-                            <i data-lucide="home" class="w-5 h-5 mr-2"></i>
-                            ${t('common.backToMainMenu')}
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Re-initialize Lucide icons
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
-        }
-    }
-    
     getSessionResults() {
-        if (!window.toeicReading || !window.toeicReading.currentSession) {
+        const reading = window.toeicReading;
+        if (!reading || !Array.isArray(reading.sessionAnswers)) {
             return [];
         }
-        
-        const results = [];
-        const session = window.toeicReading.currentSession;
-        
-        for (let i = 0; i < session.length; i++) {
-            const questionId = session[i];
-            const question = window.toeicReading.questions.get(questionId);
-            
-            if (question) {
-                // Get passage if available
-                let passage = null;
-                if (question.passageId) {
-                    const passageData = window.toeicReading.passages.get(question.passageId);
-                    if (passageData) {
-                        passage = passageData.content;
-                    }
-                }
-                
-                // Get user's answer from session stats or user progress
-                const userProgress = window.toeicReading.userProgress.get(questionId);
-                const selectedAnswer = userProgress ? userProgress.lastAnswer : -1;
-                const isCorrect = selectedAnswer === question.correctAnswer;
-                
-                results.push({
-                    questionId: questionId,
-                    questionType: window.toeicReading.questionTypes[question.type]?.name || question.type,
+
+        return reading.sessionAnswers
+            .map(answer => {
+                const question = reading.questions.get(answer.questionId);
+                if (!question) return null;
+                return {
+                    questionId: answer.questionId,
+                    questionType: reading.questionTypes[question.type]?.name || question.type,
                     question: question.question,
                     options: question.options,
                     correctAnswer: question.correctAnswer,
-                    selectedAnswer: selectedAnswer,
-                    isCorrect: isCorrect,
-                    passage: passage,
+                    selectedAnswer: answer.selectedAnswer,
+                    isCorrect: answer.isCorrect,
                     explanation: question.explanation
-                });
-            }
-        }
-        
-        return results;
+                };
+            })
+            .filter(Boolean);
     }
 
     showTestSimulatorModule(options) {

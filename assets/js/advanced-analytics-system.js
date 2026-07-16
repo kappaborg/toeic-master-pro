@@ -119,6 +119,14 @@ class AdvancedAnalyticsSystem {
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 this.userBehavior = { ...this.userBehavior, ...parsedData };
+                // Prune oversized blobs written by earlier builds that had
+                // no cap — reclaims quota on the next save
+                if (Array.isArray(this.userBehavior.interactions) && this.userBehavior.interactions.length > 500) {
+                    this.userBehavior.interactions = this.userBehavior.interactions.slice(-500);
+                }
+                if (Array.isArray(this.userBehavior.errors) && this.userBehavior.errors.length > 100) {
+                    this.userBehavior.errors = this.userBehavior.errors.slice(-100);
+                }
             }
             
             // Load performance metrics
@@ -315,16 +323,24 @@ class AdvancedAnalyticsSystem {
      */
     trackInteraction(type, data) {
         this.realTimeData.lastInteraction = Date.now();
-        
+
         const interaction = {
             type,
             data,
             timestamp: Date.now(),
             sessionId: this.sessionId
         };
-        
+
         this.userBehavior.interactions.push(interaction);
-        
+
+        // Hard cap: this array is persisted to localStorage on unload and
+        // reloaded next session — unbounded growth (every click/keydown/
+        // scroll) exhausts the 5MB quota and silently breaks every
+        // module's progress saves
+        if (this.userBehavior.interactions.length > 500) {
+            this.userBehavior.interactions.splice(0, this.userBehavior.interactions.length - 500);
+        }
+
         // Update active time
         this.realTimeData.activeTime += 1;
     }
@@ -392,7 +408,12 @@ class AdvancedAnalyticsSystem {
         };
         
         this.userBehavior.errors.push(errorData);
-        
+
+        // Cap: persisted to localStorage, must not grow unboundedly
+        if (this.userBehavior.errors.length > 100) {
+            this.userBehavior.errors.splice(0, this.userBehavior.errors.length - 100);
+        }
+
         // Update error rate
         this.performanceMetrics.errorRate = this.userBehavior.errors.length / 
             (this.userBehavior.interactions.length || 1);

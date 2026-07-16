@@ -2138,7 +2138,9 @@ class TOEICGrammarSystem {
         // Filter questions based on options
         let availableQuestions = Array.from(this.practiceQuestions.values());
         
-        if (category !== 'all') {
+        // 'mixed' means all categories; no question carries a literal
+        // 'mixed' category, so filtering by it produced an empty session
+        if (category !== 'all' && category !== 'mixed') {
             availableQuestions = availableQuestions.filter(q => q.category === category);
         }
         
@@ -2312,7 +2314,10 @@ class TOEICGrammarSystem {
         
         const totalQuestions = this.currentSession.questions.length;
         const correctAnswers = this.sessionStats.correctAnswers;
-        const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+        // Accuracy over answered questions - ending a 20-question session
+        // early after 5/5 correct is 100%, not 25%
+        const answeredCount = this.currentSession.answers.length;
+        const accuracy = answeredCount > 0 ? (correctAnswers / answeredCount) * 100 : 0;
         
         // Analyze performance by category
         const categoryPerformance = {};

@@ -344,6 +344,13 @@ class RealTimeMonitor {
         this.isMonitoring = false;
         console.log('📊 Real-Time Monitor stopped');
     }
+
+    // Callers (game-engine, performance-optimizer) invoke cleanup() behind
+    // a typeof guard - without this alias their cleanup silently never ran
+    // and monitoring intervals leaked
+    cleanup() {
+        this.stopMonitoring();
+    }
     
     resetMetrics() {
         this.metrics = {

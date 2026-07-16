@@ -807,7 +807,7 @@ class App {
     
     applyUserSettings() {
         // Apply saved user preferences
-        const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+        const settings = window.safeParseStorage('userSettings', {});
         
         // Apply theme, language, etc.
         if (settings.theme) {
@@ -834,7 +834,7 @@ class App {
     }
     
     getGameStatistics() {
-        const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+        const sessions = window.safeParseStorage('studySessions', []);
         const totalSessions = sessions.length;
         const totalScore = sessions.reduce((sum, session) => sum + (session.score || 0), 0);
         const currentStreak = this.calculateCurrentStreak(sessions);
@@ -953,6 +953,16 @@ class App {
         console.log(`🎯 Starting TOEIC module: ${moduleType}`);
 
         return safeExecute(() => {
+            // The vocabulary CSV loads async at boot; clicking Vocabulary/
+            // Flashcards before it resolves used to start an empty session
+            // (instant "Session Complete" on 0 words). Retry shortly —
+            // either the CSV or the built-in fallback set always arrives.
+            if ((moduleType === 'vocabulary' || moduleType === 'flashcards') &&
+                window.toeicVocabulary && window.toeicVocabulary.vocabulary.size === 0) {
+                setTimeout(() => this.startTOEICModule(moduleType, options), 400);
+                return;
+            }
+
             // Remember the last used module for the dashboard's
             // "Continue Learning" card
             try {
@@ -1018,16 +1028,24 @@ class App {
                     }
                     break;
                     
+                case 'listening':
+                    // Until a dedicated listening practice module ships,
+                    // the Listening card runs the listening section of the
+                    // test simulator (previously this card did nothing)
+                    this.showTOEICModuleScreen('test');
+                    this.startListeningTOEICTest();
+                    break;
+
                 case 'flashcards':
                     if (window.toeicVocabulary) {
                         this.showTOEICFlashcardInterface();
                     }
                     break;
-                    
+
                 case 'grammar':
                     this.showTOEICGrammarInterface();
                     break;
-                    
+
                 default:
                     console.warn(`Unknown TOEIC module: ${moduleType}`);
             }
@@ -2316,7 +2334,7 @@ class App {
 
     saveSessionData(sessionStats) {
         try {
-            const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+            const sessions = window.safeParseStorage('studySessions', []);
             sessions.push(sessionStats);
             
             // Keep only last 100 sessions to prevent storage bloat
@@ -2516,6 +2534,7 @@ class App {
     // Vocabulary Learning Functions
     initializeVocabularyLearning() {
         this.currentVocabularyWord = null;
+        this.vocabularyAnswerPending = false;
         this.vocabularySessionStats = {
             correct: 0,
             incorrect: 0,
@@ -2681,10 +2700,16 @@ class App {
     
     recordVocabularyAnswer(isCorrect) {
         if (!this.currentVocabularyWord || !window.toeicVocabulary) return;
-        
+
+        // Answer lock: a second click or arrow-key press during the 1s
+        // advance window used to record the same word twice AND queue a
+        // second advance that silently skipped the next word
+        if (this.vocabularyAnswerPending) return;
+        this.vocabularyAnswerPending = true;
+
         // Record answer in vocabulary system
         window.toeicVocabulary.recordAnswer(this.currentVocabularyWord.word, isCorrect);
-        
+
         // Track analytics
         if (window.advancedAnalytics && typeof window.advancedAnalytics.trackLearningProgress === 'function') {
             window.advancedAnalytics.trackLearningProgress('vocabulary', {
@@ -2694,7 +2719,7 @@ class App {
                 category: this.currentVocabularyWord.category
             });
         }
-        
+
         // Update session stats
         this.vocabularySessionStats.total++;
         if (isCorrect) {
@@ -2702,11 +2727,12 @@ class App {
         } else {
             this.vocabularySessionStats.incorrect++;
         }
-        
+
         this.updateSessionStats();
-        
+
         // Load next word
         setTimeout(() => {
+            this.vocabularyAnswerPending = false;
             this.loadNextVocabularyWord();
         }, 1000);
     }
@@ -2869,6 +2895,14 @@ class App {
         if (existingFeedback) {
             existingFeedback.remove();
         }
+
+        // Remove the flashcard checkpoint overlay if it's open — its
+        // auto-continue timer was cleared above, but the overlay itself
+        // would otherwise sit on top of the welcome screen
+        const flashcardOverlay = document.getElementById('flashcardProgressNotification');
+        if (flashcardOverlay) {
+            flashcardOverlay.remove();
+        }
         
         console.log('✅ Session ended successfully');
     }
@@ -3012,7 +3046,7 @@ class App {
                     👁 ${t('quiz.showAnswer')}
                 </button>
 
-                <div id="answerButtons" class="flashcard-actions hidden">
+                <div id="flashcardAnswerButtons" class="flashcard-actions hidden">
                     <button onclick="window.app.answerFlashcard('correct')" class="flashcard-btn know">
                         ✓ ${t('vocab.iKnowIt')}
                     </button>
@@ -3085,8 +3119,11 @@ class App {
     showFlashcardAnswer() {
         const content = document.getElementById('flashcardContent');
         const showBtn = document.getElementById('showAnswerBtn');
-        const answerButtons = document.getElementById('answerButtons');
-        
+        // Distinct id: this used to be "answerButtons", colliding with the
+        // vocabulary screen's id and breaking its reveal after a stale
+        // flashcard screen was left in the hidden module container
+        const answerButtons = document.getElementById('flashcardAnswerButtons');
+
         if (content && showBtn && answerButtons) {
             content.classList.remove('hidden');
             showBtn.classList.add('hidden');
@@ -3258,7 +3295,8 @@ class App {
             return;
         }
 
-        const accuracy = results.totalWords > 0 ? Math.round((results.correctAnswers / results.totalWords) * 100) : 0;
+        // completeSession() already computes accuracy over answered words
+        const accuracy = results.accuracy || 0;
         
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
@@ -4412,7 +4450,8 @@ class App {
     showTestInterface(testSession, testType) {
         const content = document.getElementById('toeicModuleContent');
         if (!content) return;
-        
+        content.classList.remove('hidden'); // deep links may arrive with the container hidden
+
         const testInfo = this.getTestInfo(testType);
         
         content.innerHTML = `
@@ -4426,24 +4465,37 @@ class App {
                         </div>
                     </div>
 
+                    ${(() => {
+                        // Real TOEIC never reveals right/wrong mid-test; the
+                        // old Correct/Incorrect tiles read properties that
+                        // don't exist and always showed 0. Show answered/
+                        // remaining computed from the real answer sheets —
+                        // also correct across the listening→reading boundary
+                        // of a full test (the old per-section index made the
+                        // progress bar restart at 50%).
+                        const answeredCount = Object.values(testSession.sections || {})
+                            .reduce((sum, s) => sum + Object.keys(s.answers || {}).length, 0);
+                        const totalCount = testInfo.totalQuestions || 1;
+                        return `
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-green-400">${testSession.correctAnswers || 0}</div>
-                            <div class="text-sm text-white/80">${t('common.correct')}</div>
+                            <div class="text-2xl font-bold text-green-400">${answeredCount}</div>
+                            <div class="text-sm text-white/80">${t('test.answered')}</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-red-400">${testSession.incorrectAnswers || 0}</div>
-                            <div class="text-sm text-white/80">${t('common.incorrect')}</div>
+                            <div class="text-2xl font-bold text-yellow-400">${totalCount - answeredCount}</div>
+                            <div class="text-sm text-white/80">${t('test.remaining')}</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-400">${(testSession.currentQuestion || 0) + 1}/${testInfo.totalQuestions}</div>
+                            <div class="text-2xl font-bold text-blue-400">${answeredCount}/${totalCount}</div>
                             <div class="text-sm text-white/80">${t('quiz.progress')}</div>
                         </div>
                     </div>
 
                     <div class="w-full bg-gray-700 rounded-full h-2">
-                        <div id="progressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${(((testSession.currentQuestion || 0) + 1) / testInfo.totalQuestions) * 100}%"></div>
-                    </div>
+                        <div id="progressBar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${(answeredCount / totalCount) * 100}%"></div>
+                    </div>`;
+                    })()}
                 </div>
 
                 <div class="glass-effect rounded-xl p-6">
@@ -4679,7 +4731,12 @@ class App {
             console.log(`📝 Answered question with: ${answerIndex}`);
             hasNext = window.toeicTestSimulator.getCurrentQuestion() !== null;
         } else {
-            hasNext = window.toeicTestSimulator.nextQuestion();
+            // nextQuestion() returns false at a section boundary even when
+            // the next section auto-started (full test: listening → reading),
+            // so trust getCurrentQuestion(), not the boolean — otherwise an
+            // unanswered last listening question submits the whole test
+            window.toeicTestSimulator.nextQuestion();
+            hasNext = window.toeicTestSimulator.getCurrentQuestion() !== null;
         }
 
         if (hasNext) {
@@ -4821,7 +4878,7 @@ class App {
     
     loadTestHistory() {
         // Load test history from localStorage
-        const testHistory = JSON.parse(localStorage.getItem('toeicTestHistory') || '[]');
+        const testHistory = window.safeParseStorage('toeicTestHistory', []);
         const historyContainer = document.getElementById('testHistory');
         
         if (!historyContainer) return;
@@ -5131,28 +5188,28 @@ function initializeFloatingHomeButton() {
 
 // Global function to go home
 window.goHome = function() {
-    console.log('🏠 goHome function called!');
     window.logger?.info('🏠 Going home...');
-    
+
     try {
+        // Full session/timer cleanup first — exiting via Home used to
+        // leave the test timer running (which later auto-submitted the
+        // abandoned test) and vocabulary/flashcard sessions dangling
+        if (window.app && typeof window.app.endCurrentSession === 'function') {
+            window.app.endCurrentSession();
+        }
+
         // Hide all module content
         const moduleContent = document.getElementById('toeicModuleContent');
         if (moduleContent) {
             moduleContent.classList.add('hidden');
-            console.log('✅ Hidden module content');
-        } else {
-            console.log('⚠️ Module content element not found');
         }
-        
+
         // Show main menu
         const mainMenu = document.getElementById('mainMenu');
         if (mainMenu) {
             mainMenu.classList.remove('hidden');
-            console.log('✅ Showed main menu');
-        } else {
-            console.log('⚠️ Main menu element not found');
         }
-        
+
         // Hide status bar
         const statusBar = document.getElementById('statusBar');
         if (statusBar) {

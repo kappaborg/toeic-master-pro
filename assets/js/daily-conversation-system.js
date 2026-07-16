@@ -1156,6 +1156,7 @@ class DailyConversationSystem {
         this.currentQuestionIndex = 0;
         this.sessionCorrect = 0;
         this.answered = false;
+        this.scoredQuestions = new Set();
         this.view = 'dialogue';
         this.render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1167,6 +1168,7 @@ class DailyConversationSystem {
         this.currentQuestionIndex = 0;
         this.sessionCorrect = 0;
         this.answered = false;
+        this.scoredQuestions = new Set();
         this.render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1177,7 +1179,14 @@ class DailyConversationSystem {
 
         const q = this.currentScenario.questions[this.currentQuestionIndex];
         const isCorrect = index === q.correctAnswer;
-        if (isCorrect) this.sessionCorrect++;
+        // A language switch mid-question re-renders the options unanswered;
+        // only the FIRST answer to each question may score, or re-answering
+        // after the switch double-counts into sessionCorrect/bestScore
+        if (!this.scoredQuestions) this.scoredQuestions = new Set();
+        if (!this.scoredQuestions.has(this.currentQuestionIndex)) {
+            this.scoredQuestions.add(this.currentQuestionIndex);
+            if (isCorrect) this.sessionCorrect++;
+        }
 
         // Color the options: green for correct, red for a wrong pick
         document.querySelectorAll('.dc-option').forEach(btn => {

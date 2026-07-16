@@ -99,7 +99,10 @@ class StudyDashboard {
 
         const history = this.readJSON('toeicTestHistory');
         if (Array.isArray(history) && history.length > 0) {
-            const best = Math.max(...history.map(h => Number(h.totalScore ?? h.score ?? 0)));
+            // history records store score as {listening, reading, total}
+            const best = Math.max(...history.map(h =>
+                Number(h.score?.total ?? h.totalScore ?? (typeof h.score === 'number' ? h.score : 0)) || 0
+            ));
             stats.push({
                 icon: '📋',
                 value: history.length,

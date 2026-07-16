@@ -298,7 +298,9 @@ class TOEICVocabularySystem {
     }
     
     getNextWord() {
-        if (this.currentSession.length === 0) {
+        // Session may have been ended (Exit/Home) while a 1s advance
+        // timeout was still pending — treat as "no more words", not a crash
+        if (!this.currentSession || this.currentSession.length === 0) {
             return null;
         }
         
@@ -348,12 +350,15 @@ class TOEICVocabularySystem {
         
         const stats = this.getSessionStats();
         this.endSession();
-        
+
+        // Accuracy over answered words, not session size — ending a
+        // 20-word session early after 5/5 correct is 100%, not 25%
+        const answered = stats.correctAnswers + stats.incorrectAnswers;
         return {
             totalWords: stats.totalWords,
             correctAnswers: stats.correctAnswers,
             incorrectAnswers: stats.incorrectAnswers,
-            accuracy: stats.totalWords > 0 ? Math.round((stats.correctAnswers / stats.totalWords) * 100) : 0,
+            accuracy: answered > 0 ? Math.round((stats.correctAnswers / answered) * 100) : 0,
             timeSpent: stats.timeSpent
         };
     }
@@ -396,17 +401,18 @@ class TOEICVocabularySystem {
     
     // Get session statistics
     getSessionStats() {
-        const accuracy = this.sessionStats.totalWords > 0 ? 
-            (this.sessionStats.correctAnswers / this.sessionStats.totalWords) * 100 : 0;
-        
-        const timeSpent = this.sessionStats.startTime ? 
+        const answered = this.sessionStats.correctAnswers + this.sessionStats.incorrectAnswers;
+        const accuracy = answered > 0 ?
+            (this.sessionStats.correctAnswers / answered) * 100 : 0;
+
+        const timeSpent = this.sessionStats.startTime ?
             Date.now() - this.sessionStats.startTime : 0;
-        
+
         return {
             ...this.sessionStats,
             accuracy: Math.round(accuracy),
             timeSpent: timeSpent,
-            wordsRemaining: this.currentSession.length
+            wordsRemaining: this.currentSession ? this.currentSession.length : 0
         };
     }
     

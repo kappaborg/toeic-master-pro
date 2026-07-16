@@ -22,20 +22,17 @@ class ErrorBoundary {
             });
         });
         
-        // Handle unhandled promise rejections
+    }
+
+    // Single rejection handler — a second listener here used to
+    // double-handle and double-toast every rejection
+    setupUnhandledRejectionHandler() {
         window.addEventListener('unhandledrejection', (event) => {
             this.handleError({
                 message: event.reason?.message || 'Unhandled promise rejection',
                 error: event.reason,
                 type: 'promise'
             });
-        });
-    }
-    
-    setupUnhandledRejectionHandler() {
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled promise rejection:', event.reason);
-            this.showErrorMessage('Something went wrong. Please try again.', 'error');
             event.preventDefault(); // Prevent the default browser behavior
         });
     }
@@ -256,6 +253,20 @@ async function safeExecuteAsync(fn, fallback = null, errorMessage = 'Async opera
     }
 }
 
+// Safe localStorage JSON read — one corrupted key must degrade to the
+// fallback, never brick app boot with an uncaught SyntaxError
+function safeParseStorage(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return fallback;
+        return JSON.parse(raw);
+    } catch (error) {
+        console.warn(`Corrupted localStorage key "${key}" — using fallback`, error);
+        try { localStorage.removeItem(key); } catch (e) { /* quota/security — ignore */ }
+        return fallback;
+    }
+}
+
 // Initialize Error Boundary immediately
 if (!window.errorBoundary) {
     window.errorBoundary = new ErrorBoundary();
@@ -265,5 +276,6 @@ if (!window.errorBoundary) {
 window.ErrorBoundary = ErrorBoundary;
 window.safeExecute = safeExecute;
 window.safeExecuteAsync = safeExecuteAsync;
+window.safeParseStorage = safeParseStorage;
 
 console.log('🛡️ Error Boundary system loaded');

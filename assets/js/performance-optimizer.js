@@ -300,7 +300,7 @@ class PerformanceOptimizer {
     
     setupPredictivePreloading() {
         // Track user patterns and preload likely next content
-        let userPattern = JSON.parse(localStorage.getItem('userPattern') || '[]');
+        let userPattern = window.safeParseStorage('userPattern', []);
         
         // Analyze patterns and preload accordingly
         if (userPattern.length > 3) {
@@ -370,7 +370,7 @@ class PerformanceOptimizer {
         this.cleanupUnusedEventListeners();
         
         // Clear old user patterns
-        let userPattern = JSON.parse(localStorage.getItem('userPattern') || '[]');
+        let userPattern = window.safeParseStorage('userPattern', []);
         if (userPattern.length > 100) {
             userPattern = userPattern.slice(-50);
             localStorage.setItem('userPattern', JSON.stringify(userPattern));
@@ -443,7 +443,8 @@ class PerformanceOptimizer {
         
         keysToCheck.forEach(key => {
             if (localStorage.getItem(key)) {
-                const data = JSON.parse(localStorage.getItem(key));
+                const data = window.safeParseStorage(key, null);
+                if (!data) return;
                 if (data.timestamp && Date.now() - data.timestamp > 86400000) { // 24 hours
                     localStorage.removeItem(key);
                 }

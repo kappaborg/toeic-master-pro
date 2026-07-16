@@ -5,7 +5,6 @@ class App {
     constructor() {
         this.version = '3.0.0';
         this.isInitialized = false;
-        this.currentGame = null;
         this.currentTOEICModule = null;
         this.sessionData = [];
         this.startTime = Date.now();
@@ -318,10 +317,7 @@ class App {
             // Initialize core systems
             await this.initializePWA();
             this.updateLoadingProgress(15, 'Setting up offline support...');
-            
-            await this.initializeDataManager();
-            this.updateLoadingProgress(30, 'Loading TOEIC vocabulary database...');
-            
+
             // Initialize TOEIC systems
             await this.initializeTOEICSystems();
             this.updateLoadingProgress(40, 'Setting up TOEIC modules...');
@@ -344,16 +340,7 @@ class App {
             
             await this.initializeEnhancedProgress();
             this.updateLoadingProgress(80, 'Setting up progress tracking...');
-            
-            await this.initializeRealTimeMonitor();
-            this.updateLoadingProgress(82, 'Setting up performance monitoring...');
-            
-            // await this.initializeProgressDashboard(); // Removed - file doesn't exist
-            this.updateLoadingProgress(85, 'Setting up dashboard...');
-            
-            await this.initializeGameEngine();
-            this.updateLoadingProgress(90, 'Preparing game modes...');
-            
+
             this.initializeUIManager();
             this.updateLoadingProgress(95, 'Finalizing setup...');
             
@@ -442,31 +429,6 @@ class App {
         } catch (error) {
             console.warn('⚠️ PWA initialization failed (continuing anyway):', error);
             // Don't block app initialization for PWA issues
-        }
-    }
-    
-    async initializeDataManager() {
-        console.log('📚 Initializing Data Manager...');
-        
-        // Initialize data manager with timeout fallback
-        const dataManagerPromise = new Promise((resolve, reject) => {
-            if (window.DataManager) {
-                window.dataManager = new window.DataManager();
-                resolve();
-            } else {
-                reject(new Error('DataManager not available'));
-            }
-        });
-        
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Data manager timeout')), 5000);
-        });
-        
-        try {
-            await Promise.race([dataManagerPromise, timeoutPromise]);
-        } catch (error) {
-            console.warn('⚠️ Data manager timeout, continuing with fallback');
-            this.initializeFallbackData();
         }
     }
     
@@ -636,48 +598,6 @@ class App {
         }
     }
     
-    async initializeRealTimeMonitor() {
-        console.log('📊 Initializing Real-Time Monitor...');
-        
-        // Wait for RealTimeMonitor to be available
-        for (let attempts = 0; attempts < 20; attempts++) {
-            if (window.RealTimeMonitor) break;
-            await new Promise(resolve => setTimeout(resolve, 50));
-        }
-        
-        if (window.RealTimeMonitor) {
-            this.realTimeMonitor = new window.RealTimeMonitor();
-            window.realTimeMonitor = this.realTimeMonitor;
-            console.log('✅ Real-Time Monitor initialized');
-        } else {
-            console.warn('⚠️ Real-Time Monitor not available, continuing without it');
-        }
-    }
-    
-    // async initializeProgressDashboard() {
-    //     // Removed - progress dashboard file doesn't exist
-    //     console.log('📊 Progress Dashboard removed - not used in current implementation');
-    // }
-    
-    async initializeGameEngine() {
-        console.log('🎮 Initializing Game Engine...');
-        
-        // Wait for GameEngine to be available
-        let attempts = 0;
-        for (attempts = 0; attempts < 10; attempts++) {
-            if (window.GameEngine) break;
-            console.log(`⏳ Waiting for GameEngine... (attempt ${attempts + 1})`);
-            await new Promise(resolve => setTimeout(resolve, 50));
-        }
-        
-        if (window.GameEngine) {
-            window.gameEngine = new window.GameEngine();
-            console.log('✅ Game Engine initialized');
-        } else {
-            throw new Error('GameEngine not available after waiting');
-        }
-    }
-    
     initializeUIManager() {
         console.log('🎨 UI Manager ready');
         if (window.UIManager) {
@@ -693,18 +613,6 @@ class App {
             window.pwaManager = new window.PWAManager();
             console.log('📱 PWA manager initialized');
         }
-    }
-    
-    initializeFallbackData() {
-        // Provide minimal fallback data if data manager fails
-        window.dataManager = {
-            vocabulary: new Map([
-                ['hello', { word: 'hello', level: 'A1', examples: ['Hello, how are you?'] }],
-                ['goodbye', { word: 'goodbye', level: 'A1', examples: ['Goodbye, see you later!'] }],
-                ['thank you', { word: 'thank you', level: 'A1', examples: ['Thank you for your help.'] }]
-            ]),
-            isReady: true
-        };
     }
     
     updateLoadingProgress(percentage, text) {
@@ -761,37 +669,9 @@ class App {
             }
         });
         
-        // Also remove any old text content that might be cached
-        const oldTexts = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
-        oldTexts.forEach(text => {
-            if (text.textContent.includes('10 interactive game modes')) {
-                text.textContent = text.textContent.replace('10 interactive game modes', '12 interactive game modes');
-                console.log('🔄 Updated game count text');
-            }
-        });
-        
         console.log('🏠 Welcome screen shown');
     }
-    
-    /**
-     * Show game selection screen
-     */
-    showGameSelection() {
-        // Hide welcome screen
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        if (welcomeScreen) {
-            welcomeScreen.classList.add('hidden');
-        }
-        
-        // Show game selection screen
-        const gameSelectionScreen = document.getElementById('gameSelectionScreen');
-        if (gameSelectionScreen) {
-            gameSelectionScreen.classList.remove('hidden');
-        }
-        
-        console.log('🎮 Game selection screen shown');
-    }
-    
+
     /**
      * Initialize the study dashboard in the hero area (replaces the
      * old decorative hero carousel, which duplicated the module grid)
@@ -872,19 +752,6 @@ class App {
             this.handleGlobalKeyboard(e);
         });
         
-        // Window focus/blur for pause/resume
-        window.addEventListener('focus', () => {
-            if (this.currentGame && typeof this.currentGame.resume === 'function') {
-                this.currentGame.resume();
-            }
-        });
-        
-        window.addEventListener('blur', () => {
-            if (this.currentGame && typeof this.currentGame.pause === 'function') {
-                this.currentGame.pause();
-            }
-        });
-        
         // Handle online/offline status
         window.addEventListener('online', () => {
             this.handleConnectionChange(true);
@@ -920,23 +787,12 @@ class App {
         if (event.key === 'Escape') {
             this.handleEscapeKey();
         }
-        
-        // Number keys for game choices (when in game)
-        if (this.currentGame && /^[1-9]$/.test(event.key)) {
-            const number = parseInt(event.key);
-            if (this.currentGame.handleNumberKey) {
-                this.currentGame.handleNumberKey(number);
-            }
-        }
     }
-    
+
     handleEscapeKey() {
-        // Close any open modals or return to main menu
-        if (this.currentGame) {
-            this.endCurrentGame();
-        }
+        // Modals close themselves; TOEIC modules use their own back buttons.
     }
-    
+
     handleConnectionChange(isOnline) {
         if (window.uiManager) {
             const message = isOnline ? 
@@ -987,11 +843,6 @@ class App {
                     moduleType: moduleType,
                     options: options
                 });
-            }
-            
-            // Start adaptive learning session
-            if (window.adaptiveLearning) {
-                window.adaptiveLearning.startSession();
             }
             
             // Initialize TOEIC module
@@ -1060,45 +911,6 @@ class App {
             }
             
         }, null, 'Failed to start TOEIC module');
-    }
-    
-    // Game Management (Legacy support)
-    startGame(gameMode, options = {}) {
-        console.log(`🎯 Starting legacy game: ${gameMode}`);
-        
-        return safeExecute(() => {
-            // Start adaptive learning session
-            if (window.adaptiveLearning) {
-                window.adaptiveLearning.startSession();
-            }
-            
-            // Initialize game through game engine
-            if (window.gameEngine && window.gameEngine.startGame) {
-                this.currentGame = window.gameEngine.startGame(gameMode, options);
-                
-                // Add global controls if not already added
-                if (!document.getElementById('globalControls') && !document.getElementById('progressControlBtn')) {
-                    if (window.gameEngine && typeof window.gameEngine.addGlobalControls === 'function') {
-                        window.gameEngine.addGlobalControls();
-                    } else {
-                        console.warn('⚠️ addGlobalControls method not available, creating fallback controls');
-                        this.createFallbackGlobalControls();
-                    }
-                }
-            } else {
-                throw new Error('Game engine not available');
-            }
-            
-            // Track session start
-            this.sessionData = [];
-            this.sessionStartTime = Date.now();
-            
-            // Trigger haptic feedback on mobile
-            if (window.triggerHaptic) {
-                window.triggerHaptic('light');
-            }
-            
-        }, null, 'Failed to start game');
     }
     
     // TOEIC Interface Methods
@@ -2218,109 +2030,6 @@ class App {
         return 'A1';
     }
     
-    endCurrentGame() {
-        if (!this.currentGame && !this.currentTOEICModule) return;
-        
-        console.log('🏁 Ending current session...');
-        
-        try {
-            // Calculate session stats
-            const sessionStats = this.calculateSessionStats();
-            
-            // End adaptive learning session
-            if (window.adaptiveLearning) {
-                window.adaptiveLearning.endSession(this.sessionData);
-            }
-            
-            // Check for new achievements
-            this.checkAchievements(sessionStats);
-            
-            // Save session data
-            this.saveSessionData(sessionStats);
-            
-            // Clean up
-            this.currentGame = null;
-            this.currentTOEICModule = null;
-            this.sessionData = [];
-            
-            // Return to main menu
-            this.showWelcomeScreen();
-            
-            console.log('✅ Session ended successfully');
-            
-        } catch (error) {
-            console.error('❌ Error ending session:', error);
-        }
-    }
-    
-    calculateSessionStats() {
-        const now = Date.now();
-        const duration = now - (this.sessionStartTime || now);
-        const totalQuestions = this.sessionData.length;
-        const correctAnswers = this.sessionData.filter(q => q.isCorrect).length;
-        const accuracy = totalQuestions > 0 ? correctAnswers / totalQuestions : 0;
-        
-        return {
-            duration,
-            totalQuestions,
-            correctAnswers,
-            accuracy,
-            score: correctAnswers * 10, // Simple scoring
-            date: new Date().toISOString()
-        };
-    }
-    
-    checkAchievements(sessionStats) {
-        if (!window.achievementSystem) return;
-        
-        try {
-            const userStats = this.getGameStatistics();
-            const newAchievements = window.achievementSystem.checkAchievements(
-                this.sessionData, 
-                userStats
-            );
-            
-            // Show achievement notifications
-            newAchievements.forEach(achievement => {
-                if (window.achievementNotification) {
-                    window.achievementNotification.show(achievement);
-                }
-            });
-            
-        } catch (error) {
-            console.error('❌ Error checking achievements:', error);
-        }
-    }
-    
-    createFallbackGlobalControls() {
-        console.log('🔧 Creating fallback global controls...');
-        
-        // Remove existing controls first
-        const existingControls = document.getElementById('globalControls');
-        if (existingControls) {
-            existingControls.remove();
-        }
-        
-        // Remove legacy individual buttons (the dead progress button is
-        // intentionally not recreated — its dashboard was removed)
-        const existingProgressBtn = document.getElementById('progressControlBtn');
-        const existingHomeBtn = document.getElementById('homeControlBtn');
-        if (existingProgressBtn) existingProgressBtn.remove();
-        if (existingHomeBtn) existingHomeBtn.remove();
-
-        // The static #floatingHomeButton in index.html is the single
-        // home control — just make sure it is visible and draggable
-        const staticHomeBtn = document.getElementById('floatingHomeButton');
-        if (staticHomeBtn) {
-            staticHomeBtn.classList.remove('hidden');
-            if (window.makeFloatingDraggable) {
-                window.makeFloatingDraggable(staticHomeBtn, 'floatingHomeButtonPosition');
-            }
-        }
-
-        console.log('✅ Global controls ready (single home button)');
-    }
-    
     makeButtonDraggable(button, storageKey) {
         // Delegates to the shared pointer-capture utility in
         // floating-drag.js (single implementation for all floating
@@ -2332,41 +2041,6 @@ class App {
         }
     }
 
-    saveSessionData(sessionStats) {
-        try {
-            const sessions = window.safeParseStorage('studySessions', []);
-            sessions.push(sessionStats);
-            
-            // Keep only last 100 sessions to prevent storage bloat
-            if (sessions.length > 100) {
-                sessions.splice(0, sessions.length - 100);
-            }
-            
-            localStorage.setItem('studySessions', JSON.stringify(sessions));
-            
-        } catch (error) {
-            console.error('❌ Error saving session data:', error);
-        }
-    }
-    
-    // Answer tracking for adaptive learning
-    recordAnswer(word, isCorrect, responseTime, gameMode) {
-        const answerData = {
-            word,
-            isCorrect,
-            responseTime,
-            gameMode,
-            timestamp: Date.now()
-        };
-        
-        this.sessionData.push(answerData);
-        
-        // Update adaptive learning
-        if (window.adaptiveLearning) {
-            window.adaptiveLearning.updateWordMastery(word, isCorrect, responseTime);
-        }
-    }
-    
     // Settings and Help
     showSettings() {
         // Single settings UI: the modern drawer owned by SettingsPanel.
@@ -2466,22 +2140,8 @@ class App {
                 }
             }
         }
-        
-        // Check for performance issues
-        if (window.realTimeMonitor) {
-            const metrics = window.realTimeMonitor.getMetrics();
-            
-            // Alert if performance is poor
-            if (metrics.performance.lcp > 4000) {
-                console.warn('⚠️ Poor LCP performance detected:', metrics.performance.lcp + 'ms');
-            }
-            
-            if (metrics.performance.fid > 200) {
-                console.warn('⚠️ Poor FID performance detected:', metrics.performance.fid + 'ms');
-            }
-        }
     }
-    
+
     handleInitializationError(error) {
         console.error('❌ Initialization failed:', error);
         
@@ -2505,23 +2165,9 @@ class App {
     enableDebugMode() {
         window.debug = {
             app: this,
-            gameEngine: window.gameEngine,
-            dataManager: window.dataManager,
-            adaptiveLearning: window.adaptiveLearning,
-            achievementSystem: window.achievementSystem,
-            // progressDashboard: removed
             sessionData: this.sessionData,
-            
+
             // Debug utilities
-            skipToGame: (gameMode) => this.startGame(gameMode),
-            unlockAllAchievements: () => {
-                if (window.achievementSystem) {
-                    window.achievementSystem.achievements.forEach((_, id) => {
-                        window.achievementSystem.unlockedAchievements.add(id);
-                    });
-                    window.achievementSystem.saveProgress();
-                }
-            },
             resetProgress: () => {
                 localStorage.clear();
                 location.reload();
@@ -5033,16 +4679,6 @@ class App {
         `;
     }
 }
-
-// Global helper functions
-window.startGame = function(gameMode) {
-    console.log(`🎯 Starting legacy game: ${gameMode}`);
-    if (window.app && window.app.startGame) {
-        window.app.startGame(gameMode);
-    } else {
-        console.error('❌ App not initialized');
-    }
-};
 
 // TOEIC Module Functions
 window.startTOEICModule = function(moduleType, options = {}) {

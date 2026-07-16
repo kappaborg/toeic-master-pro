@@ -681,8 +681,6 @@ class DailyConversationSystem {
         // Hide the main menu and other module content, show our container
         const mainMenu = document.getElementById('mainMenu');
         if (mainMenu) mainMenu.classList.add('hidden');
-        const gameScreens = document.getElementById('gameScreens');
-        if (gameScreens) gameScreens.classList.add('hidden');
         const container = document.getElementById('toeicModuleContent');
         if (container) container.classList.remove('hidden');
 

@@ -1,8 +1,8 @@
 // WordMaster Pro - Service Worker
 // Version 2.0.0 - Professional ESL Learning Platform
 
-const CACHE_NAME = 'toeic-master-pro-20260716b';
-const DATA_CACHE_NAME = 'toeic-data-20260716b';
+const CACHE_NAME = 'toeic-master-pro-20260716c';
+const DATA_CACHE_NAME = 'toeic-data-20260716c';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [
@@ -13,26 +13,19 @@ const FILES_TO_CACHE = [
     './assets/css/tailwind-custom.css',
     './assets/css/professional-ui.css',
     './assets/js/app.js',
-    './assets/js/game-engine.js',
     './assets/js/ui-manager.js',
-    './assets/js/data-manager.js',
     './assets/js/pwa.js',
     './assets/js/error-boundary.js',
     './assets/js/floating-drag.js',
     './assets/js/study-dashboard.js',
     './assets/js/mobile-optimization.js',
     './assets/js/performance-optimizer.js',
-    './assets/js/answer-feedback.js',
-    './assets/js/initialization-manager.js',
-    './assets/js/unified-data-layer.js',
-    './assets/js/real-time-monitor.js',
     './assets/js/spaced-repetition.js',
     './assets/js/audio-system.js',
     './assets/js/advanced-analytics-system.js',
     './assets/js/analytics-dashboard.js',
     // './assets/js/gamification-system.js', // Removed - file deleted
     './assets/js/enhanced-progress.js',
-    './assets/js/adaptive-learning.js',
     // './assets/js/progress-dashboard.js', // Removed - file doesn't exist
     './assets/js/settings-panel.js',
     './assets/js/toeic-vocabulary-system.js',

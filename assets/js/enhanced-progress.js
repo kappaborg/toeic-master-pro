@@ -125,15 +125,6 @@ class EnhancedProgress {
             totalXP: this.progressData.totalXP
         });
         
-        // Trigger level up event
-        if (window.gameEngine && window.gameEngine.showNotification) {
-            window.gameEngine.showNotification(
-                `🎉 Level Up! You're now Level ${level}!`,
-                'success',
-                5000
-            );
-        }
-        
         // Play level up sound
         if (window.audioSystem) {
             window.audioSystem.playSound('level_up');
@@ -276,15 +267,6 @@ class EnhancedProgress {
             description: achievement.description,
             reward: achievement.reward
         });
-        
-        // Show notification
-        if (window.gameEngine && window.gameEngine.showNotification) {
-            window.gameEngine.showNotification(
-                `🏆 Achievement Unlocked: ${achievement.name}`,
-                'success',
-                5000
-            );
-        }
         
         console.log(`🏆 Achievement unlocked: ${achievement.name}`);
     }

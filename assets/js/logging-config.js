@@ -24,9 +24,6 @@ class LoggingConfig {
             // Analytics logs
             analytics: false,
             
-            // Game engine logs
-            gameEngine: false,
-            
             // Audio system logs
             audio: false,
             
@@ -44,12 +41,6 @@ class LoggingConfig {
             
             // Error boundary logs (keep enabled)
             errorBoundary: {
-                enabled: true,
-                level: 'error'
-            },
-            
-            // Real-time monitor logs (keep only errors)
-            realTimeMonitor: {
                 enabled: true,
                 level: 'error'
             },
@@ -118,7 +109,6 @@ class LoggingConfig {
         if (this.isFeatureRegistrationLog(message) && !this.config.featureRegistration) return false;
         if (this.isDataLoadingLog(message) && !this.config.dataLoading) return false;
         if (this.isAnalyticsLog(message) && !this.config.analytics) return false;
-        if (this.isGameEngineLog(message) && !this.config.gameEngine) return false;
         if (this.isAudioLog(message) && !this.config.audio) return false;
         if (this.isTimeTrackingLog(message) && !this.config.timeTracking) return false;
         if (this.isCarouselLog(message) && !this.config.carousel) return false;
@@ -130,12 +120,6 @@ class LoggingConfig {
             if (!this.config.performance.enabled) return false;
             if (this.config.performance.level === 'error' && level !== 'error') return false;
             if (this.config.performance.level === 'warn' && level === 'info') return false;
-        }
-        
-        // Real-time monitor logs
-        if (this.isRealTimeMonitorLog(message)) {
-            if (!this.config.realTimeMonitor.enabled) return false;
-            if (this.config.realTimeMonitor.level === 'error' && level !== 'error') return false;
         }
         
         // Error boundary logs
@@ -229,12 +213,6 @@ class LoggingConfig {
                message.includes('Advanced Analytics');
     }
     
-    isGameEngineLog(message) {
-        return message.includes('🎮 Game') || 
-               message.includes('Game Engine') ||
-               message.includes('Game initialized');
-    }
-    
     isAudioLog(message) {
         return message.includes('🔊 Audio') || 
                message.includes('Audio System') ||
@@ -286,12 +264,6 @@ class LoggingConfig {
                message.includes('good') ||
                message.includes('Performance Alert') ||
                message.includes('threshold:');
-    }
-    
-    isRealTimeMonitorLog(message) {
-        return message.includes('📊 Real-Time') || 
-               message.includes('Real-Time Monitor') ||
-               message.includes('Performance Alert');
     }
     
     isErrorBoundaryLog(message) {

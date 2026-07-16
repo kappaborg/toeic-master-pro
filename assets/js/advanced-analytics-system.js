@@ -311,8 +311,8 @@ class AdvancedAnalyticsSystem {
     }
 
     /**
-     * Compatibility API used across the app (game-engine, app, time-tracking,
-     * real-time-monitor) — routes legacy learning events through trackEvent.
+     * Compatibility API used across the app (app, time-tracking) —
+     * routes legacy learning events through trackEvent.
      */
     recordLearningEvent(eventType, data = {}) {
         this.trackEvent('learning', eventType, data);

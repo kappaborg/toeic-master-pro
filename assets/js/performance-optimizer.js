@@ -49,9 +49,7 @@ class PerformanceOptimizer {
         // Dynamic imports for better performance
         this.lazyModules = {
             'settings': () => import('./settings-panel.js'),
-            // 'gamification': () => import('./gamification-system.js'), // Removed - file deleted
-            'spaced-repetition': () => import('./spaced-repetition.js'),
-            'adaptive-learning': () => import('./adaptive-learning.js')
+            'spaced-repetition': () => import('./spaced-repetition.js')
         };
         
         // Preload critical modules
@@ -399,16 +397,8 @@ class PerformanceOptimizer {
     
     cleanupUnusedEventListeners() {
         // Clean up old event listeners that might be causing memory leaks
-        if (window.gameEngine && window.gameEngine.cleanup) {
-            window.gameEngine.cleanup();
-        }
-        
         if (window.audioSystem && window.audioSystem.cleanup) {
             window.audioSystem.cleanup();
-        }
-        
-        if (window.realTimeMonitor && window.realTimeMonitor.cleanup) {
-            window.realTimeMonitor.cleanup();
         }
     }
     

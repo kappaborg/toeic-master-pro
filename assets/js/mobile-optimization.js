@@ -38,15 +38,6 @@ class MobileOptimization {
         document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
         document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
         
-        // Prevent default touch behaviors on game area
-        const gameArea = document.getElementById('gameScreens');
-        if (gameArea) {
-            gameArea.addEventListener('touchmove', (e) => {
-                if (e.target.closest('.game-choice') || e.target.closest('.draggable')) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        }
     }
     
     handleTouchStart(event) {
@@ -113,20 +104,10 @@ class MobileOptimization {
     }
     
     handleSwipeRight() {
-        // Navigate to previous question or back
-        if (window.gameEngine && window.gameEngine.isGameActive) {
-            this.triggerHapticFeedback('light');
-            // Could implement previous question functionality
-        }
         console.log('👉 Swipe right detected');
     }
-    
+
     handleSwipeLeft() {
-        // Navigate to next question or forward
-        if (window.gameEngine && window.gameEngine.isGameActive) {
-            this.triggerHapticFeedback('light');
-            // Could implement next question functionality
-        }
         console.log('👈 Swipe left detected');
     }
     
@@ -171,14 +152,7 @@ class MobileOptimization {
         const isPortrait = window.innerHeight > window.innerWidth;
         document.body.classList.toggle('orientation-portrait', isPortrait);
         document.body.classList.toggle('orientation-landscape', !isPortrait);
-        
-        // Update game layout if active
-        if (window.gameEngine && window.gameEngine.isGameActive) {
-            setTimeout(() => {
-                this.optimizeGameLayoutForOrientation();
-            }, 300);
-        }
-        
+
         this.triggerHapticFeedback('light');
     }
     
@@ -380,15 +354,6 @@ class MobileOptimization {
             this.reducedMotionForLowPowerMode();
             this.optimizeTouchTargets();
             this.improveScrollPerformance();
-        }
-    }
-    
-    optimizeGameLayoutForOrientation() {
-        const gameScreens = document.getElementById('gameScreens');
-        if (gameScreens && !gameScreens.classList.contains('hidden')) {
-            // Adjust game layout based on orientation
-            const isLandscape = window.innerWidth > window.innerHeight;
-            gameScreens.classList.toggle('landscape-mode', isLandscape);
         }
     }
     

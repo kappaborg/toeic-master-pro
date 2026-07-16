@@ -62,10 +62,6 @@ class LanguageManager {
                 'status.question': 'Question',
                 'status.score': 'Score:',
 
-                // Floating Game Controls (game-engine tooltips)
-                'control.progress': 'Toggle Progress Panel (Drag to move)',
-                'control.home': 'Go to Home (Drag to move)',
-
                 // Settings Drawer
                 'settings.audioSection': 'Audio',
                 'settings.enableAudio': 'Enable Audio',
@@ -541,10 +537,6 @@ class LanguageManager {
                 // Status Bar
                 'status.question': '题目',
                 'status.score': '得分:',
-
-                // Floating Game Controls (game-engine tooltips)
-                'control.progress': '切换进度面板（拖拽移动）',
-                'control.home': '返回首页（拖拽移动）',
 
                 // Settings Drawer
                 'settings.audioSection': '音频',

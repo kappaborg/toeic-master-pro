@@ -36,6 +36,11 @@ fi
 
 echo "✅ Vercel configuration found"
 
+# Bump cache-busting version (index.html ?v= stamps + sw.js cache names)
+# so returning visitors pick up this deploy instead of year-cached assets
+echo "🔄 Bumping cache version..."
+node scripts/bump-cache-version.js || exit 1
+
 # Deploy to Vercel
 echo "🚀 Deploying to Vercel..."
 echo "This will open your browser for authentication if needed."
@@ -46,15 +51,7 @@ echo "✅ Deployment completed!"
 echo "🌐 Your app should now be live at the provided URL"
 echo ""
 echo "📋 Next steps:"
-echo "1. Test all features including admin dashboard"
-echo "2. Verify real-time tracking works"
-echo "3. Test login with both admin and student credentials"
+echo "1. Commit the version bump: git add -A && git commit -m 'Bump cache version'"
+echo "2. Test all features on the live URL"
+echo "3. Test login (credentials are distributed privately, never committed)"
 echo "4. Check mobile responsiveness"
-echo ""
-echo "🔐 Admin Credentials:"
-echo "   Username: Kappasutra"
-echo "   Password: Kappa14"
-echo ""
-echo "👤 Student Credentials:"
-echo "   Username: Monica"
-echo "   Password: Thailand"

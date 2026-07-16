@@ -23,7 +23,7 @@
 - [x] `favicon.ico` - Favicon
 
 ### ✅ Features Verified
-- [x] Login system works (Admin: Kappasutra/Kappa14, Student: Monica/Thailand)
+- [x] Login system works (admin + student roles; credentials distributed privately)
 - [x] Admin dashboard accessible and functional
 - [x] Real-time student tracking works
 - [x] All TOEIC modules functional (Vocabulary, Reading, Grammar, Test Simulator, Flashcards)
@@ -45,16 +45,24 @@ npm install -g vercel
 vercel login
 ```
 
-### 3. Deploy to Production
+### 3. Bump the cache version (REQUIRED every deploy)
 ```bash
-# Option 1: Use deployment script
+node scripts/bump-cache-version.js
+```
+This rotates the `?v=` stamp on all asset URLs in `index.html` and the
+service-worker cache names in `sw.js`. Skipping it means returning
+visitors keep the previous deploy's JS/CSS (served with 1-year
+immutable caching) — the deploy will be invisible to them.
+
+### 4. Deploy to Production
+```bash
+# Option 1: Use deployment script (runs the version bump for you)
 ./deploy.sh
 
-# Option 2: Direct deployment
-vercel --prod
+# Option 2: git push to main (Vercel auto-deploys) — run step 3 first
 ```
 
-### 4. Verify Deployment
+### 5. Verify Deployment
 - [ ] Application loads correctly
 - [ ] Login page accessible
 - [ ] Admin dashboard works
@@ -66,8 +74,8 @@ vercel --prod
 ## Post-Deployment Testing
 
 ### 🔐 Authentication Testing
-- [ ] Admin login (Kappasutra/Kappa14) works
-- [ ] Student login (Monica/Thailand) works
+- [ ] Admin login works
+- [ ] Student login works
 - [ ] Admin panel button appears for admin users
 - [ ] Role-based access control works
 - [ ] Session persistence works

@@ -9,9 +9,9 @@ A comprehensive TOEIC test preparation application with real-time admin tracking
 ## ✨ Features
 
 ### 📚 Learning Modules
-- **Vocabulary Practice** - 620+ TOEIC vocabulary words with spaced repetition
-- **Reading Comprehension** - 7 passages with 25+ questions
-- **Grammar Practice** - 8 categories with 200+ questions
+- **Vocabulary Practice** - ~600 TOEIC vocabulary words with review scheduling
+- **Reading Comprehension** - 21 passages (incl. TOEIC Part 7 double passages) with 96 questions
+- **Grammar Practice** - 10 categories with 100 questions
 - **Test Simulation** - Full TOEIC test experience
 - **Flashcard Review** - Interactive flashcard system
 
@@ -26,17 +26,11 @@ A comprehensive TOEIC test preparation application with real-time admin tracking
 - **Secure Login** - Protected access to features
 - **Session Management** - Persistent user sessions
 
-## 🎯 User Credentials
+## 🎯 User Accounts
 
-### Admin Access
-- **Username:** `Kappasutra`
-- **Password:** `Kappa14`
-- **Features:** Full admin dashboard, student tracking, analytics
-
-### Student Access
-- **Username:** `Monica`
-- **Password:** `Thailand`
-- **Features:** All learning modules, progress tracking
+Two roles exist: **Admin** (dashboard, student tracking, analytics) and
+**Student** (all learning modules, progress tracking). Credentials are
+distributed privately and are never committed to this repository.
 
 ## 🛠️ Technology Stack
 

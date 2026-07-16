@@ -1,8 +1,8 @@
 // WordMaster Pro - Service Worker
 // Version 2.0.0 - Professional ESL Learning Platform
 
-const CACHE_NAME = 'toeic-master-pro-v3.6.2';
-const DATA_CACHE_NAME = 'toeic-data-v3.6.2';
+const CACHE_NAME = 'toeic-master-pro-20260716a';
+const DATA_CACHE_NAME = 'toeic-data-20260716a';
 
 // Files to cache for offline use
 const FILES_TO_CACHE = [
@@ -10,8 +10,8 @@ const FILES_TO_CACHE = [
     './index.html',
     './manifest.json',
     './favicon.ico',
-    // './assets/css/style.css', // Removed - file doesn't exist
     './assets/css/tailwind-custom.css',
+    './assets/css/professional-ui.css',
     './assets/js/app.js',
     './assets/js/game-engine.js',
     './assets/js/ui-manager.js',
@@ -112,10 +112,8 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event
 self.addEventListener('fetch', (event) => {
-    console.log('[ServiceWorker] Fetch', event.request.url);
-    
     // Handle API requests separately
     if (event.request.url.includes('/api/')) {
         event.respondWith(
@@ -136,17 +134,27 @@ self.addEventListener('fetch', (event) => {
         );
         return;
     }
-    
-    // Handle app shell requests
+
+    // Navigations are network-first so a new deploy is picked up on the
+    // very next page load; the cached shell is only an offline fallback.
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copy));
+                    return response;
+                })
+                .catch(() => caches.match('./index.html'))
+        );
+        return;
+    }
+
+    // Static assets: cache-first is safe because every asset URL carries a
+    // ?v= stamp that scripts/bump-cache-version.js rotates on each deploy.
     event.respondWith(
         caches.match(event.request).then((response) => {
-            // Return cached version or fetch from network
-            return response || fetch(event.request).catch(() => {
-                // If both cache and network fail, return offline page for navigation requests
-                if (event.request.mode === 'navigate') {
-                    return caches.match('./index.html');
-                }
-            });
+            return response || fetch(event.request);
         })
     );
 });

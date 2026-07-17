@@ -73,8 +73,9 @@ class App {
             window.adminDashboard.updateInterval = window.productionConfig.realTimeUpdateInterval;
         }
         
-        // Enable service worker for PWA
-        if ('serviceWorker' in navigator && window.productionConfig.enablePWA) {
+        // Enable service worker for PWA (http/https only - the desktop app
+        // shell serves over a custom protocol where SWs are unsupported)
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && window.productionConfig.enablePWA) {
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
                     console.log('✅ Service Worker registered in production');
@@ -416,7 +417,7 @@ class App {
     async initializePWA() {
         console.log('📱 Initializing PWA...');
         try {
-            if ('serviceWorker' in navigator) {
+            if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
                 // Set timeout to prevent hanging
                 const registrationPromise = navigator.serviceWorker.register('./sw.js');
                 const timeoutPromise = new Promise((_, reject) => 

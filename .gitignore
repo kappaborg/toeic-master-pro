@@ -216,3 +216,7 @@ public/build/
 *.temp
 
 .vercel
+
+# Tauri desktop app build artifacts
+desktop/src-tauri/target/
+desktop/src-tauri/gen/

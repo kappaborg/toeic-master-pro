@@ -1,0 +1,15 @@
+{
+  "name": "toeic-master-pro-desktop",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TOEIC Master Pro desktop app (Tauri shell around the web app)",
+  "scripts": {
+    "sync": "node scripts/sync-web.js",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

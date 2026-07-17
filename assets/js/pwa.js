@@ -28,7 +28,7 @@ class PWAManager {
     }
     
     async registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
             try {
                 console.log('🔧 Registering Service Worker...');
                 

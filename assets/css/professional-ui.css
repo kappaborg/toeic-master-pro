@@ -2666,21 +2666,8 @@ html.reduce-motion *::after {
     letter-spacing: 0.02em;
 }
 
-/* One orchestrated reveal when a module opens (stagger via nth-child).
-   html.reduce-motion already zeroes all animation durations. */
-@keyframes moduleRise {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.module-shell > * {
-    animation: moduleRise 0.45s cubic-bezier(0.22, 0.9, 0.3, 1) both;
-}
-
-.module-shell > *:nth-child(2) { animation-delay: 0.06s; }
-.module-shell > *:nth-child(3) { animation-delay: 0.12s; }
-.module-shell > *:nth-child(4) { animation-delay: 0.18s; }
-.module-shell > *:nth-child(5) { animation-delay: 0.24s; }
+/* Module-open reveal now lives in the MOTION PASS section at the end
+   of this file (spring stagger, up to 8 children, reduced-motion safe). */
 
 /* ------------------------------------------------------------------
    Vocabulary practice — compact efficient layout
@@ -3126,4 +3113,353 @@ html.reduce-motion *::after {
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.88rem;
     line-height: 1.55;
+}
+
+/* ==================================================================
+   MOTION PASS — springy, tactile micro-interactions
+   ------------------------------------------------------------------
+   Rules of the section:
+   - Only `transform` and `opacity` are animated (compositor-friendly);
+     the sole exception is the pre-existing progress-bar width tween.
+   - Spring pops use   cubic-bezier(0.34, 1.56, 0.64, 1)  (back-out)
+     and settles use   cubic-bezier(0.22, 1, 0.36, 1).
+   - Every animation declared here is force-disabled in the
+     consolidated reduced-motion block at the bottom of this file.
+   - JS hooks (assets/js/motion.js) apply the .m-* utilities.
+   ================================================================== */
+
+:root {
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Keyframes (transform/opacity only) ---------- */
+
+@keyframes m-rise {
+    from { opacity: 0; transform: translateY(16px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes m-pop {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.09); }
+    100% { transform: scale(1); }
+}
+
+@keyframes m-pop-in {
+    0%   { opacity: 0.35; transform: scale(0.55); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes m-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+@keyframes m-bump {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.22); }
+    100% { transform: scale(1); }
+}
+
+@keyframes m-press {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(0.97); }
+    100% { transform: scale(1); }
+}
+
+@keyframes m-glow {
+    0%   { opacity: 0; }
+    30%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes m-sheen {
+    from { transform: translateX(-120%); }
+    to   { transform: translateX(320%); }
+}
+
+/* ---------- Utility classes (applied by motion.js) ---------- */
+
+.m-fade-up { animation: m-rise 0.4s var(--ease-spring) both; }
+.m-pop     { animation: m-pop 0.35s var(--ease-spring); }
+.m-shake   { animation: m-shake 0.35s var(--ease-settle); }
+.m-bump    { animation: m-bump 0.3s var(--ease-spring); }
+.m-press   { animation: m-press 0.22s var(--ease-settle); }
+
+.m-stagger > * { animation: m-rise 0.42s var(--ease-spring) both; }
+.m-stagger > *:nth-child(2) { animation-delay: 55ms; }
+.m-stagger > *:nth-child(3) { animation-delay: 110ms; }
+.m-stagger > *:nth-child(4) { animation-delay: 165ms; }
+.m-stagger > *:nth-child(5) { animation-delay: 220ms; }
+.m-stagger > *:nth-child(6) { animation-delay: 275ms; }
+.m-stagger > *:nth-child(7) { animation-delay: 330ms; }
+.m-stagger > *:nth-child(n+8) { animation-delay: 385ms; }
+
+/* ---------- Entrance choreography ---------- */
+
+/* Module open: spring slide-up + fade, staggered up to 8 children.
+   Fires automatically on innerHTML insertion. */
+.module-shell > * { animation: m-rise 0.45s var(--ease-spring) both; }
+.module-shell > *:nth-child(2) { animation-delay: 55ms; }
+.module-shell > *:nth-child(3) { animation-delay: 110ms; }
+.module-shell > *:nth-child(4) { animation-delay: 165ms; }
+.module-shell > *:nth-child(5) { animation-delay: 220ms; }
+.module-shell > *:nth-child(6) { animation-delay: 275ms; }
+.module-shell > *:nth-child(7) { animation-delay: 330ms; }
+.module-shell > *:nth-child(n+8) { animation-delay: 385ms; }
+
+/* Reading session: let the two panels choreograph themselves instead
+   of riding the shell child animation (avoids compounded motion). */
+.module-shell > .reading-layout { animation: none; }
+.reading-layout > * { animation: m-rise 0.45s var(--ease-spring) both; }
+.reading-layout > *:nth-child(2) { animation-delay: 90ms; }
+
+/* Dashboard (inserted into #studyDashboard by JS) */
+.dashboard-grid > .dashboard-card { animation: m-rise 0.45s var(--ease-spring) both; }
+.dashboard-grid > .dashboard-card:nth-child(2) { animation-delay: 60ms; }
+.dashboard-grid > .dashboard-card:nth-child(3) { animation-delay: 120ms; }
+.dashboard-stats .dashboard-stat { animation: m-rise 0.4s var(--ease-spring) both; }
+.dashboard-stats .dashboard-stat:nth-child(2) { animation-delay: 50ms; }
+.dashboard-stats .dashboard-stat:nth-child(3) { animation-delay: 100ms; }
+.dashboard-stats .dashboard-stat:nth-child(n+4) { animation-delay: 150ms; }
+
+/* Welcome page-load sequence: hero settles first, heading next,
+   then the module cards cascade in. */
+#welcomeScreen > section:first-of-type { animation: m-rise 0.5s var(--ease-settle) both; }
+#welcomeScreen .heading-3 {
+    animation: m-rise 0.45s var(--ease-settle) both;
+    animation-delay: 120ms;
+}
+/* the grid container's legacy slide-up would compound with the
+   per-card stagger; the cards own the entrance now */
+#welcomeScreen .animate-slide-up { animation: none; }
+#welcomeScreen .game-card { animation: m-rise 0.45s var(--ease-spring) both; }
+#welcomeScreen .game-card:nth-child(1) { animation-delay: 200ms; }
+#welcomeScreen .game-card:nth-child(2) { animation-delay: 250ms; }
+#welcomeScreen .game-card:nth-child(3) { animation-delay: 300ms; }
+#welcomeScreen .game-card:nth-child(4) { animation-delay: 350ms; }
+#welcomeScreen .game-card:nth-child(5) { animation-delay: 400ms; }
+#welcomeScreen .game-card:nth-child(6) { animation-delay: 450ms; }
+#welcomeScreen .game-card:nth-child(7) { animation-delay: 500ms; }
+#welcomeScreen .game-card:nth-child(n+8) { animation-delay: 550ms; }
+
+/* ---------- Micro-interactions: hover lift + pressed states ---------- */
+
+.btn:hover { transform: translateY(-2px); }
+
+.module-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+}
+
+.flashcard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+    opacity: 1;
+}
+
+.reading-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.quiz-option-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.quiz-option-btn { transition: background 0.15s ease, border-color 0.15s ease, transform 0.18s var(--ease-settle); }
+.reading-option { transition: background 0.15s ease, border-color 0.15s ease, transform 0.18s var(--ease-settle), box-shadow 0.18s var(--ease-settle); }
+.module-action-btn { transition: background 0.2s ease, border-color 0.2s ease, transform 0.18s var(--ease-settle), box-shadow 0.18s var(--ease-settle); }
+.flashcard-btn { transition: transform 0.18s var(--ease-settle), opacity 0.15s ease, box-shadow 0.18s var(--ease-settle); }
+
+/* Fast tactile press (scale down), released with the spring above */
+.btn:active,
+.module-action-btn:active,
+.flashcard-btn:active,
+.flashcard-reveal-btn:active,
+.module-back-btn:active,
+.quiz-option-btn:active:not(:disabled),
+.reading-option:active,
+.dashboard-primary-btn:active,
+.dashboard-secondary-btn:active,
+.dashboard-icon-btn:active,
+.game-card:active {
+    transform: scale(0.97);
+    transition-duration: 0.08s;
+}
+
+/* Game card: subtle 3D tilt-lift on hover (replaces the flat lift) */
+.game-card:hover {
+    transform: perspective(900px) rotateX(3deg) translateY(-10px) scale(1.02);
+}
+
+/* ---------- Selection / answer feedback ---------- */
+
+.reading-option { position: relative; }
+
+/* Letter badge pops when an option is picked */
+.reading-option.selected .reading-option-letter,
+.quiz-option-btn.is-correct .quiz-option-letter {
+    animation: m-pop-in 0.3s var(--ease-spring);
+}
+
+/* Correct: success pop + one soft glow pulse (glow lives on a
+   pseudo-element and only its OPACITY is animated) */
+.reading-option.reading-answer-correct,
+.quiz-option-btn.is-correct {
+    animation: m-pop 0.4s var(--ease-spring);
+}
+
+.reading-option.reading-answer-correct::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.55), 0 0 26px rgba(52, 211, 153, 0.35);
+    opacity: 0;
+    animation: m-glow 0.9s var(--ease-settle) both;
+}
+
+/* Wrong: short low-amplitude shake */
+.reading-option.reading-answer-incorrect,
+.quiz-option-btn.is-wrong {
+    animation: m-shake 0.35s var(--ease-settle);
+}
+
+/* Feedback panels slide-spring in */
+#readingFeedback .reading-feedback-message,
+.reading-feedback-message,
+.quiz-feedback,
+#dcFeedback > * {
+    animation: m-rise 0.4s var(--ease-spring) both;
+}
+
+/* End-of-session review list cascades */
+.reading-review-item { animation: m-rise 0.4s var(--ease-spring) both; }
+.reading-review-item:nth-child(2) { animation-delay: 60ms; }
+.reading-review-item:nth-child(3) { animation-delay: 120ms; }
+.reading-review-item:nth-child(n+4) { animation-delay: 180ms; }
+
+/* ---------- Progress bar: springy fill + moving sheen ---------- */
+
+.quiz-progress-fill {
+    position: relative;
+    overflow: hidden;
+    /* sole allowed non-transform tween (pre-existing behavior, retimed) */
+    transition: width 0.6s var(--ease-settle);
+}
+
+.quiz-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    animation: m-sheen 2s var(--ease-settle) 0.4s infinite;
+}
+
+/* Stop the sheen once the bar is full (width is set inline by JS) */
+.quiz-progress-fill[style*="100%"]::after {
+    animation: none;
+    opacity: 0;
+}
+
+/* ==================================================================
+   Consolidated reduced-motion guard for the MOTION PASS.
+   Disables every animation/transform effect declared above:
+   m-rise, m-pop, m-pop-in, m-shake, m-bump, m-press, m-glow, m-sheen
+   (in addition to the global blanket rules earlier in this file).
+   ================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .m-fade-up,
+    .m-pop,
+    .m-shake,
+    .m-bump,
+    .m-press,
+    .m-stagger > *,
+    .module-shell > *,
+    .reading-layout > *,
+    .dashboard-grid > .dashboard-card,
+    .dashboard-stats .dashboard-stat,
+    #welcomeScreen > section:first-of-type,
+    #welcomeScreen .heading-3,
+    #welcomeScreen .game-card,
+    .reading-option.selected .reading-option-letter,
+    .quiz-option-btn.is-correct .quiz-option-letter,
+    .reading-option.reading-answer-correct,
+    .reading-option.reading-answer-correct::after,
+    .reading-option.reading-answer-incorrect,
+    .quiz-option-btn.is-correct,
+    .quiz-option-btn.is-wrong,
+    #readingFeedback .reading-feedback-message,
+    .reading-feedback-message,
+    .quiz-feedback,
+    #dcFeedback > *,
+    .reading-review-item,
+    .quiz-progress-fill::after {
+        animation: none !important;
+    }
+
+    .btn:hover,
+    .module-action-btn:hover,
+    .flashcard-btn:hover,
+    .reading-option:hover,
+    .quiz-option-btn:hover:not(:disabled),
+    .game-card:hover,
+    .btn:active,
+    .module-action-btn:active,
+    .flashcard-btn:active,
+    .flashcard-reveal-btn:active,
+    .module-back-btn:active,
+    .quiz-option-btn:active:not(:disabled),
+    .reading-option:active,
+    .dashboard-primary-btn:active,
+    .dashboard-secondary-btn:active,
+    .dashboard-icon-btn:active,
+    .game-card:active {
+        transform: none !important;
+    }
+
+    .quiz-progress-fill { transition: none !important; }
+}
+
+/* Mirror the guard for the in-app "reduce motion" setting */
+html.reduce-motion .m-fade-up,
+html.reduce-motion .m-pop,
+html.reduce-motion .m-shake,
+html.reduce-motion .m-bump,
+html.reduce-motion .m-press,
+html.reduce-motion .m-stagger > *,
+html.reduce-motion .module-shell > *,
+html.reduce-motion .reading-layout > *,
+html.reduce-motion .dashboard-grid > .dashboard-card,
+html.reduce-motion .dashboard-stats .dashboard-stat,
+html.reduce-motion #welcomeScreen > section:first-of-type,
+html.reduce-motion #welcomeScreen .heading-3,
+html.reduce-motion #welcomeScreen .game-card,
+html.reduce-motion .reading-option.reading-answer-correct,
+html.reduce-motion .reading-option.reading-answer-correct::after,
+html.reduce-motion .reading-option.reading-answer-incorrect,
+html.reduce-motion .quiz-option-btn.is-correct,
+html.reduce-motion .quiz-option-btn.is-wrong,
+html.reduce-motion #readingFeedback .reading-feedback-message,
+html.reduce-motion .reading-feedback-message,
+html.reduce-motion .quiz-feedback,
+html.reduce-motion #dcFeedback > *,
+html.reduce-motion .reading-review-item,
+html.reduce-motion .quiz-progress-fill::after {
+    animation: none !important;
+}
+
+html.reduce-motion .game-card:hover,
+html.reduce-motion .btn:hover,
+html.reduce-motion .btn:active,
+html.reduce-motion .module-action-btn:hover,
+html.reduce-motion .reading-option:hover,
+html.reduce-motion .reading-option:active {
+    transform: none !important;
 }

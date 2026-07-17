@@ -2186,6 +2186,9 @@ class App {
     endCurrentSession() {
         console.log('🔄 Ending current session...');
 
+        // Stop any in-flight TTS (listening test audio) — goHome() routes here too
+        window.audioSystem?.cancelSpeech?.();
+
         // Hide the TOEIC module container (un-hidden by showTOEICModuleScreen)
         const moduleContent = document.getElementById('toeicModuleContent');
         if (moduleContent) {
@@ -3511,6 +3514,7 @@ class App {
         }
         const testSession = window.toeicTestSimulator.startTest({ type: 'full' });
         this.testTimerSeconds = 0; // fresh clock for a new test
+        this.testAudioPlays = {}; // fresh replay counters
 
         this.showTestInterface(testSession, 'full');
     }
@@ -3528,6 +3532,7 @@ class App {
         }
         const testSession = window.toeicTestSimulator.startTest({ type: 'listening' });
         this.testTimerSeconds = 0; // fresh clock for a new test
+        this.testAudioPlays = {}; // fresh replay counters
 
         this.showTestInterface(testSession, 'listening');
     }
@@ -3545,6 +3550,7 @@ class App {
         }
         const testSession = window.toeicTestSimulator.startTest({ type: 'reading' });
         this.testTimerSeconds = 0; // fresh clock for a new test
+        this.testAudioPlays = {}; // fresh replay counters
 
         this.showTestInterface(testSession, 'reading');
     }
@@ -3555,7 +3561,15 @@ class App {
         content.classList.remove('hidden'); // deep links may arrive with the container hidden
 
         const testInfo = this.getTestInfo(testType);
-        
+        const currentQuestion = window.toeicTestSimulator?.getCurrentQuestion?.() || null;
+        // Real exam numbering (reading starts at 101) + per-part label
+        const questionHeading = currentQuestion
+            ? `${t('status.question')} ${currentQuestion.number}`
+            : `${t('status.question')} ${(testSession.currentQuestion || 0) + 1}`;
+        const partBadge = currentQuestion?.part
+            ? `<span class="text-xs font-semibold text-blue-300 bg-blue-500/20 rounded-full px-3 py-1 ml-3 align-middle">${t('test.partLabel', { part: currentQuestion.part })}</span>`
+            : '';
+
         content.innerHTML = `
             <div class="max-w-4xl mx-auto">
                 <div class="glass-effect rounded-xl p-6 mb-6">
@@ -3602,7 +3616,7 @@ class App {
 
                 <div class="glass-effect rounded-xl p-6">
                     <div id="testQuestion" class="mb-6">
-                        <h4 class="text-lg font-semibold text-white mb-4">${t('status.question')} ${(testSession.currentQuestion || 0) + 1}</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4">${questionHeading}${partBadge}</h4>
                         <div class="text-white/90 mb-6">
                             ${this.generateTestQuestion(testSession, testType)}
                         </div>
@@ -3633,33 +3647,98 @@ class App {
                 </div>
             </div>
         `;
-        
+
+        // Restore a previously selected answer (e.g. after Previous)
+        if (currentQuestion) {
+            const section = window.toeicTestSimulator?.currentTest?.sections?.[currentQuestion.section];
+            const savedAnswer = section?.answers?.[currentQuestion.number];
+            if (savedAnswer && Number.isInteger(savedAnswer.answer)) {
+                const input = content.querySelector(`input[name="testAnswer"][value="${savedAnswer.answer}"]`);
+                if (input) input.checked = true;
+            }
+        }
+
         // Start test timer
         this.startTestTimer(testInfo.duration);
     }
-    
+
     getTestInfo(testType) {
+        // Use the simulator's configured section limits (45 min listening +
+        // 75 min reading), not a hardcoded duration
+        const config = window.toeicTestSimulator?.testConfig;
+        const listeningMs = config?.listening?.timeLimit ?? 45 * 60 * 1000;
+        const readingMs = config?.reading?.timeLimit ?? 75 * 60 * 1000;
+        const formatDuration = (ms) => {
+            const totalSeconds = Math.round(ms / 1000);
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        };
+
         const testInfo = {
             full: {
                 title: t('test.fullTest'),
-                duration: '2:30:00',
-                totalQuestions: 200
+                duration: formatDuration(listeningMs + readingMs),
+                totalQuestions: (config?.listening?.totalQuestions ?? 100) + (config?.reading?.totalQuestions ?? 100)
             },
             listening: {
                 title: t('test.listeningTitle'),
-                duration: '0:45:00',
-                totalQuestions: 100
+                duration: formatDuration(listeningMs),
+                totalQuestions: config?.listening?.totalQuestions ?? 100
             },
             reading: {
                 title: t('test.readingTitle'),
-                duration: '1:15:00',
-                totalQuestions: 100
+                duration: formatDuration(readingMs),
+                totalQuestions: config?.reading?.totalQuestions ?? 100
             }
         };
-        
+
         return testInfo[testType] || testInfo.full;
     }
     
+    // Audio player card for listening questions. The spoken content is
+    // NEVER rendered as text — the student presses Play and listens.
+    buildTestAudioCard(question) {
+        this.testAudioPlays = this.testAudioPlays || {};
+        const played = this.testAudioPlays[question.number] || 0;
+        const replaysLeft = played <= 1 ? 2 : Math.max(0, 3 - played);
+        const exhausted = played >= 3;
+
+        return `
+            <div class="bg-gray-800/60 border border-white/10 rounded-xl p-6 mb-4 text-center">
+                <p class="text-white/60 text-sm mb-4">🎧 ${t('test.listenCarefully')}</p>
+                <button id="testPlayBtn" onclick="window.app.playTestAudio()"
+                        class="btn btn-primary text-lg px-8 py-3" ${exhausted ? 'disabled' : ''}>
+                    ▶ ${played === 0 ? t('test.play') : t('test.replay')}
+                </button>
+                <div id="testReplayInfo" class="text-white/50 text-sm mt-3">
+                    ${exhausted ? t('test.noReplays') : t('test.replaysLeft', { count: replaysLeft })}
+                </div>
+            </div>
+        `;
+    }
+
+    // Scrollable passage panel for Parts 6/7 (companion text for double passages)
+    buildTestPassagePanel(question) {
+        const renderText = (p) => {
+            if (!p) return '';
+            if (typeof p === 'string') return p;
+            return (p.title ? p.title + '\n\n' : '') + (p.content || '');
+        };
+        const main = renderText(question.passage);
+        const companion = renderText(question.companionPassage);
+        return `
+            <div class="bg-gray-800 rounded-lg p-6 mb-4 max-h-96 overflow-y-auto text-left">
+                <p class="text-white/90 whitespace-pre-line">${main}</p>
+                ${companion ? `
+                    <hr class="border-white/20 my-4">
+                    <p class="text-white/90 whitespace-pre-line">${companion}</p>
+                ` : ''}
+            </div>
+        `;
+    }
+
     generateTestQuestion(testSession, testType) {
         if (!window.toeicTestSimulator) {
             return `<p class="text-red-400">${t('test.simulatorUnavailable')}</p>`;
@@ -3670,61 +3749,65 @@ class App {
             return `<p class="text-yellow-400">${t('test.noQuestion')}</p>`;
         }
 
-        // The listening banks have no real audio, but every question
-        // carries a transcript so it can be practiced as written text
-        const transcriptBlock = question.transcript ? `
-            <div class="bg-gray-800 rounded-lg p-6 mb-4 text-left">
-                <p class="text-white/50 text-sm mb-2">${t('test.transcript')}</p>
-                <p class="text-white/90 whitespace-pre-line">${question.transcript}</p>
-            </div>
-        ` : '';
-
-        // Generate question based on type (types come from
-        // toeic-test-simulator.js: photographs, questionResponse,
-        // conversations, talks, incompleteSentences, textCompletion,
-        // readingComprehension)
+        // Types come from toeic-test-simulator.js: photographs (P1),
+        // questionResponse (P2), conversations (P3), talks (P4),
+        // incompleteSentences (P5), textCompletion (P6), readingComprehension (P7)
         if (question.type === 'photographs') {
+            // Emoji scene stands in for the photograph; the 4 statements are audio-only
             return `
                 <div class="text-center mb-6">
-                    <p class="text-lg mb-4">${t('test.lookAtPhoto')}</p>
-                    ${transcriptBlock}
+                    <p class="text-white/70 mb-4">${t('test.part1Instr')}</p>
+                    <div class="bg-gray-800 rounded-xl p-8 mb-4">
+                        <div class="text-6xl mb-3" role="img" aria-label="${question.caption || ''}">${question.scene || '🖼️'}</div>
+                        ${question.caption ? `<p class="text-white/60 text-sm italic">${question.caption}</p>` : ''}
+                    </div>
+                    ${this.buildTestAudioCard(question)}
                 </div>
             `;
         } else if (question.type === 'questionResponse') {
             return `
                 <div class="text-center mb-6">
-                    <p class="text-lg mb-4">${t('test.listenQuestion')}</p>
-                    ${transcriptBlock}
+                    <p class="text-white/70 mb-4">${t('test.part2Instr')}</p>
+                    ${this.buildTestAudioCard(question)}
                 </div>
             `;
         } else if (question.type === 'conversations') {
+            // The conversation itself is audio-only; question + options are shown
             return `
                 <div class="mb-6">
-                    <p class="text-lg mb-4">${t('test.listenConversation')}</p>
-                    ${transcriptBlock}
-                    <p class="text-white/90 mb-4">${question.question}</p>
+                    <p class="text-white/70 mb-4">${t('test.part3Instr')}</p>
+                    ${this.buildTestAudioCard(question)}
+                    <p class="text-white/90 text-lg mb-4">${question.question}</p>
                 </div>
             `;
         } else if (question.type === 'talks') {
             return `
                 <div class="mb-6">
-                    <p class="text-lg mb-4">${t('test.listenTalk')}</p>
-                    ${transcriptBlock}
-                    <p class="text-white/90 mb-4">${question.question}</p>
+                    <p class="text-white/70 mb-4">${t('test.part4Instr')}</p>
+                    ${this.buildTestAudioCard(question)}
+                    <p class="text-white/90 text-lg mb-4">${question.question}</p>
                 </div>
             `;
         } else if (question.type === 'incompleteSentences') {
             return `
                 <div class="mb-6">
-                    <p class="text-white/90 mb-4">${question.sentence || question.question}</p>
+                    <p class="text-white/70 mb-4">${t('test.part5Instr')}</p>
+                    <p class="text-white/90 text-lg mb-4">${question.sentence || question.question}</p>
                 </div>
             `;
-        } else if (question.type === 'textCompletion' || question.type === 'readingComprehension') {
+        } else if (question.type === 'textCompletion') {
             return `
                 <div class="mb-6">
-                    <div class="bg-gray-800 rounded-lg p-6 mb-4">
-                        <p class="text-white/90 whitespace-pre-line">${typeof question.passage === 'object' ? (question.passage.title ? question.passage.title + '\n\n' : '') + question.passage.content : question.passage}</p>
-                    </div>
+                    <p class="text-white/70 mb-4">${t('test.part6Instr')}</p>
+                    ${this.buildTestPassagePanel(question)}
+                    ${question.question ? `<p class="text-white/90 mb-4">${question.question}</p>` : ''}
+                </div>
+            `;
+        } else if (question.type === 'readingComprehension') {
+            return `
+                <div class="mb-6">
+                    <p class="text-white/70 mb-4">${t('test.part7Instr')}</p>
+                    ${this.buildTestPassagePanel(question)}
                     <p class="text-white/90 mb-4">${question.question}</p>
                 </div>
             `;
@@ -3742,8 +3825,22 @@ class App {
         if (!question || !question.options) {
             return `<p class="text-yellow-400">${t('test.noOptions')}</p>`;
         }
-        
-        // Generate answer options (A, B, C, D)
+
+        // Parts 1 & 2: audio-only — render letter-only answer buttons
+        // (the spoken statements/responses are never displayed)
+        if (question.lettersOnly) {
+            const letterButtons = question.options.map((_, index) => {
+                const optionLetter = String.fromCharCode(65 + index);
+                return `
+                    <label class="flex items-center justify-center w-16 h-16 bg-gray-800/40 rounded-xl cursor-pointer hover:bg-gray-700/60 transition-colors text-white text-xl font-bold">
+                        <input type="radio" name="testAnswer" value="${index}" class="mr-2">${optionLetter}
+                    </label>
+                `;
+            }).join('');
+            return `<div class="flex gap-4 justify-center">${letterButtons}</div>`;
+        }
+
+        // Written options (A, B, C, D)
         let options = '';
         question.options.forEach((option, index) => {
             const optionLetter = String.fromCharCode(65 + index); // A, B, C, D
@@ -3755,6 +3852,85 @@ class App {
             `;
         });
         return options;
+    }
+
+    // Build the spoken TTS sequence for the current listening question
+    buildTestAudioSequence(question) {
+        const parts = [];
+        const letters = ['A', 'B', 'C', 'D'];
+
+        if (question.type === 'photographs') {
+            (question.spokenStatements || []).forEach((statement, i) => {
+                parts.push({ text: `${letters[i]}. ${statement}`, voiceHint: null, pauseAfterMs: 700 });
+            });
+        } else if (question.type === 'questionResponse') {
+            if (question.spokenQuestion) {
+                parts.push({ text: question.spokenQuestion, voiceHint: 'M', pauseAfterMs: 900 });
+            }
+            (question.spokenResponses || []).forEach((response, i) => {
+                parts.push({ text: `${letters[i]}. ${response}`, voiceHint: 'W', pauseAfterMs: 700 });
+            });
+        } else if (question.type === 'conversations') {
+            (question.conversation || []).forEach(line => {
+                if (!line || !line.text) return;
+                const speaker = (line.speaker || 'M').charAt(0).toUpperCase() === 'W' ? 'W' : 'M';
+                parts.push({ text: line.text, voiceHint: speaker, pauseAfterMs: 350 });
+            });
+        } else if (question.type === 'talks') {
+            if (question.talk) {
+                parts.push({ text: question.talk, voiceHint: 'M', pauseAfterMs: 0 });
+            }
+        }
+
+        return parts;
+    }
+
+    playTestAudio() {
+        const question = window.toeicTestSimulator?.getCurrentQuestion?.();
+        const audio = window.audioSystem;
+        if (!question || !audio || typeof audio.speakSequence !== 'function') return;
+
+        this.testAudioPlays = this.testAudioPlays || {};
+        const played = this.testAudioPlays[question.number] || 0;
+        if (played >= 3) return; // first play + 2 replays max
+
+        const parts = this.buildTestAudioSequence(question);
+        if (parts.length === 0) return;
+
+        this.testAudioPlays[question.number] = played + 1;
+        const playsSoFar = played + 1;
+        const questionNumber = question.number;
+
+        const playBtn = document.getElementById('testPlayBtn');
+        const replayInfo = document.getElementById('testReplayInfo');
+        if (playBtn) {
+            playBtn.disabled = true;
+            playBtn.innerHTML = `🔊 ${t('test.playing')}`;
+        }
+        if (replayInfo) {
+            const replaysLeft = Math.max(0, 3 - playsSoFar);
+            replayInfo.textContent = replaysLeft > 0
+                ? t('test.replaysLeft', { count: replaysLeft })
+                : t('test.noReplays');
+        }
+
+        audio.speakSequence(parts, {
+            onEnd: () => {
+                // Only touch the DOM if the same question is still shown
+                const current = window.toeicTestSimulator?.getCurrentQuestion?.();
+                if (!current || current.number !== questionNumber) return;
+                const btn = document.getElementById('testPlayBtn');
+                if (btn) {
+                    if (playsSoFar >= 3) {
+                        btn.disabled = true;
+                        btn.innerHTML = `▶ ${t('test.replay')}`;
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = `▶ ${t('test.replay')}`;
+                    }
+                }
+            }
+        });
     }
     
     startTestTimer(duration) {
@@ -3817,12 +3993,15 @@ class App {
     
     nextTestQuestion() {
         console.log('➡️ Moving to next question');
-        
+
         if (!window.toeicTestSimulator) {
             console.error('❌ Test simulator not available');
             return;
         }
-        
+
+        // Never let the previous question's audio bleed into the next one
+        window.audioSystem?.cancelSpeech?.();
+
         // Record the answer if selected — answerQuestion() advances the
         // question pointer internally, so don't also call nextQuestion()
         const selectedAnswer = document.querySelector('input[name="testAnswer"]:checked');
@@ -3858,7 +4037,10 @@ class App {
             console.error('❌ Test simulator not available');
             return;
         }
-        
+
+        // Stop any in-flight listening audio before navigating
+        window.audioSystem?.cancelSpeech?.();
+
         // Move to previous question
         const hasPrevious = window.toeicTestSimulator.previousQuestion();
         if (hasPrevious) {
@@ -3875,7 +4057,10 @@ class App {
             console.error('❌ Test simulator not available');
             return;
         }
-        
+
+        // Stop any in-flight listening audio
+        window.audioSystem?.cancelSpeech?.();
+
         // Get current answer if selected
         const selectedAnswer = document.querySelector('input[name="testAnswer"]:checked');
         if (selectedAnswer) {

@@ -2,12 +2,14 @@
 // Simulates the actual TOEIC test format and timing
 
 // ============================================================
-// Question banks
+// Internal FALLBACK question banks
+// Used only when the external content sources (TOEIC_LISTENING_BANK,
+// TOEIC_PART6_BANK, toeicGrammar, toeicReading) are missing or empty.
 // Every item has a FIXED correctAnswer index (0=A, 1=B, 2=C, 3=D)
 // that genuinely matches its content, so grading is deterministic.
 // Generators cycle through each bank with bank[i % bank.length].
-// Listening items include a `transcript` field describing what
-// "was heard" so the UI can display it in place of real audio.
+// Listening transcripts are converted into TTS speaker lines at
+// generation time — they are never displayed during a test.
 // ============================================================
 
 // Part 1: Photographs (bank of 10 - one per question)
@@ -890,28 +892,85 @@ const TOEIC_READING_COMPREHENSION_BANK = [
     ]
 ];
 
+// ============================================================
+// Content-sourcing helpers (2018+ format)
+// External banks are preferred when present and non-empty:
+//   window.TOEIC_LISTENING_BANK  (Parts 1-4, see assets/data/toeic-listening-banks.js)
+//   window.TOEIC_PART6_BANK      (Part 6)
+//   window.toeicGrammar          (Part 5 — TOEICGrammarSystem instance)
+//   window.toeicReading          (Part 7 — TOEICReadingSystem instance)
+// Every part falls back to the internal banks above when a
+// source is missing or empty, so a test can always be built.
+// ============================================================
+
+// Strip legacy "A) " / "B) " prefixes so the UI can prepend letters itself
+function stripOptionLetter(option) {
+    return typeof option === 'string' ? option.replace(/^[A-D]\)\s*/, '') : option;
+}
+
+function shuffleArray(items) {
+    const arr = items.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// Shuffle options and remap the correct-answer index (the grammar bank
+// has a heavy A/B answer bias, so Part 5 must always reshuffle)
+function shuffleOptionsWithAnswer(options, correctAnswer) {
+    const order = shuffleArray(options.map((_, i) => i));
+    return {
+        options: order.map(i => options[i]),
+        correctAnswer: order.indexOf(correctAnswer)
+    };
+}
+
+// Parse the internal fallback conversation transcripts
+// ('Woman: ... Man: ...') into TTS-ready speaker lines
+function parseSpeakerTranscript(transcript) {
+    const lines = [];
+    const regex = /(Man|Woman)\s*:\s*/g;
+    const markers = [];
+    let match;
+    while ((match = regex.exec(transcript)) !== null) {
+        markers.push({ speaker: match[1] === 'Woman' ? 'W' : 'M', start: match.index, textStart: regex.lastIndex });
+    }
+    if (markers.length === 0) {
+        return [{ speaker: 'M', text: transcript }];
+    }
+    for (let i = 0; i < markers.length; i++) {
+        const end = i + 1 < markers.length ? markers[i + 1].start : transcript.length;
+        const text = transcript.slice(markers[i].textStart, end).trim();
+        if (text) lines.push({ speaker: markers[i].speaker, text });
+    }
+    return lines;
+}
+
 class TOEICTestSimulator {
     constructor() {
         this.testSessions = new Map();
         this.currentTest = null;
+        // 2018+ TOEIC format: L = 6 + 25 + 39 + 30, R = 30 + 16 + 54
         this.testConfig = {
             listening: {
                 totalQuestions: 100,
                 timeLimit: 45 * 60 * 1000, // 45 minutes in milliseconds
                 sections: {
-                    photographs: { count: 10, timePerQuestion: 3000 },
-                    questionResponse: { count: 30, timePerQuestion: 2000 },
-                    conversations: { count: 30, timePerQuestion: 4500 },
-                    talks: { count: 30, timePerQuestion: 6000 }
+                    photographs: { count: 6, timePerQuestion: 3000 },        // Part 1
+                    questionResponse: { count: 25, timePerQuestion: 2000 },  // Part 2
+                    conversations: { count: 39, timePerQuestion: 4500 },     // Part 3 (13 x 3)
+                    talks: { count: 30, timePerQuestion: 6000 }              // Part 4 (10 x 3)
                 }
             },
             reading: {
                 totalQuestions: 100,
                 timeLimit: 75 * 60 * 1000, // 75 minutes in milliseconds
                 sections: {
-                    incompleteSentences: { count: 40, timePerQuestion: 30000 },
-                    textCompletion: { count: 12, timePerQuestion: 45000 },
-                    readingComprehension: { count: 48, timePerQuestion: 60000 }
+                    incompleteSentences: { count: 30, timePerQuestion: 30000 },   // Part 5
+                    textCompletion: { count: 16, timePerQuestion: 45000 },        // Part 6 (4 x 4)
+                    readingComprehension: { count: 54, timePerQuestion: 60000 }   // Part 7
                 }
             }
         };
@@ -1083,141 +1142,367 @@ class TOEICTestSimulator {
         return sections;
     }
     
+    // External listening bank, or null when absent/still empty
+    getListeningBankSection(part) {
+        const bank = (typeof window !== 'undefined' && window.TOEIC_LISTENING_BANK) || null;
+        const section = bank && bank[part];
+        return Array.isArray(section) && section.length > 0 ? section : null;
+    }
+
     generateListeningQuestions() {
         const questions = [];
+        const cfg = this.testConfig.listening.sections;
         let questionNumber = 1;
-        
-        // Photographs (Questions 1-10)
-        for (let i = 0; i < 10; i++) {
-            const item = TOEIC_PHOTOGRAPH_BANK[i % TOEIC_PHOTOGRAPH_BANK.length];
+
+        // ---- Part 1: Photographs (Questions 1-6) ----
+        // The student SEES the emoji scene and only HEARS the 4 statements;
+        // options are letter-only, the statements are never displayed.
+        const part1Bank = this.getListeningBankSection('part1');
+        for (let i = 0; i < cfg.photographs.count; i++) {
+            let scene, caption, statements, correctAnswer;
+            if (part1Bank) {
+                const item = part1Bank[i % part1Bank.length];
+                scene = item.scene;
+                caption = item.caption || '';
+                statements = item.statements;
+                correctAnswer = item.correctAnswer;
+            } else {
+                const item = TOEIC_PHOTOGRAPH_BANK[i % TOEIC_PHOTOGRAPH_BANK.length];
+                scene = '🖼️';
+                caption = item.transcript; // scene description stands in for the photo
+                statements = item.options.map(stripOptionLetter);
+                correctAnswer = item.correctAnswer;
+            }
             questions.push({
                 number: questionNumber++,
                 type: 'photographs',
-                imageUrl: `assets/images/toeic/photo_${String(i + 1).padStart(2, '0')}.jpg`,
-                audioUrl: `assets/audio/toeic/photo_${String(i + 1).padStart(2, '0')}.mp3`,
-                transcript: item.transcript,
-                options: item.options,
-                correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.listening.sections.photographs.timePerQuestion
+                part: 1,
+                scene: scene,
+                caption: caption,
+                spokenStatements: statements,
+                options: ['A', 'B', 'C', 'D'],
+                lettersOnly: true,
+                correctAnswer: correctAnswer,
+                timeLimit: cfg.photographs.timePerQuestion
             });
         }
 
-        // Question-Response (Questions 11-40)
-        for (let i = 0; i < 30; i++) {
-            const item = TOEIC_QUESTION_RESPONSE_BANK[i % TOEIC_QUESTION_RESPONSE_BANK.length];
+        // ---- Part 2: Question-Response (Questions 7-31) ----
+        // Fully audio-only: spoken question + 3 spoken responses (A-C)
+        const part2Bank = this.getListeningBankSection('part2');
+        for (let i = 0; i < cfg.questionResponse.count; i++) {
+            let spokenQuestion, responses, correctAnswer;
+            if (part2Bank) {
+                const item = part2Bank[i % part2Bank.length];
+                spokenQuestion = item.question;
+                responses = item.responses;
+                correctAnswer = item.correctAnswer;
+            } else {
+                // Internal bank items have 4 responses; real Part 2 has 3.
+                // Deterministically drop the last incorrect response.
+                const item = TOEIC_QUESTION_RESPONSE_BANK[i % TOEIC_QUESTION_RESPONSE_BANK.length];
+                spokenQuestion = item.transcript;
+                const all = item.options.map(stripOptionLetter);
+                const dropIndex = all.length - 1 === item.correctAnswer ? all.length - 2 : all.length - 1;
+                responses = all.filter((_, idx) => idx !== dropIndex);
+                correctAnswer = item.correctAnswer > dropIndex ? item.correctAnswer - 1 : item.correctAnswer;
+            }
             questions.push({
                 number: questionNumber++,
                 type: 'questionResponse',
-                audioUrl: `assets/audio/toeic/qr_${String(i + 1).padStart(2, '0')}.mp3`,
-                transcript: item.transcript,
-                options: item.options,
-                correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.listening.sections.questionResponse.timePerQuestion
+                part: 2,
+                spokenQuestion: spokenQuestion,
+                spokenResponses: responses,
+                options: ['A', 'B', 'C'],
+                lettersOnly: true,
+                correctAnswer: correctAnswer,
+                timeLimit: cfg.questionResponse.timePerQuestion
             });
         }
 
-        // Conversations (Questions 41-70)
-        for (let i = 0; i < 30; i++) {
+        // ---- Part 3: Conversations (Questions 32-70, 13 x 3) ----
+        // Conversation is audio-only; question + 4 written options ARE shown.
+        const part3Bank = this.getListeningBankSection('part3');
+        const conversations = part3Bank
+            ? part3Bank
+            : TOEIC_CONVERSATION_BANK.map(conv => ({
+                conversation: parseSpeakerTranscript(conv.transcript),
+                questions: conv.questions.map(q => ({
+                    question: q.question,
+                    options: q.options.map(stripOptionLetter),
+                    correctAnswer: q.correctAnswer
+                }))
+            }));
+        for (let i = 0; i < cfg.conversations.count; i++) {
             const conversationNumber = Math.floor(i / 3) + 1;
             const questionInConversation = (i % 3) + 1;
-            const conversation = TOEIC_CONVERSATION_BANK[(conversationNumber - 1) % TOEIC_CONVERSATION_BANK.length];
-            const item = conversation.questions[questionInConversation - 1];
+            const conversation = conversations[(conversationNumber - 1) % conversations.length];
+            const item = conversation.questions[(questionInConversation - 1) % conversation.questions.length];
 
             questions.push({
                 number: questionNumber++,
                 type: 'conversations',
+                part: 3,
                 conversationNumber: conversationNumber,
                 questionInConversation: questionInConversation,
-                audioUrl: `assets/audio/toeic/conv_${String(conversationNumber).padStart(2, '0')}.mp3`,
-                transcript: conversation.transcript,
+                conversation: conversation.conversation,
                 question: item.question,
                 options: item.options,
                 correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.listening.sections.conversations.timePerQuestion
+                timeLimit: cfg.conversations.timePerQuestion
             });
         }
 
-        // Talks (Questions 71-100)
-        for (let i = 0; i < 30; i++) {
+        // ---- Part 4: Talks (Questions 71-100, 10 x 3) ----
+        const part4Bank = this.getListeningBankSection('part4');
+        const talks = part4Bank
+            ? part4Bank
+            : TOEIC_TALK_BANK.map(talk => ({
+                type: 'talk',
+                talk: talk.transcript,
+                questions: talk.questions.map(q => ({
+                    question: q.question,
+                    options: q.options.map(stripOptionLetter),
+                    correctAnswer: q.correctAnswer
+                }))
+            }));
+        for (let i = 0; i < cfg.talks.count; i++) {
             const talkNumber = Math.floor(i / 3) + 1;
             const questionInTalk = (i % 3) + 1;
-            const talk = TOEIC_TALK_BANK[(talkNumber - 1) % TOEIC_TALK_BANK.length];
-            const item = talk.questions[questionInTalk - 1];
+            const talk = talks[(talkNumber - 1) % talks.length];
+            const item = talk.questions[(questionInTalk - 1) % talk.questions.length];
 
             questions.push({
                 number: questionNumber++,
                 type: 'talks',
+                part: 4,
                 talkNumber: talkNumber,
                 questionInTalk: questionInTalk,
-                audioUrl: `assets/audio/toeic/talk_${String(talkNumber).padStart(2, '0')}.mp3`,
-                transcript: talk.transcript,
+                talk: talk.talk,
+                talkType: talk.type || 'talk',
                 question: item.question,
                 options: item.options,
                 correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.listening.sections.talks.timePerQuestion
-            });
-        }
-        
-        return questions;
-    }
-    
-    generateReadingQuestions() {
-        const questions = [];
-        let questionNumber = 101; // Reading starts at 101
-        
-        // Incomplete Sentences (Questions 101-140)
-        for (let i = 0; i < 40; i++) {
-            const item = TOEIC_INCOMPLETE_SENTENCE_BANK[i % TOEIC_INCOMPLETE_SENTENCE_BANK.length];
-            questions.push({
-                number: questionNumber++,
-                type: 'incompleteSentences',
-                sentence: item.sentence,
-                options: item.options,
-                correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.reading.sections.incompleteSentences.timePerQuestion
+                timeLimit: cfg.talks.timePerQuestion
             });
         }
 
-        // Text Completion (Questions 141-152)
-        for (let i = 0; i < 12; i++) {
-            const textNumber = Math.floor(i / 3) + 1;
-            const questionInText = (i % 3) + 1;
-            const text = TOEIC_TEXT_COMPLETION_BANK[(textNumber - 1) % TOEIC_TEXT_COMPLETION_BANK.length];
-            const item = text.questions[questionInText - 1];
+        return questions;
+    }
+    
+    // Part 5 items sampled WITHOUT replacement from the grammar practice
+    // bank, with options reshuffled per question (the source bank has a
+    // heavy A/B answer bias). Returns null when the bank is unavailable.
+    buildPart5FromGrammarBank(count) {
+        const grammar = (typeof window !== 'undefined' && window.toeicGrammar) || null;
+        if (!grammar || !grammar.practiceQuestions || grammar.practiceQuestions.size === 0) return null;
+
+        const pool = shuffleArray([...grammar.practiceQuestions.values()])
+            .filter(q => q && q.question && Array.isArray(q.options) &&
+                Number.isInteger(q.correctAnswer) && q.options[q.correctAnswer] !== undefined);
+        if (pool.length === 0) return null;
+
+        const items = [];
+        for (let i = 0; i < count; i++) {
+            const src = pool[i % pool.length]; // cycles only if the bank has < count items
+            const shuffledItem = shuffleOptionsWithAnswer(src.options.map(stripOptionLetter), src.correctAnswer);
+            items.push({
+                sentence: src.question,
+                options: shuffledItem.options,
+                correctAnswer: shuffledItem.correctAnswer,
+                explanation: src.explanation || null
+            });
+        }
+        return items;
+    }
+
+    // Part 7 passage groups from the reading system, grouped by passageId
+    // with companion texts resolved for double passages. Null if unavailable.
+    buildPart7Groups() {
+        const reading = (typeof window !== 'undefined' && window.toeicReading) || null;
+        if (!reading || !reading.questions || reading.questions.size === 0 || !reading.passages) return null;
+
+        const byPassage = new Map();
+        for (const question of reading.questions.values()) {
+            if (question.type !== 'reading_comprehension' || !question.passageId) continue;
+            if (!byPassage.has(question.passageId)) byPassage.set(question.passageId, []);
+            byPassage.get(question.passageId).push(question);
+        }
+
+        const groups = [];
+        for (const [passageId, groupQuestions] of byPassage) {
+            const passage = reading.passages.get(passageId);
+            if (!passage || !passage.content) continue;
+            const companion = passage.linkedPassageId
+                ? reading.passages.get(passage.linkedPassageId) || null
+                : null;
+            groups.push({
+                passageId: passageId,
+                passage: { id: passageId, title: passage.title || '', content: passage.content },
+                companionPassage: companion
+                    ? { id: companion.id, title: companion.title || '', content: companion.content }
+                    : null,
+                questions: groupQuestions
+            });
+        }
+        return groups.length > 0 ? groups : null;
+    }
+
+    // Greedily select whole passage groups summing to exactly `target`
+    // questions where possible; if not exactly reachable, the last group
+    // is trimmed. Returns [{group, take}] entries.
+    selectPart7Groups(groups, target) {
+        const pool = shuffleArray(groups);
+        const selection = [];
+        let remaining = target;
+
+        while (remaining > 0 && pool.length > 0) {
+            const sizes = pool.map(g => g.questions.length);
+            // Prefer a group that fits and keeps the remainder reachable
+            // (0, or at least as large as the smallest group left)
+            let pick = pool.findIndex((g, idx) => {
+                const after = remaining - g.questions.length;
+                if (after < 0) return false;
+                if (after === 0) return true;
+                return sizes.some((s, j) => j !== idx && s <= after);
+            });
+            // Otherwise fall back to any group that fits
+            if (pick === -1) pick = pool.findIndex(g => g.questions.length <= remaining);
+
+            if (pick === -1) {
+                // Nothing fits whole — trim the smallest remaining group
+                let smallest = 0;
+                pool.forEach((g, idx) => {
+                    if (g.questions.length < pool[smallest].questions.length) smallest = idx;
+                });
+                selection.push({ group: pool[smallest], take: remaining });
+                remaining = 0;
+                break;
+            }
+
+            const group = pool.splice(pick, 1)[0];
+            selection.push({ group: group, take: group.questions.length });
+            remaining -= group.questions.length;
+        }
+
+        // Bank exhausted before the target: recycle groups from the start
+        let cycleIndex = 0;
+        while (remaining > 0 && groups.length > 0) {
+            const group = groups[cycleIndex % groups.length];
+            const take = Math.min(group.questions.length, remaining);
+            selection.push({ group: group, take: take });
+            remaining -= take;
+            cycleIndex++;
+        }
+
+        return selection;
+    }
+
+    generateReadingQuestions() {
+        const questions = [];
+        const cfg = this.testConfig.reading.sections;
+        let questionNumber = 101; // Reading starts at 101
+
+        // ---- Part 5: Incomplete Sentences (Questions 101-130) ----
+        const part5Count = cfg.incompleteSentences.count;
+        let part5Items = this.buildPart5FromGrammarBank(part5Count);
+        if (!part5Items) {
+            part5Items = [];
+            for (let i = 0; i < part5Count; i++) {
+                const item = TOEIC_INCOMPLETE_SENTENCE_BANK[i % TOEIC_INCOMPLETE_SENTENCE_BANK.length];
+                part5Items.push({
+                    sentence: item.sentence,
+                    options: item.options.map(stripOptionLetter),
+                    correctAnswer: item.correctAnswer,
+                    explanation: null
+                });
+            }
+        }
+        for (const item of part5Items) {
+            questions.push({
+                number: questionNumber++,
+                type: 'incompleteSentences',
+                part: 5,
+                sentence: item.sentence,
+                options: item.options,
+                correctAnswer: item.correctAnswer,
+                explanation: item.explanation,
+                timeLimit: cfg.incompleteSentences.timePerQuestion
+            });
+        }
+
+        // ---- Part 6: Text Completion (Questions 131-146, 4 texts x 4) ----
+        const externalPart6 = (typeof window !== 'undefined' && window.TOEIC_PART6_BANK) || null;
+        const part6Bank = Array.isArray(externalPart6) && externalPart6.length > 0
+            ? externalPart6
+            : TOEIC_TEXT_COMPLETION_BANK.map(text => ({
+                passage: text.passage,
+                questions: text.questions.map(q => ({
+                    question: q.question,
+                    options: q.options.map(stripOptionLetter),
+                    correctAnswer: q.correctAnswer
+                }))
+            }));
+        for (let i = 0; i < cfg.textCompletion.count; i++) {
+            const textNumber = Math.floor(i / 4) + 1;
+            const questionInText = (i % 4) + 1;
+            const text = part6Bank[(textNumber - 1) % part6Bank.length];
+            const item = text.questions[(questionInText - 1) % text.questions.length];
 
             questions.push({
                 number: questionNumber++,
                 type: 'textCompletion',
+                part: 6,
                 textNumber: textNumber,
                 questionInText: questionInText,
                 passage: text.passage,
                 question: item.question,
                 options: item.options,
                 correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.reading.sections.textCompletion.timePerQuestion
+                timeLimit: cfg.textCompletion.timePerQuestion
             });
         }
 
-        // Reading Comprehension (Questions 153-200)
-        for (let i = 0; i < 48; i++) {
-            const passageNumber = Math.floor(i / 4) + 1;
-            const questionInPassage = (i % 4) + 1;
-            const passageQuestions = TOEIC_READING_COMPREHENSION_BANK[(passageNumber - 1) % TOEIC_READING_COMPREHENSION_BANK.length];
-            const item = passageQuestions[questionInPassage - 1];
-
-            questions.push({
-                number: questionNumber++,
-                type: 'readingComprehension',
-                passageNumber: passageNumber,
-                questionInPassage: questionInPassage,
-                passage: this.generateReadingPassage(passageNumber),
-                question: item.question,
-                options: item.options,
-                correctAnswer: item.correctAnswer,
-                timeLimit: this.testConfig.reading.sections.readingComprehension.timePerQuestion
-            });
+        // ---- Part 7: Reading Comprehension (Questions 147-200) ----
+        const part7Target = cfg.readingComprehension.count;
+        let groups = this.buildPart7Groups();
+        if (!groups) {
+            // Internal fallback: rebuild the 2 sample passages as groups
+            groups = TOEIC_READING_COMPREHENSION_BANK.map((bankQuestions, idx) => ({
+                passageId: `internal_${idx + 1}`,
+                passage: { id: `internal_${idx + 1}`, title: '', content: this.generateReadingPassage(idx + 1) },
+                companionPassage: null,
+                questions: bankQuestions.map(q => ({
+                    question: q.question,
+                    options: q.options.map(stripOptionLetter),
+                    correctAnswer: q.correctAnswer
+                }))
+            }));
         }
-        
+
+        const selection = this.selectPart7Groups(groups, part7Target);
+        let passageNumber = 0;
+        for (const { group, take } of selection) {
+            passageNumber++;
+            for (let j = 0; j < take; j++) {
+                const item = group.questions[j];
+                questions.push({
+                    number: questionNumber++,
+                    type: 'readingComprehension',
+                    part: 7,
+                    passageNumber: passageNumber,
+                    questionInPassage: j + 1,
+                    passageId: group.passageId,
+                    passage: group.passage,
+                    companionPassage: group.companionPassage,
+                    question: item.question,
+                    options: (item.options || []).map(stripOptionLetter),
+                    correctAnswer: item.correctAnswer,
+                    timeLimit: cfg.readingComprehension.timePerQuestion
+                });
+            }
+        }
+
         return questions;
     }
     

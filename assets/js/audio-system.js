@@ -15,10 +15,177 @@ class AudioSystem {
         };
         
         this.audioCache = new Map();
+
+        // Sequence-speech state (TOEIC listening TTS)
+        this._sequenceToken = 0;
+        this._sequenceActive = false;
+        this._resumeTimer = null;
+        this._isChromium = typeof navigator !== 'undefined' &&
+            /chrome|chromium|edg\//i.test(navigator.userAgent || '');
+
         this.loadSettings();
         this.initializeVoices();
 
         console.log('🔊 Audio System initialized');
+    }
+
+    // ================= TOEIC listening sequence engine =================
+
+    /**
+     * Speak an ordered sequence of parts through speechSynthesis.
+     * parts = [{ text, voiceHint: 'M'|'W'|null, pauseAfterMs }]
+     * Cancels any prior sequence before starting. Distinct English voices
+     * are used for M/W speakers when the platform provides them.
+     * options: { rate, onEnd } — rate defaults to the audio settings rate.
+     */
+    async speakSequence(parts, options = {}) {
+        if (!this.isSupported || !Array.isArray(parts) || parts.length === 0) return false;
+
+        this.cancelSpeech();
+        const token = ++this._sequenceToken;
+        this._sequenceActive = true;
+        this._startResumeGuard();
+
+        const rate = options.rate || this.settings.rate || 1.0;
+        const speakers = this._pickSpeakerVoices();
+
+        try {
+            for (const part of parts) {
+                if (token !== this._sequenceToken) return false;
+                if (part && part.text) {
+                    const hint = part.voiceHint ? String(part.voiceHint).charAt(0).toUpperCase() : null;
+                    const voice = hint === 'W' ? speakers.W : hint === 'M' ? speakers.M : speakers.default;
+                    await this._speakSequencePart(part.text, rate, voice, token);
+                }
+                if (token !== this._sequenceToken) return false;
+                if (part && part.pauseAfterMs) {
+                    await this.pause(part.pauseAfterMs);
+                }
+            }
+        } finally {
+            if (token === this._sequenceToken) {
+                this._sequenceActive = false;
+                this._stopResumeGuard();
+            }
+        }
+
+        if (token !== this._sequenceToken) return false;
+        if (typeof options.onEnd === 'function') {
+            try { options.onEnd(); } catch (e) { /* listener errors are non-fatal */ }
+        }
+        return true;
+    }
+
+    /** Cancel any in-flight sequence (and any single utterance). */
+    cancelSpeech() {
+        this._sequenceToken++;
+        this._sequenceActive = false;
+        this._stopResumeGuard();
+        if (this.isSupported) {
+            try { speechSynthesis.cancel(); } catch (e) { /* non-fatal */ }
+        }
+        this.currentUtterance = null;
+    }
+
+    isSequenceActive() {
+        return this._sequenceActive;
+    }
+
+    _speakSequencePart(text, rate, voice, token) {
+        return new Promise((resolve) => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = rate;
+            utterance.pitch = this.settings.pitch || 1.0;
+            utterance.volume = this.settings.volume ?? 0.8;
+            if (voice) {
+                utterance.voice = voice;
+                utterance.lang = voice.lang || 'en-US';
+            } else {
+                utterance.lang = 'en-US';
+            }
+
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(watchdog);
+                if (this.currentUtterance === utterance) this.currentUtterance = null;
+                resolve();
+            };
+
+            utterance.onend = finish;
+            utterance.onerror = finish;
+
+            // Watchdog: never hang the sequence if the engine drops events
+            // (generous budget scaled to text length and speech rate)
+            const budget = Math.min(120000, 4000 + (text.length * 120) / Math.max(0.5, rate));
+            const watchdog = setTimeout(() => {
+                if (token !== this._sequenceToken) { finish(); return; }
+                try { speechSynthesis.cancel(); } catch (e) { /* non-fatal */ }
+                finish();
+            }, budget);
+
+            this.currentUtterance = utterance;
+            try {
+                speechSynthesis.speak(utterance);
+            } catch (e) {
+                finish();
+            }
+        });
+    }
+
+    // Chromium silently pauses long synthesis (~15s); periodically nudging
+    // it with pause()+resume() keeps the audio flowing. Other engines only
+    // get a resume() when they report being stuck in a paused state.
+    _startResumeGuard() {
+        this._stopResumeGuard();
+        if (!this.isSupported) return;
+        this._resumeTimer = setInterval(() => {
+            try {
+                if (speechSynthesis.paused) {
+                    speechSynthesis.resume();
+                } else if (this._isChromium && speechSynthesis.speaking) {
+                    speechSynthesis.pause();
+                    speechSynthesis.resume();
+                }
+            } catch (e) { /* non-fatal */ }
+        }, 10000);
+    }
+
+    _stopResumeGuard() {
+        if (this._resumeTimer) {
+            clearInterval(this._resumeTimer);
+            this._resumeTimer = null;
+        }
+    }
+
+    // Pick two distinct English voices for the M/W speaker hints.
+    // Falls back to the default voice when the platform has no match.
+    _pickSpeakerVoices() {
+        const english = (this.voices || []).filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+        // Prefer en-US, then any English voice
+        const pool = english.length > 0
+            ? english.slice().sort((a, b) => {
+                const aUS = a.lang.toLowerCase() === 'en-us' ? 0 : 1;
+                const bUS = b.lang.toLowerCase() === 'en-us' ? 0 : 1;
+                return aUS - bUS;
+            })
+            : (this.voices || []);
+        const fallback = this.settings.voice || pool[0] || null;
+
+        const femalePattern = /female|woman|samantha|victoria|karen|moira|tessa|fiona|kate|serena|allison|ava|susan|zira|hazel|joanna|kendra|kimberly|salli|nicky|shelley|sandy|jenny|aria|michelle|sonia|libby|natasha|catherine/i;
+        const malePattern = /\bmale\b|\bman\b|daniel|david|mark|alex|fred|tom|aaron|arthur|gordon|guy|james|oliver|nathan|ryan|matthew|joey|brian|russell|george|william|christopher|eric|reed|rocko/i;
+        const isFemale = v => femalePattern.test(v.name) && !/\bmale\b/i.test(v.name);
+        const isMale = v => !isFemale(v) && malePattern.test(v.name);
+
+        let womanVoice = pool.find(isFemale) || null;
+        let manVoice = pool.find(v => isMale(v) && v !== womanVoice) || null;
+
+        // Ensure two DISTINCT voices whenever more than one is available
+        if (!womanVoice) womanVoice = pool.find(v => v !== manVoice) || manVoice || fallback;
+        if (!manVoice) manVoice = pool.find(v => v !== womanVoice) || womanVoice || fallback;
+
+        return { M: manVoice, W: womanVoice, default: fallback };
     }
 
     /**
@@ -206,8 +373,11 @@ class AudioSystem {
         return true;
     }
     
-    // Stop current speech
+    // Stop current speech (also aborts any running sequence)
     stop() {
+        this._sequenceToken++;
+        this._sequenceActive = false;
+        this._stopResumeGuard();
         if (this.isSupported && speechSynthesis.speaking) {
             speechSynthesis.cancel();
         }
